@@ -199,8 +199,7 @@ class _OtpScreenState extends State<OtpScreen> {
           onPressed: () {
 
             /// 🔹 GET OTP VALUE
-            String otp =
-            controllers.map((e) => e.text).join();
+            String otp = controllers.map((e) => e.text).join();
 
             /// ✅ EMPTY VALIDATION
             if (otp.isEmpty || otp.length < 4) {
@@ -211,8 +210,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  margin:
-                  const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 ),
               );
               return;
@@ -232,20 +230,29 @@ class _OtpScreenState extends State<OtpScreen> {
                   content: const Text("Invalid OTP"),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  margin:
-                  const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 ),
               );
             }
           },
+
+          /// ✅ BUTTON STYLE
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.blue,
+            backgroundColor: AppColors.lightblue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10), // 👈 radius 10
+            ),
+            elevation: 2,
           ),
+
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

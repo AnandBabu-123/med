@@ -169,7 +169,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.blue,
+            backgroundColor: AppColors.lightblue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

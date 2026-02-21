@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:medryder/config/colors/app_colors.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -11,9 +13,6 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen>
     with WidgetsBindingObserver {
-
-  final GlobalKey<ScaffoldState> scaffoldKey =
-  GlobalKey<ScaffoldState>();
 
   int currentIndex = 0;
   String? address;
@@ -46,10 +45,9 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   /// ================= LOCATION FLOW =================
   Future<void> _handleLocationFlow() async {
-    bool serviceEnabled =
-    await Geolocator.isLocationServiceEnabled();
+    bool enabled = await Geolocator.isLocationServiceEnabled();
 
-    if (serviceEnabled) {
+    if (enabled) {
       await _getExactLocation();
     } else {
       if (!isBottomSheetOpen) {
@@ -58,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     }
   }
 
-  /// ================= GET EXACT LOCATION =================
+  /// ================= GET ADDRESS =================
   Future<void> _getExactLocation() async {
     try {
       LocationPermission permission =
@@ -70,138 +68,275 @@ class _DashboardScreenState extends State<DashboardScreen>
 
       if (permission == LocationPermission.deniedForever) return;
 
-      /// ✅ FORCE GPS HIGH ACCURACY
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-        timeLimit: const Duration(seconds: 15),
+        desiredAccuracy: LocationAccuracy.best,
       );
 
-      /// ✅ REVERSE GEOCODING
       List<Placemark> placemarks =
       await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
-      Placemark place = placemarks.first;
+      Placemark p = placemarks.first;
 
-      /// ✅ CLEAN HUMAN READABLE ADDRESS
-      String fullAddress =
-          "${place.name}, "
-          "${place.street}, "
-          "${place.locality}, "
-          "${place.subAdministrativeArea}, "
-          "${place.administrativeArea}, "
-          "${place.postalCode}";
+      List<String> parts = [
+        if (p.name != null && p.name!.isNotEmpty) p.name!,
+        if (p.thoroughfare != null) p.thoroughfare!,
+        if (p.subLocality != null) p.subLocality!,
+        if (p.locality != null) p.locality!,
+        if (p.administrativeArea != null) p.administrativeArea!,
+        if (p.postalCode != null) p.postalCode!,
+      ];
 
       setState(() {
-        address = fullAddress;
+        address = parts.join(", ");
       });
 
-      /// close bottom sheet safely
       if (isBottomSheetOpen) {
-        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pop(context);
         isBottomSheetOpen = false;
       }
     } catch (e) {
-      debugPrint("Location Error: $e");
+      debugPrint("Location error $e");
     }
   }
 
-  /// ================= LOCATION BOTTOM SHEET =================
+  /// ================= LOCATION SHEET =================
   void _showLocationBottomSheet() {
     isBottomSheetOpen = true;
 
     showModalBottomSheet(
       context: context,
       isDismissible: false,
-      enableDrag: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.vertical(top: Radius.circular(20)),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: ListTile(
+          leading: const Icon(Icons.my_location, color: AppColors.lightblue,),
+          title: const Text("Use Current Location"),
+          onTap: () async {
+            bool enabled =
+            await Geolocator.isLocationServiceEnabled();
+
+            if (!enabled) {
+              await Geolocator.openLocationSettings();
+            } else {
+              _getExactLocation();
+            }
+          },
+        ),
       ),
-      builder: (_) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
+    );
+  }
+
+  /// ================= SIDE MENU DIALOG =================
+  /// ================= SIDE MENU DIALOG =================
+  void _openSideMenuDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (_) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
 
-              const Text(
-                "Select Location",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+              /// ========= HEADER (BLUE) =========
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 18),
+
+                child: Row(
+                  children: [
+
+                    Center(
+                      child: Image.asset(
+                        "assets/logo.png",
+
+                        width: 130,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Spacer(),
+
+                    /// LANGUAGE ICON (ROUND)
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.language,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    /// CLOSE ICON (ROUND)
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
-              const SizedBox(height: 20),
+              /// ========= MENU LIST (WHITE + SCROLL) =========
+              Container(
+                color: Colors.white,
+                height: 550, // dialog scroll height
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
 
-              /// CURRENT LOCATION
-              ListTile(
-                leading: const Icon(Icons.my_location,
-                    color: Colors.blue),
-                title: const Text("Use Current Location"),
-                onTap: () async {
-                  bool enabled =
-                  await Geolocator.isLocationServiceEnabled();
+                      _menuItem(Icons.person, "Profile"),
+                      _menuItemHospitals(Icons.local_hospital_rounded, "Hospital Bookings"),
+                      _menuItem(Icons.tablet, "Wellness & Medicine Bookings"),
+                      _menuItem(Icons.local_hospital, "Online Doctor Booking"),
+                      _menuItemLabBookings(Icons.science, "Lab Bookings History"),
+                      _menuItem(Icons.monitor_heart, "Diagnostic Bookings"),
+                      _menuItem(Icons.lock, "Med Locker"),
+                      _menuItem(Icons.receipt_long, "Med Rayder Subscription"),
+                      _menuItem(Icons.credit_card, "E Card"),
+                      _menuItem(Icons.note, "Acko Insurance"),
+                      _menuItem(Icons.location_on, "Your Address"),
+                      _menuItem(Icons.share, "Share App"),
+                      _menuItem(Icons.person, "Contact Us"),
+                      _menuItem(Icons.info, "About Us"),
+                      _menuItem(Icons.logout, "Logout"),
 
-                  if (!enabled) {
-                    await Geolocator.openLocationSettings();
-                  } else {
-                    _getExactLocation();
-                  }
-                },
-              ),
 
-              const Divider(),
-
-              /// MANUAL ENTRY
-              ListTile(
-                leading: const Icon(Icons.edit_location_alt,
-                    color: Colors.green),
-                title: const Text("Enter Location Manually"),
-                onTap: () {
-                  Navigator.pop(context);
-                  isBottomSheetOpen = false;
-                  _manualAddressDialog();
-                },
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  /// ================= MANUAL ADDRESS =================
-  void _manualAddressDialog() {
-    TextEditingController controller =
-    TextEditingController();
+  Widget _menuItemLabBookings(IconData icon, String title) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent, // removes line
+      ),
+      child: ExpansionTile(
+        leading: Icon(icon, color: Colors.black87),
 
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Enter Address"),
-        content: TextField(
-          controller: controller,
-          decoration:
-          const InputDecoration(hintText: "Enter address"),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel")),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                address = controller.text;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Save"),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
+        ),
+
+        // dropdown icon automatically appears at end
+        trailing: const Icon(Icons.keyboard_arrow_down),
+
+        children: [
+          _subMenu("MedRayder Labs History"),
+          _subMenu("Lab Tests Bookings"),
+
+
         ],
       ),
+    );
+  }
+
+  Widget _menuItemHospitals(IconData icon, String title) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent, // removes line
+      ),
+      child: ExpansionTile(
+        leading: Icon(icon, color: Colors.black87),
+
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+
+        // dropdown icon automatically appears at end
+        trailing: const Icon(Icons.keyboard_arrow_down),
+
+        children: [
+          _subMenu("Hospital Medicine Bookings"),
+          _subMenu("Hospital Admission Bookings"),
+          _subMenu("Hospital Doctor Bookings"),
+          _subMenu("Hospital Diagnostic Bookings"),
+          _subMenu("Hospital Ambulance Bookings"),
+        ],
+      ),
+    );
+  }
+  Widget _subMenu(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Widget _menuItem(IconData icon, String title) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.black87),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+      },
     );
   }
 
@@ -209,75 +344,119 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        title: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              const Icon(Icons.location_on),
-              const SizedBox(width: 6),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Text(
-                    address ?? "Select Location",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: const [
-          Icon(Icons.credit_card),
-          SizedBox(width: 15),
-          Icon(Icons.notifications),
-          SizedBox(width: 12),
-        ],
-      ),
+      backgroundColor: Colors.white,
 
       body: Column(
         children: [
-          /// SEARCH + MENU
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+
+          /// ================= BLUE HEADER =================
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 50, 16, 20),
+            decoration: const BoxDecoration(
+              color: AppColors.lightblue,
+              borderRadius:
+              BorderRadius.vertical(bottom: Radius.circular(22)),
+            ),
+            child: Column(
               children: [
-                InkWell(
-                  onTap: () =>
-                      scaffoldKey.currentState?.openDrawer(),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius:
-                      BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.menu),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Search...",
-                      prefixIcon:
-                      const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(12),
+
+                /// -------- ROW 1 ----------
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.white),
+                    const SizedBox(width: 6),
+
+                    /// ADDRESS
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(
+                          address ?? "Select Location",
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 14),
+                        ),
                       ),
                     ),
-                  ),
+
+                    /// CREDIT CARD ICON
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.credit_card,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    /// NOTIFICATION ICON
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.notifications,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+
+                /// -------- ROW 2 ----------
+                Row(
+                  children: [
+
+                    /// SIDE NAV ICON
+                    GestureDetector(
+                      onTap: _openSideMenuDialog,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.menu),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    /// SEARCH BAR
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          BorderRadius.circular(12),
+                        ),
+                        child: const TextField(
+                          decoration: InputDecoration(
+                            hintText: "Search medicines...",
+                            border: InputBorder.none,
+                            prefixIcon: Icon(Icons.search),
+                            suffixIcon: Icon(Icons.mic),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
+          /// BODY
           const Expanded(
             child: Center(
               child: Text("Dashboard Content"),
@@ -286,25 +465,60 @@ class _DashboardScreenState extends State<DashboardScreen>
         ],
       ),
 
+      /// ================= BOTTOM NAV =================
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.whiteColor,
         currentIndex: currentIndex,
-        onTap: (i) => setState(() => currentIndex = i),
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+
         type: BottomNavigationBarType.fixed,
+
+        /// ✅ Selected color
+        selectedItemColor: AppColors.lightblue,
+
+        /// ✅ Unselected color
+        unselectedItemColor: Colors.grey,
+
+        /// ✅ Reduce font size
+        selectedFontSize: 11,
+        unselectedFontSize: 10,
+
+        /// ✅ Icon animation duration./
+        enableFeedback: true,
+
+        /// ✅ Label visibility
+        showUnselectedLabels: true,
+
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home), label: "Home"),
+            icon: Icon(Icons.local_hospital_rounded),
+            activeIcon: Icon(Icons.local_hospital_rounded, size: 30),
+            label: "Home",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.category),
-              label: "Categories"),
+            icon: Icon(Icons.health_and_safety),
+            activeIcon: Icon(Icons.health_and_safety, size: 30),
+            label: "Hospitals",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.location_on),
-              label: "Address"),
+            icon: Icon(Icons.local_pharmacy),
+            activeIcon: Icon(Icons.local_pharmacy, size: 30),
+            label: "Medicines",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: "Cart"),
+            icon: Icon(Icons.science),
+            activeIcon: Icon(Icons.science, size: 30),
+            label: "Lab Tests",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Profile"),
+            icon: Icon(Icons.add_location),
+            activeIcon: Icon(Icons.add_location, size: 30),
+            label: "Diagnostics",
+          ),
         ],
       ),
     );
