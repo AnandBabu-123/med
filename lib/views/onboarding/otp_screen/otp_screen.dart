@@ -95,6 +95,7 @@ class _OtpScreenState extends State<OtpScreen> {
               Image.asset(
                 "assets/logo.png",
                 height: 150,
+                width: 220,
               ),
 
               const SizedBox(height: 25),
@@ -242,7 +243,7 @@ class _OtpScreenState extends State<OtpScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.lightblue,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10), // 👈 radius 10
+              borderRadius: BorderRadius.circular(10),
             ),
             elevation: 2,
           ),

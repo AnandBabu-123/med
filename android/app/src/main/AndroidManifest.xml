@@ -8,7 +8,7 @@
     <!-- Optional (better accuracy background handling) -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <application
-        android:label="medryder"
+        android:label="MEDRAYDER"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
