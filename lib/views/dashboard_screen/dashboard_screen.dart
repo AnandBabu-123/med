@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medryder/config/colors/app_colors.dart';
+
+import '../../config/routes/routes_name.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -208,7 +211,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   child: Column(
                     children: [
 
-                      _menuItem(Icons.person, "Profile"),
+                      _menuItemProfile(Icons.person, "Profile"),
                       _menuItemHospitals(Icons.local_hospital_rounded, "Hospital Bookings"),
                       _menuItem(Icons.tablet, "Wellness & Medicine Bookings"),
                       _menuItem(Icons.local_hospital, "Online Doctor Booking"),
@@ -285,15 +288,174 @@ class _DashboardScreenState extends State<DashboardScreen>
         trailing: const Icon(Icons.keyboard_arrow_down),
 
         children: [
-          _subMenu("Hospital Medicine Bookings"),
-          _subMenu("Hospital Admission Bookings"),
-          _subMenu("Hospital Doctor Bookings"),
-          _subMenu("Hospital Diagnostic Bookings"),
-          _subMenu("Hospital Ambulance Bookings"),
+          _subMenuMedicalBookings("Hospital Medicine Bookings"),
+          _subMenuAdmissionBookings("Hospital Admission Bookings"),
+          _subMenuDoctorBookings("Hospital Doctor Bookings"),
+          _subMenuDiagnosticBookings("Hospital Diagnostic Bookings"),
+          _subMenuAmbulanceBookings("Hospital Ambulance Bookings"),
         ],
       ),
     );
   }
+  Widget _subMenuMedicalBookings(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RoutesName.hospitalMedicineBooking,
+
+          );
+        },
+      ),
+    );
+  }
+  Widget _subMenuAdmissionBookings(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RoutesName.hospitalAdmissionBookings,
+
+          );
+        },
+      ),
+    );
+  }
+  Widget _subMenuDoctorBookings(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RoutesName.hospitalDoctorBookings,
+
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _subMenuDiagnosticBookings(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+        Navigator.pushNamed(context, RoutesName.hospitalDiagnosticBookings);
+        },
+      ),
+    );
+  }
+  Widget _subMenuAmbulanceBookings(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: ListTile(
+        title: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+        Navigator.pushNamed(context, RoutesName.hospitalAmbulanceBookings);
+        },
+      ),
+    );
+  }
+
   Widget _subMenu(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
@@ -318,7 +480,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           ],
         ),
         onTap: () {
-          Navigator.pop(context);
+         Navigator.pop(context);
         },
       ),
     );
@@ -340,7 +502,28 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  Widget _menuItemProfile(IconData icon, String title) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.black87),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RoutesName.profileScreen,
+
+        );
+      },
+    );
+  }
+
   /// ================= UI =================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -360,13 +543,12 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Column(
               children: [
 
-                /// -------- ROW 1 ----------
+                /// -------- ROW 1 (LOCATION) ----------
                 Row(
                   children: [
                     const Icon(Icons.location_on, color: Colors.white),
                     const SizedBox(width: 6),
 
-                    /// ADDRESS
                     Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -378,53 +560,24 @@ class _DashboardScreenState extends State<DashboardScreen>
                       ),
                     ),
 
-                    /// CREDIT CARD ICON
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.credit_card,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                    ),
-
+                    _circleIcon(Icons.credit_card),
                     const SizedBox(width: 10),
-
-                    /// NOTIFICATION ICON
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                    ),
+                    _circleIcon(Icons.notifications),
                   ],
                 ),
 
                 const SizedBox(height: 15),
 
-                /// -------- ROW 2 ----------
+                /// -------- ROW 2 (MENU + SEARCH) ----------
                 Row(
                   children: [
-
-                    /// SIDE NAV ICON
                     GestureDetector(
                       onTap: _openSideMenuDialog,
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                          BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(Icons.menu),
                       ),
@@ -432,13 +585,11 @@ class _DashboardScreenState extends State<DashboardScreen>
 
                     const SizedBox(width: 12),
 
-                    /// SEARCH BAR
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                          BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const TextField(
                           decoration: InputDecoration(
@@ -455,11 +606,45 @@ class _DashboardScreenState extends State<DashboardScreen>
               ],
             ),
           ),
+             SizedBox(height: 15,),
+          /// ================= WHITE DASHBOARD AREA =================
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
 
-          /// BODY
-          const Expanded(
-            child: Center(
-              child: Text("Dashboard Content"),
+                  /// ✅ HORIZONTAL CATEGORY SCROLL
+                  Container(
+                    height: 115,
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _svgCategory("assets/image_three.png", "Ambulance"),
+                        _svgCategory("assets/image_six.png", "Admission"),
+                        _svgCategory("assets/image_seven.png", "Treatment Planning"),
+                        _svgCategory("assets/image_one.png", "Online Pharmacy"),
+                        _svgCategory("assets/image_five.png", "Online Doctors"),
+                        _svgCategory("assets/image_four.png", "Lab Tests Booking"),
+                        _svgCategory("assets/image_five.png", "Diagnostics Center"),
+                      ],
+                    ),
+                  ),
+
+                  /// DASHBOARD CONTENT
+                  const SizedBox(height: 30),
+                  const Center(
+                    child: Text(
+                      "Dashboard Content",
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+
+                  const SizedBox(height: 400), // demo scroll space
+                ],
+              ),
             ),
           ),
         ],
@@ -469,58 +654,94 @@ class _DashboardScreenState extends State<DashboardScreen>
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: AppColors.whiteColor,
         currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-
+        onTap: (index) => setState(() => currentIndex = index),
         type: BottomNavigationBarType.fixed,
-
-        /// ✅ Selected color
         selectedItemColor: AppColors.lightblue,
-
-        /// ✅ Unselected color
         unselectedItemColor: Colors.grey,
-
-        /// ✅ Reduce font size
         selectedFontSize: 11,
         unselectedFontSize: 10,
-
-        /// ✅ Icon animation duration./
-        enableFeedback: true,
-
-        /// ✅ Label visibility
         showUnselectedLabels: true,
-
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_hospital_rounded),
-            activeIcon: Icon(Icons.local_hospital_rounded, size: 30),
-            label: "Home",
-          ),
+              icon: Icon(Icons.local_hospital_rounded),
+              activeIcon: Icon(Icons.local_hospital_rounded, size: 30),
+              label: "Home"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.health_and_safety),
-            activeIcon: Icon(Icons.health_and_safety, size: 30),
-            label: "Hospitals",
-          ),
+              icon: Icon(Icons.health_and_safety),
+              activeIcon: Icon(Icons.health_and_safety, size: 30),
+              label: "Hospitals"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_pharmacy),
-            activeIcon: Icon(Icons.local_pharmacy, size: 30),
-            label: "Medicines",
-          ),
+              icon: Icon(Icons.local_pharmacy),
+              activeIcon: Icon(Icons.local_pharmacy, size: 30),
+              label: "Medicines"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.science),
-            activeIcon: Icon(Icons.science, size: 30),
-            label: "Lab Tests",
-          ),
+              icon: Icon(Icons.science),
+              activeIcon: Icon(Icons.science, size: 30),
+              label: "Lab Tests"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_location),
-            activeIcon: Icon(Icons.add_location, size: 30),
-            label: "Diagnostics",
+              icon: Icon(Icons.add_location),
+              activeIcon: Icon(Icons.add_location, size: 30),
+              label: "Diagnostics"),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _circleIcon(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: Colors.black, size: 20),
+    );
+  }
+
+  Widget _svgCategory(String asset, String title) {
+    return Container(
+      width: 77,
+      margin: const EdgeInsets.only(right: 14),
+      child: Column(
+        children: [
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: Center(child: _loadIcon(asset)),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w500),
           ),
         ],
       ),
     );
   }
+  Widget _loadIcon(String asset) {
+    if (asset.toLowerCase().endsWith(".svg")) {
+      return SvgPicture.asset(
+        asset,
+        height: 28,
+        width: 28,
+        fit: BoxFit.contain,
+      );
+    }
+    return Image.asset(
+      asset,
+      height: 28,
+      width: 28,
+      fit: BoxFit.contain,
+    );
+  }
+
 }

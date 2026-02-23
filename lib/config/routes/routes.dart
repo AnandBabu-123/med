@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/routes/routes_name.dart';
+import 'package:medryder/views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
+import 'package:medryder/views/hospital_bookings/hospital_ambulance_bookings/hospital_ambulance_bookings.dart';
+import 'package:medryder/views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
+import 'package:medryder/views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_bookings.dart';
+import 'package:medryder/views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
+import 'package:medryder/views/profile/profile_screen.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
 import '../../bloc/store_bloc/store_bloc.dart';
 import '../../repository/store_repository/store_repository.dart';
@@ -65,6 +71,53 @@ class Routes {
           builder: (_) => OtpScreen(
             mobileNumber: args["mobile"],
             selectedLanguage: args["language"],
+          ),
+        );
+
+      case RoutesName.profileScreen:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const ProfileScreen(),
+          ),
+        );
+
+      case RoutesName.hospitalMedicineBooking:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const HospitalMedicalBookings(),
+          ),
+        );
+
+      case RoutesName.hospitalAdmissionBookings:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const HospitalAdmissionBookings(),
+          ),
+        );
+      case RoutesName.hospitalDoctorBookings:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const HospitalDoctorBookings(),
+          ),
+        );
+
+      case RoutesName.hospitalDiagnosticBookings:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const HospitalDiagnosticBookings(),
+          ),
+        );
+
+      case RoutesName.hospitalAmbulanceBookings:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const HospitalAmbulanceBookings(),
           ),
         );
 

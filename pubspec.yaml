@@ -48,6 +48,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   geolocator: ^14.0.2
   geocoding: ^4.0.0
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
