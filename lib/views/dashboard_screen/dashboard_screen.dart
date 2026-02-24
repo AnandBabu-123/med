@@ -801,7 +801,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 height: 50,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                  Navigator.pushNamed(context, RoutesName.addAdddress);
+                  Navigator.pushNamed(context, RoutesName.addAddress);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lightblue,

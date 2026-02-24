@@ -122,7 +122,7 @@ class Routes {
           ),
         );
 
-      case RoutesName.addAdddress:
+      case RoutesName.addAddress:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
             create: (_) => StoreBloc(StoreRepository()),

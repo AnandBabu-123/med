@@ -14,5 +14,5 @@ class RoutesName {
   static const String hospitalDoctorBookings ="hospital_doctor_bookings";
   static const String hospitalDiagnosticBookings= "hospital_diagnostic_bookings";
   static const String hospitalAmbulanceBookings ="hospital_ambulance_bookings";
-  static const String addAdddress ="add_address";
+  static const String addAddress ="add_address";
 }
