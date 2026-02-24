@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:medryder/config/colors/app_colors.dart';
-
 import '../../config/routes/routes_name.dart';
 
 
@@ -21,21 +20,51 @@ class _DashboardScreenState extends State<DashboardScreen>
   String? address;
   bool isBottomSheetOpen = false;
 
+  late ScrollController _locationScrollController;
+  double _scrollPosition = 0;
+
+
   /// ================= INIT =================
   @override
   void initState() {
     super.initState();
+    _locationScrollController = ScrollController();
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _handleLocationFlow();
+      _startAutoScroll();
     });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _locationScrollController.dispose();
     super.dispose();
+  }
+
+  void _startAutoScroll() {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(milliseconds: 60));
+
+      if (!_locationScrollController.hasClients) return true;
+
+      final maxScroll =
+          _locationScrollController.position.maxScrollExtent;
+
+      if (maxScroll <= 0) return true; // text small → no scroll
+
+      _scrollPosition += 1;
+
+      if (_scrollPosition >= maxScroll) {
+        _scrollPosition = 0; // restart
+      }
+
+      _locationScrollController.jumpTo(_scrollPosition);
+
+      return true;
+    });
   }
 
   /// ================= APP RESUME =================
@@ -546,16 +575,27 @@ class _DashboardScreenState extends State<DashboardScreen>
                 /// -------- ROW 1 (LOCATION) ----------
                 Row(
                   children: [
-                    const Icon(Icons.location_on, color: Colors.white),
+                    GestureDetector(
+                      onTap: _openLocationBottomSheet,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.white,
+                      ),
+                    ),
                     const SizedBox(width: 6),
 
                     Expanded(
                       child: SingleChildScrollView(
+                        controller: _locationScrollController,
                         scrollDirection: Axis.horizontal,
+                        physics: const NeverScrollableScrollPhysics(),
                         child: Text(
                           address ?? "Select Location",
                           style: const TextStyle(
-                              color: Colors.white, fontSize: 14),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500
+                          ),
                         ),
                       ),
                     ),
@@ -686,7 +726,102 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
+  /// ================= LOCATION BOTTOM SHEET =================
+  void _openLocationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
 
+              /// HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Your Addresses",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              /// CURRENT ADDRESS
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey.shade100,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on,
+                        color: Colors.blue),
+
+                    const SizedBox(width: 10),
+
+                    Expanded(
+                      child: Text(
+                        address ?? "No address selected",
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// ✅ ADD NEW ADDRESS BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                  Navigator.pushNamed(context, RoutesName.addAdddress);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.lightblue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text(
+                    "Add New Address",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Widget _circleIcon(IconData icon) {
     return Container(

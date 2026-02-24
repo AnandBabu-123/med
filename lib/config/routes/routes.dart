@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/routes/routes_name.dart';
+import 'package:medryder/views/address/add_address.dart';
 import 'package:medryder/views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_ambulance_bookings/hospital_ambulance_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
@@ -118,6 +119,14 @@ class Routes {
           builder: (context) => BlocProvider(
             create: (_) => StoreBloc(StoreRepository()),
             child: const HospitalAmbulanceBookings(),
+          ),
+        );
+
+      case RoutesName.addAdddress:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (_) => StoreBloc(StoreRepository()),
+            child: const AddAddress(),
           ),
         );
 

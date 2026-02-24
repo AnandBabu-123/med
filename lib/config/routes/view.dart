@@ -12,3 +12,4 @@ export '../../views/hospital_bookings/hospital_admission_bookings/hospital_admis
 export '../../views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_bookings.dart';
 export '../../views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
 export '../../views/hospital_bookings/hospital_ambulance_bookings/hospital_ambulance_bookings.dart';
+export '../../views/address/add_address.dart';

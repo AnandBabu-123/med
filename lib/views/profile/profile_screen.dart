@@ -346,7 +346,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           DropdownButtonFormField<String>(
             value: value,
             dropdownColor: Colors.white, // ✅ dropdown background
-            iconEnabledColor: Colors.black, // ✅ arrow color
+            iconEnabledColor: Colors.black, // ✅ arrow  color
             style: const TextStyle(
               fontSize: 14,
               color: Colors.black, // ✅ selected text color
