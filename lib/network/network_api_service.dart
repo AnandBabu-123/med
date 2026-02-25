@@ -28,12 +28,12 @@ class NetworkApiService implements BaseApiService {
       "Accept": "application/json",
     };
 
-    if (isAuthRequired) {
-      final token = await _session.getToken();
-      if (token != null && token.isNotEmpty) {
-        headers["Authorization"] = "Bearer $token";
-      }
-    }
+    // if (isAuthRequired) {
+    //   final token = await _session.getToken();
+    //   if (token != null && token.isNotEmpty) {
+    //     headers["Authorization"] = "Bearer $token";
+    //   }
+    // }
 
     return Options(headers: headers);
   }

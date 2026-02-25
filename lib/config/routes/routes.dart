@@ -9,13 +9,18 @@ import 'package:medryder/views/hospital_bookings/hospital_doctor_bookings/hospit
 import 'package:medryder/views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
 import 'package:medryder/views/profile/profile_screen.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
+import '../../bloc/otp_bloc/otp_bloc.dart';
+import '../../bloc/signup_bloc/signup_bloc.dart';
 import '../../bloc/store_bloc/store_bloc.dart';
+import '../../repository/otp_respository/otp_repository.dart';
+import '../../repository/signup_repository/signup_repository.dart';
 import '../../repository/store_repository/store_repository.dart';
 import '../../views/home/home_screen.dart';
 import '../../views/login/login_screen.dart';
 import '../../views/onboarding/language_screen/language_screen.dart';
 import '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
 import '../../views/onboarding/otp_screen/otp_screen.dart';
+import '../../views/onboarding/signup_screen/signup_screen.dart';
 import '../../views/splash/splash_screen.dart';
 
 class Routes {
@@ -69,12 +74,26 @@ class Routes {
         final args = settings.arguments as Map<String, dynamic>;
 
         return MaterialPageRoute(
-          builder: (_) => OtpScreen(
-            mobileNumber: args["mobile"],
-            selectedLanguage: args["language"],
+          builder: (_) => BlocProvider(
+            create: (_) => OtpBloc(OtpRepository()),
+            child: OtpScreen(
+              mobileNumber: args["mobile"],
+              selectedLanguage: args["language"],
+            ),
           ),
         );
 
+      case RoutesName.signupScreen:
+        final language = settings.arguments as String;
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => SignupBloc(SignupRepository()),
+            child: SignupScreen(
+              selectedLanguage: language,
+            ),
+          ),
+        );
       case RoutesName.profileScreen:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(

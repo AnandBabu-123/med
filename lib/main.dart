@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'config/routes/routes.dart';
 import 'config/routes/routes_name.dart';
+import 'network/http_override.dart';
 
   void main() {
+    HttpOverrides.global = MyHttpOverrides();
     runApp(const MyApp());
   }
 

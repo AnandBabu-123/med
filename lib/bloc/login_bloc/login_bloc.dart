@@ -48,7 +48,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginStates> {
       // 🔥 SUCCESS (200)
       if (apiResponse.statusCode == 200) {
         final response = LoginModel.fromJson(apiResponse.data);
-        await sessionManager.saveUser(response);
+      //  await sessionManager.saveUser(response);
         emit(state.copyWith(
           postApiStatus: PostApiStatus.success,
           message: response.responseMessage ?? "Login Success",

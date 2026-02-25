@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../config/language/app_strings.dart';
+import '../../../config/routes/routes_name.dart';
 import '../signup_screen/signup_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -162,13 +163,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               TextField(
                 readOnly: true,
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => SignupScreen(
-                        selectedLanguage: widget.selectedLanguage,
-                      ),
-                    ),
+                    RoutesName.signupScreen,
+                    arguments: widget.selectedLanguage,
                   );
                 },
                 keyboardType: TextInputType.phone,

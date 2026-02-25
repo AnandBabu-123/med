@@ -11,19 +11,39 @@ class SessionManager {
   static const String _tokenKey = "token";
   static const String _roleKey = "dashboardRole";
 
+  static const String userIdKey = "user_id";
+  static const String mobileKey = "mobile";
+  static const String emailKey = "email";
+  static const String tokenKey = "auth_token";
 
-  /// 🔹 SAVE LOGIN DATA
-  Future<void> saveUser(LoginModel user) async {
+  static Future<void> saveUser({
+    required int id,
+    required int mobile,
+    required String email,
+    required String token,
+  }) async {
+
     final prefs = await SharedPreferences.getInstance();
 
-    await prefs.setString(_userIdKey, user.userId ?? '');
-    await prefs.setString(_usernameKey, user.username ?? '');
-    await prefs.setString(_userTypeKey, user.userType ?? '');
-    await prefs.setString(_emailKey, user.userEmailAddress ?? '');
-    await prefs.setString(_contactKey, user.userContact ?? '');
-    await prefs.setString(_tokenKey, user.token ?? '');
-    await prefs.setString(_roleKey, user.dashboardRole ?? '');
+    await prefs.setInt("user_id", id);
+    await prefs.setInt("mobile", mobile);
+    await prefs.setString("email", email);
+    await prefs.setString("auth_token", token);
   }
+  /// ✅ GET TOKEN
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(tokenKey);
+  }
+
+  /// ✅ LOGOUT CLEAR
+  static Future<void> clearSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+
+
 
   /// 🔹 GETTERS
   Future<String?> getUserId() async {
@@ -34,12 +54,5 @@ class SessionManager {
   Future<String?> getUsername() async =>
       (await SharedPreferences.getInstance()).getString(_usernameKey);
 
-  Future<String?> getToken() async =>
-      (await SharedPreferences.getInstance()).getString(_tokenKey);
 
-  /// 🔹 CLEAR (Logout)
-  Future<void> clearSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-  }
 }

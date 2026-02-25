@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'dart:async';
+import '../../../bloc/otp_bloc/otp_bloc.dart';
+import '../../../bloc/otp_bloc/otp_event.dart';
+import '../../../bloc/otp_bloc/otp_state.dart';
 import '../../../config/colors/app_colors.dart';
 import '../../../config/language/app_strings.dart';
 import '../../dashboard/dashboard_screens.dart';
 import '../../dashboard_screen/dashboard_screen.dart';
+
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 
 class OtpScreen extends StatefulWidget {
@@ -51,122 +59,124 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void dispose() {
     timer?.cancel();
+    for (var c in controllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    final enterOtp =
-    AppStrings.get(widget.selectedLanguage, "enterOtp");
-
-    final didntReceive =
-    AppStrings.get(widget.selectedLanguage, "didntReceive");
-
-    final resend =
-    AppStrings.get(widget.selectedLanguage, "resend");
-
     final continueText =
     AppStrings.get(widget.selectedLanguage, "continue");
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: const BackButton(),
         elevation: 0,
-        // backgroundColor: Colors.white,
       ),
 
-      /// ✅ Bottom Button
-      bottomNavigationBar: _continueButton(continueText),
+      /// ✅ LISTEN API RESULT
+      bottomNavigationBar:
+      BlocConsumer<OtpBloc, OtpState>(
+        listener: (context, state) {
+
+          if (state.status == OtpStatus.success) {
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const DashboardScreens(),
+              ),
+            );
+          }
+
+          if (state.status == OtpStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+
+          return Container(
+            padding: const EdgeInsets.all(20),
+            child: SizedBox(
+              height: 50,
+              child:
+              ElevatedButton(
+                onPressed: state.status == OtpStatus.loading
+                    ? null
+                    : () {
+
+                  String otp =
+                  controllers.map((e) => e.text).join();
+
+                  if (otp.length < 4) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please enter OTP")),
+                    );
+                    return;
+                  }
+
+                  /// ✅ CORRECT EVENT CALL
+                  context.read<OtpBloc>().add(
+                    VerifyOtpEvent(
+                      mobile: widget.mobileNumber,
+                      otp: otp,
+                    ),
+                  );
+                },
+
+                child: state.status ==
+                    OtpStatus.loading
+                    ? const CircularProgressIndicator(
+                    color: Colors.white)
+                    : Text(continueText),
+              ),
+            ),
+          );
+        },
+      ),
 
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+        child: Column(
+          children: [
 
-              /// IMAGE
-              Image.asset(
-                "assets/logo.png",
-                height: 150,
-                width: 220,
-              ),
+            const SizedBox(height: 40),
 
-              const SizedBox(height: 25),
+            Image.asset(
+              "assets/logo.png",
+              height: 150,
+            ),
 
-              /// OTP CONTAINER
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: Colors.grey.shade100,
-                ),
-                child: Column(
-                  children: [
+            const SizedBox(height: 30),
 
-                    Text(
-                      "$enterOtp ${widget.mobileNumber}",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+            Text(
+              "Enter OTP sent to ${widget.mobileNumber}",
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600),
+            ),
 
-                    const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-                    /// OTP BOXES
-                    Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        4,
-                            (index) => _otpBox(index),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            Row(
+              mainAxisAlignment:
+              MainAxisAlignment.spaceEvenly,
+              children:
+              List.generate(4, (i) => _otpBox(i)),
+            ),
 
-              const SizedBox(height: 25),
+            const SizedBox(height: 25),
 
-              /// RESEND + TIMER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(didntReceive),
-
-                  GestureDetector(
-                    onTap: seconds == 0 ? startTimer : null,
-                    child: Text(
-                      " $resend",
-                      style: TextStyle(
-                        color: AppColors.blue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  Text("00:${seconds.toString().padLeft(2, '0')}"),
-                ],
-              ),
-            ],
-          ),
+            Text("00:${seconds.toString().padLeft(2, '0')}"),
+          ],
         ),
       ),
     );
   }
 
-  /// OTP BOX
   Widget _otpBox(int index) {
     return SizedBox(
       width: 55,
@@ -178,7 +188,8 @@ class _OtpScreenState extends State<OtpScreen> {
         decoration: InputDecoration(
           counterText: "",
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius:
+            BorderRadius.circular(10),
           ),
         ),
         onChanged: (value) {
@@ -186,77 +197,6 @@ class _OtpScreenState extends State<OtpScreen> {
             FocusScope.of(context).nextFocus();
           }
         },
-      ),
-    );
-  }
-
-  /// CONTINUE BUTTON
-  Widget _continueButton(String text) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: SizedBox(
-        height: 50,
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-
-            /// 🔹 GET OTP VALUE
-            String otp = controllers.map((e) => e.text).join();
-
-            /// ✅ EMPTY VALIDATION
-            if (otp.isEmpty || otp.length < 4) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text("Please enter OTP"),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                ),
-              );
-              return;
-            }
-
-            /// ✅ DEMO OTP CHECK
-            if (otp == "1234") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const DashboardScreens(),
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text("Invalid OTP"),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                ),
-              );
-            }
-          },
-
-          /// ✅ BUTTON STYLE
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.lightblue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 2,
-          ),
-
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
       ),
     );
   }
