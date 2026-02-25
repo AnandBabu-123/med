@@ -161,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  /// ================= SIDE MENU DIALOG =================
+
   /// ================= SIDE MENU DIALOG =================
   void _openSideMenuDialog() {
     showDialog(

@@ -13,3 +13,4 @@ export '../../views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_b
 export '../../views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
 export '../../views/hospital_bookings/hospital_ambulance_bookings/hospital_ambulance_bookings.dart';
 export '../../views/address/add_address.dart';
+export '../../views/dashboard/dashboard_screens.dart';

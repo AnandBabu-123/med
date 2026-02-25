@@ -7,7 +7,7 @@ class RoutesName {
   static const String onBoardingScreen ="onboarding_screen";
   static const String signUpScreen ="signup_screen";
   static const String otpScreen ="otp_screen";
-  static const String dashBoardScreen ="dashboard_screen";
+  // static const String dashBoardScreen ="dashboard_screen";
   static const String profileScreen ="profile_screen";
   static const String hospitalMedicineBooking ="hospital_medicine_booking";
   static const String hospitalAdmissionBookings ="hospital_admission_bookings";
@@ -15,4 +15,5 @@ class RoutesName {
   static const String hospitalDiagnosticBookings= "hospital_diagnostic_bookings";
   static const String hospitalAmbulanceBookings ="hospital_ambulance_bookings";
   static const String addAddress ="add_address";
+  static const String dashBoardScreens ="dashboard_screens";
 }

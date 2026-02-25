@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../../config/colors/app_colors.dart';
 import '../../../config/language/app_strings.dart';
+import '../../dashboard/dashboard_screens.dart';
 import '../../dashboard_screen/dashboard_screen.dart';
 
 
@@ -222,7 +223,7 @@ class _OtpScreenState extends State<OtpScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DashboardScreen(),
+                  builder: (_) => const DashboardScreens(),
                 ),
               );
             } else {
