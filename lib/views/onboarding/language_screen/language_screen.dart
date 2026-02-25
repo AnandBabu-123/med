@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medryder/config/routes/view.dart';
-
 import '../../../config/colors/app_colors.dart';
 import '../../../config/routes/routes_name.dart';
 

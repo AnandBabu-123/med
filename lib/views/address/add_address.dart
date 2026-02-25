@@ -19,7 +19,7 @@ class _AddAddressState extends State<AddAddress> {
 
   String addressType = "Home";
 
-  /// ✅ Get Exact Location
+  ///  Get Exact Location
   Future<void> _getCurrentLocation() async {
     LocationPermission permission;
 
@@ -95,7 +95,7 @@ class _AddAddressState extends State<AddAddress> {
               "Confirm Address",
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white, // ✅ text color
+                  color: Colors.white, //  text color
                   fontWeight: FontWeight.w600,
                 ) ,
             ),

@@ -653,7 +653,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               child: Column(
                 children: [
 
-                  /// ✅ HORIZONTAL CATEGORY SCROLL
+                  ///  HORIZONTAL CATEGORY SCROLL
                   Container(
                     height: 115,
                     padding:
@@ -795,7 +795,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
               const SizedBox(height: 20),
 
-              /// ✅ ADD NEW ADDRESS BUTTON
+              ///  ADD NEW ADDRESS BUTTON
               SizedBox(
                 width: double.infinity,
                 height: 50,

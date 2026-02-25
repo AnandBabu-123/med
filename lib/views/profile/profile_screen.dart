@@ -204,9 +204,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lightblue, // ✅ blue background
+                    backgroundColor: AppColors.lightblue,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // ✅ corner radius
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     elevation: 2,
                   ),
@@ -214,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Profile Updated ✅"),
+                          content: Text("Profile Updated"),
                         ),
                       );
                     }
@@ -223,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     "Update",
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.white, // ✅ text color
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -275,10 +275,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             v == null || v.isEmpty ? "$title is required" : null,
             style: const TextStyle(fontSize: 14), // smaller text
             decoration: InputDecoration(
-              isDense: true, // ✅ reduces height
+              isDense: true,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
-                vertical: 14, // ✅ control box height
+                vertical: 14,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -308,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             v == null || v.isEmpty ? "Date of Birth required" : null,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              isDense: true, // ✅ reduce height
+              isDense: true, //  reduce height
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 10,
@@ -345,11 +345,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           DropdownButtonFormField<String>(
             value: value,
-            dropdownColor: Colors.white, // ✅ dropdown background
-            iconEnabledColor: Colors.black, // ✅ arrow  color
+            dropdownColor: Colors.white,
+            iconEnabledColor: Colors.black,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.black, // ✅ selected text color
+              color: Colors.black,
             ),
             validator: (v) =>
             required && v == null ? "Select $title" : null,
@@ -368,7 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: const TextStyle(color: Colors.black54),
             ),
 
-            /// ✅ dropdown items text color fix
+            ///  dropdown items text color fix
             items: items.map((e) {
               return DropdownMenuItem<String>(
                 value: e,
