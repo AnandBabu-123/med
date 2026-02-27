@@ -4,40 +4,51 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 
 class CategoryItem extends StatelessWidget {
-  final String asset;
-  final String title;
 
-  const CategoryItem(this.asset, this.title, {super.key});
+  final String image;
+  final String title;
+  final VoidCallback? onTap;
+
+  const CategoryItem(
+      this.image,
+      this.title, {
+        super.key,
+        this.onTap,
+      });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 77,
-      margin: const EdgeInsets.only(right: 14),
-      child: Column(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
+
+    return GestureDetector(
+      onTap: onTap, // ✅ CLICK EVENT
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+
+            Container(
+              height: 70,
+              width: 70,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Image.asset(image),
+              ),
             ),
-            child: Center(child: _icon()),
-          ),
-          const SizedBox(height: 6),
-          Text(title,
+
+            const SizedBox(height: 6),
+
+            Text(
+              title,
               textAlign: TextAlign.center,
-              maxLines: 2),
-        ],
+              style: const TextStyle(fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Widget _icon() {
-    if (asset.endsWith(".svg")) {
-      return SvgPicture.asset(asset, height: 28);
-    }
-    return Image.asset(asset, height: 28);
   }
 }

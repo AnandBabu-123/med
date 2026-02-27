@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import '../../bloc/banner_bloc/banner_bloc.dart';
 import '../../config/colors/app_colors.dart';
 import '../../config/routes/routes_name.dart';
+import '../../repository/banner_repository/banner_repository.dart';
 import 'dashboard_widgets/dashboard_bottom_nav.dart';
 import 'dashboard_widgets/dashboard_categories.dart';
 import 'dashboard_widgets/dashboard_header.dart';
 import 'dashboard_widgets/side_menu_dialog.dart';
 import 'location_service/location_service.dart';
 
+
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class DashboardScreens extends StatefulWidget {
@@ -154,7 +160,6 @@ class _DashboardScreensState extends State<DashboardScreens>
                   ),
                 ),
               ),
-
             ],
           ),
         );
@@ -181,14 +186,17 @@ class _DashboardScreensState extends State<DashboardScreens>
             onLocationTap: _openLocationBottomSheet,
           ),
 
-          /// BODY
-          const Expanded(
-            child: DashboardCategories(),
+          /// ✅ PROVIDE BLOC HERE (CORRECT PLACE)
+          Expanded(
+            child: BlocProvider(
+              create: (_) =>
+                  BannerBloc(BannerRepository()),
+              child: const DashboardCategories(),
+            ),
           ),
         ],
       ),
 
-      /// ✅ FIXED PARAMETER ERROR HERE
       bottomNavigationBar: DashboardBottomNav(
         currentIndex: currentIndex,
         onChanged: (i) {

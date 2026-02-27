@@ -23,16 +23,34 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
 
     try {
 
-      print("EVENT RECEIVED IN BLOC");
+      print("========== OTP BLOC START ==========");
+
+      /// ✅ EVENT DATA
+      print("EVENT MOBILE => ${event.mobile}");
+      print("EVENT OTP => ${event.otp}");
 
       emit(state.copyWith(status: OtpStatus.loading));
+
+      /// ✅ API CALL
+      print("CALLING VERIFY OTP API...");
 
       final response = await repository.verifyOtp(
         mobile: event.mobile,
         otp: event.otp,
       );
 
+      print("✅ API SUCCESS RECEIVED");
+
+      /// ✅ RAW RESPONSE DEBUG
+      print("MESSAGE => ${response.message}");
+      print("USER ID => ${response.response.id}");
+      print("MOBILE => ${response.response.mobile}");
+      print("EMAIL => ${response.response.email}");
+      print("TOKEN => ${response.response.authToken}");
+
       /// ✅ SAVE USER DATA
+      print("SAVING USER INTO SHARED PREFS...");
+
       await SessionManager.saveUser(
         id: response.response.id,
         mobile: response.response.mobile,
@@ -40,16 +58,31 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
         token: response.response.authToken,
       );
 
-      print("USER SAVED SUCCESS");
+      print("✅ USER SAVED SUCCESS");
+
+      /// ✅ VERIFY SAVED DATA (VERY IMPORTANT)
+      final savedId = await SessionManager.getUserId();
+      final savedToken = await SessionManager.getToken();
+
+      print("🔎 VERIFY PREF DATA");
+      print("SAVED USER ID => $savedId");
+      print("SAVED TOKEN => $savedToken");
+
+      /// EXTRA FULL PREF PRINT
+     // await SessionManager.printAllSession();
+
+      print("========== OTP BLOC END ==========");
 
       emit(state.copyWith(
         status: OtpStatus.success,
         message: response.message,
       ));
 
-    } catch (e) {
+    } catch (e, stacktrace) {
 
-      print("API ERROR => $e");
+      print("❌ OTP API ERROR");
+      print("ERROR => $e");
+      print("STACKTRACE => $stacktrace");
 
       emit(state.copyWith(
         status: OtpStatus.failure,

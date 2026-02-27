@@ -118,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 20),
 
                 Text(
-                  enterMobile,
+                  "Enter Mobile Number",
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -127,7 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 20),
 
-                Text(phone),
+                Text("Phone"),
 
                 const SizedBox(height: 8),
 
@@ -148,7 +148,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 20),
 
-                Text(referral),
+                Text("Referral code"),
 
                 const SizedBox(height: 8),
 
@@ -239,7 +239,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               )
                   : Text(
-                continueText,
+                "Continue",
                 style: const TextStyle(
                     color: Colors.white),
               ),

@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// 🔹 LETS GET STARTED
               Text(
-                getStarted,
+                "Get Started",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -150,7 +150,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// 🔹 ENTER MOBILE
               Text(
-                enterMobile,
+                "Enter Mobile Number",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

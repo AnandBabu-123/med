@@ -1,12 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import '../../models/login_response_model.dart';
-import '../../models/otp_verify_request.dart';
-
 
 
 class OtpRepository {

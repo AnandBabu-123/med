@@ -1,7 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medryder/config/colors/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../bloc/profile_bloc/profile_bloc.dart';
+import '../../bloc/profile_bloc/profile_event.dart';
+import '../../bloc/profile_bloc/profile_state.dart';
+import '../../models/profile_request_model.dart';
+
+
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,32 +22,56 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  /// ---------- FORM KEY ----------
   final _formKey = GlobalKey<FormState>();
 
-  /// ---------- CONTROLLERS ----------
+  /// CONTROLLERS
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final dobController = TextEditingController();
 
-  /// ---------- DROPDOWN VALUES ----------
+  /// DROPDOWNS VALUES
   String? gender;
   String? bloodGroup;
   String? coverage;
   String? relationship;
 
-  /// ---------- IMAGE ----------
+  /// DROPDOWN LISTS
+  final Map<String, String> genderList = {
+    "1": "Male",
+    "2": "Female",
+  };
+
+  final Map<String,String> bloodGroupList = {
+    "1":"A+",
+    "2":"A-",
+    "3":"B+",
+    "4":"B-",
+    "5":"O+",
+    "6":"O-",
+    "7":"AB+",
+    "8":"AB-",
+  };
+
+  final Map<String,String> coverageList = {
+    "1":"Health Insurance",
+    "2":"ESIC/EHS/CGHS",
+    "3":"Aarogya Sree",
+    "4":"Cash",
+    "5":"Other",
+  };
+  final relationshipList = [
+    "Father",
+    "Mother",
+    "Son",
+    "Daughter"
+  ];
+
+  /// IMAGE
   File? profileImage;
-  final ImagePicker picker = ImagePicker();
+  final picker = ImagePicker();
 
-  /// ---------- LISTS ----------
-  final genderList = ["Male", "Female",];
-  final bloodGroupList = ["A+","A-","B+","B-","O+","O-","AB+","AB-"];
-  final coverageList = ["Health Insurance", "ESIC/EHS/CGHS","Aarogya Sree","Cash","Other","Aarogya Sree and Health Insurance"];
-  final relationshipList = ["Father","Mother","Son","Daughter"];
-
-  /// ---------- DATE PICKER ----------
+  // ================= DATE PICKER =================
   Future<void> pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -49,341 +83,326 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (picked != null) {
       dobController.text =
       "${picked.day}-${picked.month}-${picked.year}";
+      setState(() {});
     }
   }
 
-  /// ---------- IMAGE OPTIONS ----------
+  // ================= IMAGE PICK =================
   void showImagePickerOption() {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text("Camera"),
-              onTap: () async {
-                Navigator.pop(context);
-                await pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text("Gallery"),
-              onTap: () async {
-                Navigator.pop(context);
-                await pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
+      builder: (_) => Wrap(children: [
+        ListTile(
+          leading: const Icon(Icons.camera_alt),
+          title: const Text("Camera"),
+          onTap: () {
+            Navigator.pop(context);
+            pickImage(ImageSource.camera);
+          },
         ),
-      ),
+        ListTile(
+          leading: const Icon(Icons.photo),
+          title: const Text("Gallery"),
+          onTap: () {
+            Navigator.pop(context);
+            pickImage(ImageSource.gallery);
+          },
+        ),
+      ]),
     );
   }
 
   Future<void> pickImage(ImageSource source) async {
-    final XFile? image =
-    await picker.pickImage(source: source);
+    final XFile? image = await picker.pickImage(source: source);
 
     if (image != null) {
-      setState(() {
-        profileImage = File(image.path);
-      });
+      setState(() => profileImage = File(image.path));
     }
   }
 
-  /// ---------- UI ----------
+
+
+  Future<String> convertImageToBase64(File image) async {
+    List<int> imageBytes = await image.readAsBytes();
+    return base64Encode(imageBytes);
+  }
+
+  Future<void> submitProfile() async {
+
+    if (!_formKey.currentState!.validate()) return;
+
+    if (gender == null ||
+        bloodGroup == null ||
+        coverage == null ||
+        relationship == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select all dropdown values")),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final int userId = prefs.getInt("user_id") ?? 0;
+
+    /// ✅ Convert image
+    String base64Image = "";
+
+    if (profileImage != null) {
+      base64Image = await convertImageToBase64(profileImage!);
+    }
+
+    final request = ProfileRequestModel(
+      image: base64Image,
+      gender: int.parse(gender!),
+      coverageCategory: int.parse(coverage!),
+      userId: userId,
+      dob: dobController.text,
+      name: nameController.text.trim(),
+      mobile: int.parse(phoneController.text.trim()),
+      bloodGroup: int.parse(bloodGroup!),
+      email: emailController.text.trim(),
+    );
+
+    debugPrint("===== FINAL BODY =====");
+    debugPrint(request.toJson().toString());
+
+    context.read<ProfileBloc>().add(
+      SubmitProfileEvent(
+        request: request,
+        image: profileImage,
+      ),
+    );
+  }
+
+  // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.lightblue,
-        leading: const BackButton(color: Colors.white),
-        title:
-        const Text("Profile", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600,)),
-      ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
+    return BlocConsumer<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+
+        if (state.status == ProfileStatus.success) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.message)));
+          Navigator.pop(context);
+        }
+
+        if (state.status == ProfileStatus.failure) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      builder: (context, state) {
+
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.lightblue,
+            title: const Text("Profile",
+                style: TextStyle(color: Colors.white)),
+          ),
+
+          body: Stack(
             children: [
 
-              /// -------- STEPPER ----------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return Row(
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                     children: [
-                      Container(
-                        width: 30,
-                        height: 34,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.lightblue,
-                        ),
-                        child: Text("${index + 1}",
-                            style: const TextStyle(
-                                color: Colors.white)),
+
+                      /// IMAGE
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 45,
+                            backgroundImage: profileImage != null
+                                ? FileImage(profileImage!)
+                                : const AssetImage("assets/profile.png")
+                            as ImageProvider,
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: showImagePickerOption,
+                              child: const CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.blue,
+                                child: Icon(Icons.camera_alt,
+                                    size: 18,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      if (index != 4)
-                        Container(width: 40, height: 2, color: AppColors.lightblue),
+
+                      const SizedBox(height: 25),
+
+                      buildTextField("Name", nameController),
+                      buildTextField("Phone", phoneController,
+                          keyboardType: TextInputType.phone),
+                      buildTextField("Email", emailController,
+                          keyboardType: TextInputType.emailAddress),
+
+                      buildDateField(),
+
+                      buildDropdown(
+                        label: "Gender",
+                        value: gender,
+                        items: genderList,
+                        onChanged: (val) => setState(() => gender = val),
+                      ),
+
+                      buildDropdown(
+                        label: "Blood Group",
+                        value: bloodGroup,
+                        items: bloodGroupList,
+                        onChanged: (val) => setState(() => bloodGroup = val),
+                      ),
+
+                      buildDropdown(
+                        label: "Coverage",
+                        value: coverage,
+                        items: coverageList,
+                        onChanged: (val) => setState(() => coverage = val),
+                      ),
+
+                      buildDropdownRelationShip(
+                        label: "Relationship",
+                        value: relationship,
+                        items: relationshipList,
+                        onChanged: (val) => setState(() => relationship = val),
+                      ),
+
+                      const SizedBox(height: 25),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: state.status ==
+                              ProfileStatus.loading
+                              ? null
+                              : submitProfile,
+                          child: const Text("Update"),
+                        ),
+                      )
                     ],
-                  );
-                }),
-              ),
-
-              const SizedBox(height: 25),
-
-              /// -------- PROFILE IMAGE ----------
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundImage: profileImage != null
-                        ? FileImage(profileImage!)
-                        : const AssetImage("assets/profile.png")
-                    as ImageProvider,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: showImagePickerOption,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.camera_alt,
-                            size: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 25),
-
-              /// -------- FORM FIELDS ----------
-              buildTextField("Name", nameController),
-              buildTextField("Phone Number", phoneController,
-                  keyboardType: TextInputType.phone),
-              buildTextField("Email ID", emailController,
-                  keyboardType: TextInputType.emailAddress),
-
-              buildDropdown("Gender", gender, genderList,
-                      (v) => setState(() => gender = v)),
-
-              buildDateField(),
-
-              buildDropdown("Blood Group", bloodGroup,
-                  bloodGroupList,
-                      (v) => setState(() => bloodGroup = v)),
-
-              /// OPTIONAL
-              buildDropdown("Coverage Category", coverage,
-                  coverageList,
-                      (v) => setState(() => coverage = v),
-                  required: false),
-
-              buildDropdown("Relationship", relationship,
-                  relationshipList,
-                      (v) => setState(() => relationship = v)),
-
-              const SizedBox(height: 30),
-
-              /// -------- UPDATE BUTTON ----------
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lightblue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 2,
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Profile Updated"),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Update",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                 ),
-              )
+              ),
+
+              if (state.status == ProfileStatus.loading)
+                Container(
+                  color: Colors.black26,
+                  child: const Center(
+                      child: CircularProgressIndicator()),
+                ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  // ================= TEXTFIELD =================
+  Widget buildTextField(String label,
+      TextEditingController controller,
+      {TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        validator: (v) =>
+        v == null || v.isEmpty ? "Enter $label" : null,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
   }
 
-  /// ---------- LABEL ----------
-  Widget buildLabel(String title, {bool required = true}) {
-    return RichText(
-      text: TextSpan(
-        text: title,
-        style: const TextStyle(
-            color: Colors.black, fontWeight: FontWeight.w600),
-        children: required
-            ? const [
-          TextSpan(
-              text: " *",
-              style: TextStyle(color: Colors.red))
-        ]
-            : [],
-      ),
-    );
-  }
-
-  /// ---------- TEXTFIELD ----------
-  Widget buildTextField(
-      String title,
-      TextEditingController controller, {
-        TextInputType keyboardType = TextInputType.text,
-      }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14), // reduced spacing
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabel(title),
-          const SizedBox(height: 6),
-
-          TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
-            validator: (v) =>
-            v == null || v.isEmpty ? "$title is required" : null,
-            style: const TextStyle(fontSize: 14), // smaller text
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// ---------- DATE ----------
+  // ================= DATE FIELD =================
   Widget buildDateField() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabel("Date of Birth"),
-          const SizedBox(height: 6),
-
-          TextFormField(
-            controller: dobController,
-            readOnly: true,
-            onTap: pickDate,
-            validator: (v) =>
-            v == null || v.isEmpty ? "Date of Birth required" : null,
-            style: const TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              isDense: true, //  reduce height
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
-              suffixIcon: const Icon(
-                Icons.calendar_month,
-                size: 20,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: dobController,
+        readOnly: true,
+        onTap: pickDate,
+        validator: (v) =>
+        v == null || v.isEmpty ? "Select DOB" : null,
+        decoration: InputDecoration(
+          labelText: "Date of Birth",
+          suffixIcon: const Icon(Icons.calendar_today),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
       ),
     );
   }
 
-  /// ---------- DROPDOWN ----------
-  Widget buildDropdown(
-      String title,
-      String? value,
-      List<String> items,
-      Function(String?) onChanged, {
-        bool required = true,
-      }) {
+  // ================= DROPDOWN =================
+  Widget buildDropdownRelationShip({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildLabel(title, required: required),
-          const SizedBox(height: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
+        items: items
+            .map((e) => DropdownMenuItem(
+          value: e,
+          child: Text(e),
+        ))
+            .toList(),
+        onChanged: onChanged,
+        validator: (v) => v == null ? "Select $label" : null,
+      ),
+    );
+  }
 
-          DropdownButtonFormField<String>(
-            value: value,
-            dropdownColor: Colors.white,
-            iconEnabledColor: Colors.black,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black,
-            ),
-            validator: (v) =>
-            required && v == null ? "Select $title" : null,
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            hint: Text(
-              "Select $title",
-              style: const TextStyle(color: Colors.black54),
-            ),
-
-            ///  dropdown items text color fix
-            items: items.map((e) {
-              return DropdownMenuItem<String>(
-                value: e,
-                child: Text(
-                  e,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
-                ),
-              );
-            }).toList(),
-            onChanged: onChanged,
+  Widget buildDropdown({
+    required String label,
+    required String? value,
+    required Map<String, String> items,
+    required Function(String?) onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+        ),
+
+        /// ✅ KEY = API VALUE
+        /// ✅ VALUE = DISPLAY TEXT
+        items: items.entries.map((entry) {
+          return DropdownMenuItem<String>(
+            value: entry.key,        // API ID
+            child: Text(entry.value), // UI Text
+          );
+        }).toList(),
+
+        onChanged: onChanged,
+        validator: (v) => v == null ? "Select $label" : null,
       ),
     );
   }

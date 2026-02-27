@@ -1,5 +1,3 @@
-export '../../views/home/home_screen.dart';
-export '../../views/login/login_screen.dart';
 export '../../views/splash/splash_screen.dart';
 export '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
 export '../../views/onboarding/otp_screen/otp_screen.dart';
@@ -13,3 +11,4 @@ export '../../views/hospital_bookings/hospital_ambulance_bookings/hospital_ambul
 export '../../views/address/add_address.dart';
 export '../../views/dashboard/dashboard_screens.dart';
 export '../../views/onboarding/signup_screen/signup_screen.dart';
+export '../../views/pharmacy/pharmacy_screen.dart';

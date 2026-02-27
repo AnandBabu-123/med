@@ -16,4 +16,5 @@ class RoutesName {
   static const String hospitalAmbulanceBookings ="hospital_ambulance_bookings";
   static const String addAddress ="add_address";
   static const String dashBoardScreens ="dashboard_screens";
+  static const String pharmacyScreen ="pharmacy_screen";
 }

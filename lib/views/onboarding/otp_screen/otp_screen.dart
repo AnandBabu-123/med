@@ -18,11 +18,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class OtpScreen extends StatefulWidget {
   final String mobileNumber;
   final String selectedLanguage;
+  final String apiOtp;
 
   const OtpScreen({
     super.key,
     required this.mobileNumber,
     required this.selectedLanguage,
+    required this.apiOtp,
   });
 
   @override
@@ -78,12 +80,10 @@ class _OtpScreenState extends State<OtpScreen> {
       ),
 
       /// ✅ LISTEN API RESULT
-      bottomNavigationBar:
-      BlocConsumer<OtpBloc, OtpState>(
+      bottomNavigationBar: BlocConsumer<OtpBloc, OtpState>(
         listener: (context, state) {
 
           if (state.status == OtpStatus.success) {
-
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -93,52 +93,76 @@ class _OtpScreenState extends State<OtpScreen> {
           }
 
           if (state.status == OtpStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            _showSnack(context, state.message);
           }
         },
+
         builder: (context, state) {
 
           return Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            color: Colors.white,
             child: SizedBox(
               height: 50,
-              child:
-              ElevatedButton(
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed: state.status == OtpStatus.loading
                     ? null
                     : () {
 
-                  String otp =
+                  /// ENTERED OTP
+                  String enteredOtp =
                   controllers.map((e) => e.text).join();
 
-                  if (otp.length < 4) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please enter OTP")),
-                    );
+                  if (enteredOtp.length < 4) {
+                    _showSnack(context, "Enter OTP");
                     return;
                   }
 
-                  /// ✅ CORRECT EVENT CALL
+                  /// ✅ FRONTEND OTP MATCH
+                  if (enteredOtp != widget.apiOtp) {
+                    _showSnack(context, "Invalid OTP");
+                    return;
+                  }
+
+                  /// ✅ CALL VERIFY API
                   context.read<OtpBloc>().add(
                     VerifyOtpEvent(
                       mobile: widget.mobileNumber,
-                      otp: otp,
+                      otp: enteredOtp,
                     ),
                   );
                 },
 
-                child: state.status ==
-                    OtpStatus.loading
-                    ? const CircularProgressIndicator(
-                    color: Colors.white)
-                    : Text(continueText),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue, // ✅ BLUE BUTTON
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+
+                child: state.status == OtpStatus.loading
+                    ? const SizedBox(
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : const Text(
+                  "Continue",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           );
         },
       ),
+
 
       body: SafeArea(
         child: Column(
@@ -173,6 +197,20 @@ class _OtpScreenState extends State<OtpScreen> {
             Text("00:${seconds.toString().padLeft(2, '0')}"),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showSnack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.black87,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(16),
+        content: Text(message),
       ),
     );
   }
