@@ -114,7 +114,19 @@ class _AddAddressState extends State<AddAddress> {
           if (state.status == PostAddressStatus.success) {
 
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(
+                content: Text(
+                  state.message,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                behavior: SnackBarBehavior.floating, // makes it float above bottom
+                margin: const EdgeInsets.all(16), // spacing from edges
+                backgroundColor: Colors.blue, // or any color you want
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16), // round corners
+                ),
+                duration: const Duration(seconds: 2), // visible duration
+              ),
             );
 
             Future.delayed(const Duration(milliseconds: 300), () {
@@ -124,7 +136,19 @@ class _AddAddressState extends State<AddAddress> {
 
           if (state.status == PostAddressStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(
+                content: Text(
+                  state.message,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                behavior: SnackBarBehavior.floating, // makes it float above bottom
+                margin: const EdgeInsets.all(16), // spacing from edges
+                backgroundColor: Colors.blue, // or any color you want
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16), // round corners
+                ),
+                duration: const Duration(seconds: 2), // visible duration
+              ),
             );
           }
         },
@@ -144,11 +168,24 @@ class _AddAddressState extends State<AddAddress> {
                   /// LOCATION VALIDATION
                   if (latitude == null ||
                       longitude == null) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(
-                      const SnackBar(
-                          content: Text(
-                              "Please select location")),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          "Please select location",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        behavior: SnackBarBehavior.floating, // makes it float above bottom
+                        margin: const EdgeInsets.all(16), // distance from edges
+                        backgroundColor: Colors.black, // choose a color to indicate warning
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16), // rounded corners
+                        ),
+                        duration: const Duration(seconds: 2), // visible duration
+                      ),
+
                     );
                     return;
                   }
@@ -213,6 +250,10 @@ class _AddAddressState extends State<AddAddress> {
           children: [
 
             /// Address + Location Picker
+            Align(
+              alignment: Alignment.topLeft,
+                child: Text("Address",style: TextStyle(fontWeight: FontWeight.w500),)),
+            SizedBox(height: 3,),
             TextField(
               controller: addressController,
               maxLines: 2,
@@ -233,21 +274,24 @@ class _AddAddressState extends State<AddAddress> {
 
             Align(
               alignment: Alignment.centerLeft,
-              child: const Text("House No"),
+              child: const Text("House No",style: TextStyle(fontWeight: FontWeight.w500),),
             ),
-            _textField("Enter house number", houseController),
+            SizedBox(height: 3,),
+            _textField("", houseController),
 
             Align(
               alignment: Alignment.centerLeft,
-              child: const Text("Building / Block"),
+              child: const Text("Building / Block",style: TextStyle(fontWeight: FontWeight.w500),),
             ),
-            _textField("Enter building", buildingController),
+            SizedBox(height: 3,),
+            _textField("", buildingController),
 
             Align(
               alignment: Alignment.centerLeft,
-              child: const Text("Landmark"),
+              child: const Text("Landmark",style: TextStyle(fontWeight: FontWeight.w500),),
             ),
-            _textField("Enter landmark", landmarkController),
+            SizedBox(height: 3,),
+            _textField("", landmarkController),
           ],
         ),
       ),

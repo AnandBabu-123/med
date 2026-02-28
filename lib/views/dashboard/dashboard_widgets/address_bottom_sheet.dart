@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../bloc/get_address_bloc/get_address_bloc.dart';
 import '../../../bloc/get_address_bloc/get_address_state.dart';
 import '../../../config/colors/app_colors.dart';
@@ -45,6 +46,34 @@ class AddressBottomSheet extends StatelessWidget {
 
           const SizedBox(height: 10),
 
+          /// USE EXACT LOCATION BUTTON
+          SizedBox(
+            width: double.infinity,
+            height: 40,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                // Open location settings
+                await Geolocator.openLocationSettings();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.lightblue.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: const Icon(Icons.my_location, color: Colors.white, size: 18),
+              label: const Text(
+                "Use Exact Location",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
           /// ================= ADDRESS LIST =================
           Expanded(
             child: BlocBuilder<GetAddressBloc, GetAddressState>(
@@ -74,8 +103,7 @@ class AddressBottomSheet extends StatelessWidget {
                 /// LIST (SCROLLABLE)
                 return ListView.separated(
                   itemCount: state.addresses.length,
-                  separatorBuilder: (_, __) =>
-                  const Divider(height: 1),
+                  separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
 
                     final item = state.addresses[index];
@@ -105,7 +133,7 @@ class AddressBottomSheet extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.black,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -143,9 +171,7 @@ class AddressBottomSheet extends StatelessWidget {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
-
                   Navigator.pop(context); // close sheet
-
                   Navigator.pushNamed(
                     context,
                     RoutesName.addAddress,
@@ -160,7 +186,10 @@ class AddressBottomSheet extends StatelessWidget {
                 icon: const Icon(Icons.add, color: Colors.white),
                 label: const Text(
                   "Add New Address",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
             ),
