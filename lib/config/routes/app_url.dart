@@ -13,6 +13,7 @@ class AppUrl {
 
   /// ADDRESS
   static const String postAddress = "user_address";
+  static const String getAddress ="get_user_address";
 
   /// PHARMACY
   static const String pharmacyCategories = "pharmacy_categories";

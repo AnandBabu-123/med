@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           appBar: AppBar(
             backgroundColor: AppColors.lightblue,
             title: const Text("Profile",
-                style: TextStyle(color: Colors.white)),
+                style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
           ),
 
           body: Stack(
@@ -218,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             radius: 45,
                             backgroundImage: profileImage != null
                                 ? FileImage(profileImage!)
-                                : const AssetImage("assets/profile.png")
+                                : const AssetImage("assets/man_icon.png")
                             as ImageProvider,
                           ),
                           Positioned(

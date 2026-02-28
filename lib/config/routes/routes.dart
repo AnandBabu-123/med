@@ -5,7 +5,6 @@ import 'package:medryder/bloc/post_address_bloc/post_address_bloc.dart';
 import 'package:medryder/config/routes/routes_name.dart';
 import 'package:medryder/views/address/add_address.dart';
 import 'package:medryder/views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
-import 'package:medryder/views/hospital_bookings/hospital_ambulance_bookings/hospital_ambulance_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
@@ -17,12 +16,12 @@ import '../../bloc/profile_bloc/profile_bloc.dart';
 import '../../bloc/signup_bloc/signup_bloc.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
-import '../../network/network_api_service.dart';
 import '../../repository/otp_respository/otp_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/prifile_repository/profile_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
+import '../../views/dashboard/dashboard_screens.dart';
 import '../../views/onboarding/language_screen/language_screen.dart';
 import '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
 import '../../views/onboarding/otp_screen/otp_screen.dart';
@@ -40,8 +39,14 @@ class Routes {
         );
 
 
+      case RoutesName.dashBoardScreens:
+        return MaterialPageRoute(
+          builder: (context) => const DashboardScreens(),
+        );
 
-      //// original screens
+
+
+    //// original screens
 
       case RoutesName.languageScreen:
         return MaterialPageRoute(

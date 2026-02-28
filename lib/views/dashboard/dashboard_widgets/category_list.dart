@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 
 class CategoryItem extends StatelessWidget {
-
   final String image;
   final String title;
   final VoidCallback? onTap;
@@ -18,24 +17,25 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
-      onTap: onTap, // ✅ CLICK EVENT
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+      onTap: onTap,
+      child: SizedBox(
+        width: 80, // fixed width for horizontal scroll
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-
+            // Circular Image Container
             Container(
-              height: 70,
-              width: 70,
+              height: 62,
+              width: 62,
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle, // circular shape
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(image),
+              padding: const EdgeInsets.all(12),
+              child: Image.asset(
+                image,
+                fit: BoxFit.contain,
               ),
             ),
 
@@ -44,7 +44,9 @@ class CategoryItem extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
+              maxLines: 2, // allow wrapping to next line
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w600),
             ),
           ],
         ),

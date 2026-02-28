@@ -1,17 +1,18 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../bloc/banner_bloc/banner_bloc.dart';
-import '../../config/colors/app_colors.dart';
-import '../../config/routes/routes_name.dart';
+import '../../bloc/get_address_bloc/get_address_bloc.dart';
+import '../../bloc/get_address_bloc/get_address_event.dart';
+import '../../network/dio_network/dio_client.dart';
+import '../../network/dio_network/network_info.dart';
 import '../../repository/banner_repository/banner_repository.dart';
+import '../../repository/get_address_repository/get_address_repository.dart';
+import 'dashboard_widgets/address_bottom_sheet.dart';
 import 'dashboard_widgets/dashboard_bottom_nav.dart';
 import 'dashboard_widgets/dashboard_categories.dart';
 import 'dashboard_widgets/dashboard_header.dart';
 import 'dashboard_widgets/side_menu_dialog.dart';
 import 'location_service/location_service.dart';
-
-
-
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -69,6 +70,7 @@ class _DashboardScreensState extends State<DashboardScreens>
 
   /// ================= LOCATION BOTTOM SHEET =================
   void _openLocationBottomSheet() {
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -76,91 +78,20 @@ class _DashboardScreensState extends State<DashboardScreens>
         borderRadius:
         BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom:
-            MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-
-              /// HEADER
-              Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Your Addresses",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  )
-                ],
-              ),
-
-              const SizedBox(height: 15),
-
-              /// CURRENT ADDRESS
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.grey.shade100,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        color: Colors.blue),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        address ?? "No address selected",
-                        style:
-                        const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              /// ADD NEW ADDRESS
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                        context, RoutesName.addAddress);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    AppColors.lightblue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(10),
-                    ),
-                  ),
-                  icon: const Icon(Icons.add,
-                      color: Colors.white),
-                  label: const Text(
-                    "Add New Address",
-                    style:
-                    TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
+      builder: (_) {
+        return BlocProvider(
+          create: (_) => GetAddressBloc(
+            GetAddressRepository(DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+            )),
+          )..add(FetchAddressEvent()), // ✅ API CALL HERE
+          child: AddressBottomSheet(
+            onSelect: (selectedAddress) {
+              setState(() {
+                address = selectedAddress;
+              });
+            },
           ),
         );
       },

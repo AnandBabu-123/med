@@ -50,6 +50,8 @@ dependencies:
   geocoding: ^4.0.0
   flutter_svg: ^2.0.10+1
   image_picker: ^1.2.1
+  connectivity_plus: ^7.0.0
+  flutter_native_splash: ^2.4.7
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -89,6 +91,18 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/app_logo.png"
+
+  flutter_native_splash:
+    color: "#FFFFFF"
+    image: assets/app_logo.png
+
+    android: true
+    ios: true
+
+    android_gravity: center
+    ios_content_mode: center
+
+    fullscreen: true
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

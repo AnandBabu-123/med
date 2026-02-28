@@ -6,6 +6,7 @@ import '../../../bloc/otp_bloc/otp_event.dart';
 import '../../../bloc/otp_bloc/otp_state.dart';
 import '../../../config/colors/app_colors.dart';
 import '../../../config/language/app_strings.dart';
+import '../../../config/routes/routes_name.dart';
 import '../../dashboard/dashboard_screens.dart';
 import '../../dashboard_screen/dashboard_screen.dart';
 
@@ -84,14 +85,12 @@ class _OtpScreenState extends State<OtpScreen> {
         listener: (context, state) {
 
           if (state.status == OtpStatus.success) {
-            Navigator.pushReplacement(
+            // Navigate via route name instead of directly creating MaterialPageRoute
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(
-                builder: (_) => const DashboardScreens(),
-              ),
+              RoutesName.dashBoardScreens,
             );
           }
-
           if (state.status == OtpStatus.failure) {
             _showSnack(context, state.message);
           }

@@ -26,7 +26,7 @@ import 'network/http_override.dart';
           useMaterial3: true,
         ),
 
-        initialRoute: RoutesName.languageScreen,
+        initialRoute: RoutesName.splashScreen,
         onGenerateRoute: Routes.generateRoute,
       );
     }
