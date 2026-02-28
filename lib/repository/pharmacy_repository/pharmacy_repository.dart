@@ -11,7 +11,8 @@ class PharmacyRepository {
       "https://medconnect.org.in/bharosa/";
 
   Future<List<PharmacyCategoryModel>> fetchCategories(
-      String language) async {
+      String language) async
+  {
 
     final userId = await SessionManager.getUserId();
     final token = await SessionManager.getToken();

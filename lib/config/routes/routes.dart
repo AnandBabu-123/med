@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medryder/bloc/post_address_bloc/post_address_bloc.dart';
 import 'package:medryder/config/routes/routes_name.dart';
 import 'package:medryder/views/address/add_address.dart';
 import 'package:medryder/views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
@@ -13,8 +15,12 @@ import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmcy_event.dart';
 import '../../bloc/profile_bloc/profile_bloc.dart';
 import '../../bloc/signup_bloc/signup_bloc.dart';
+import '../../network/dio_network/dio_client.dart';
+import '../../network/dio_network/network_info.dart';
+import '../../network/network_api_service.dart';
 import '../../repository/otp_respository/otp_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
+import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/prifile_repository/profile_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
 import '../../views/onboarding/language_screen/language_screen.dart';
@@ -55,7 +61,10 @@ class Routes {
 
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => OtpBloc(OtpRepository()),
+            create: (_) => OtpBloc(OtpRepository(DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+            ),)),
             child: OtpScreen(
               mobileNumber: args["mobile"],
               selectedLanguage: args["language"],
@@ -112,9 +121,15 @@ class Routes {
 
       case RoutesName.addAddress:
         return MaterialPageRoute(
-          builder: (context) => const AddAddress(),
+          builder: (_) => BlocProvider(
+            create: (_) =>
+                PostAddressBloc(PostAddressRepository(DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ))),
+            child: const AddAddress(),
+          ),
         );
-
       case RoutesName.pharmacyScreen:
         final language = settings.arguments as String;
 
