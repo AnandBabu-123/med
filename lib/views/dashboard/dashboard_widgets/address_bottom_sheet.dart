@@ -123,7 +123,7 @@ class AddressBottomSheet extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.black,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -133,7 +133,7 @@ class AddressBottomSheet extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.black,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
                         ),
                       ),

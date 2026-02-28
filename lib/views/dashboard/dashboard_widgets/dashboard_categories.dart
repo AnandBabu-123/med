@@ -5,11 +5,20 @@ import '../dashboard_banner_list/dashboard_banner_list.dart';
 
 
 class DashboardCategories extends StatelessWidget {
-  const DashboardCategories({super.key});
+  final String lat;
+  final String lon;
+  final String language;
+
+  const DashboardCategories({
+    super.key,
+    required this.lat,
+    required this.lon,
+    required this.language,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // List of categories
+
     final categories = [
       {"image": "assets/image_three.png", "title": "Ambulance", "route": null},
       {
@@ -20,8 +29,13 @@ class DashboardCategories extends StatelessWidget {
       {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": null},
       {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},
       {"image": "assets/image_six.png", "title": "Blood Test", "route": null},
-      {"image": "assets/image_seven.png", "title": "More Services", "route": null},
-      // Add more items here
+
+      /// ✅ DIAGNOSTICS
+      {
+        "image": "assets/image_seven.png",
+        "title": "More Services",
+        "route": RoutesName.diagnosticScreen
+      },
     ];
 
     return SingleChildScrollView(
@@ -45,10 +59,15 @@ class DashboardCategories extends StatelessWidget {
                       Navigator.pushNamed(
                         context,
                         cat["route"]!,
-                        arguments: "en", // pass language if needed
+                        arguments: {
+                          "lat": lat,
+                          "lon": lon,
+                          "language": language,
+                        },
                       );
                     }
                         : null,
+
                     child: SizedBox(
                       width: 80,
                       child: Column(

@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../bloc/banner_bloc/banner_bloc.dart';
 import '../../bloc/get_address_bloc/get_address_bloc.dart';
 import '../../bloc/get_address_bloc/get_address_event.dart';
-import '../../config/colors/app_colors.dart';
-import '../../config/routes/routes_name.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/banner_repository/banner_repository.dart';
@@ -15,10 +13,6 @@ import 'dashboard_widgets/dashboard_categories.dart';
 import 'dashboard_widgets/dashboard_header.dart';
 import 'dashboard_widgets/side_menu_dialog.dart';
 import 'location_service/location_service.dart';
-
-
-
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -33,7 +27,12 @@ class _DashboardScreensState extends State<DashboardScreens>
     with WidgetsBindingObserver {
 
   int currentIndex = 0;
+
   String? address;
+  String? lat;
+  String? lon;
+
+  String language = "en";
 
   final ScrollController _scrollController = ScrollController();
   double _scrollPos = 0;
@@ -49,9 +48,15 @@ class _DashboardScreensState extends State<DashboardScreens>
 
   /// ================= LOCATION =================
   Future<void> _fetchLocation() async {
-    final result = await LocationService.getExactAddress();
-    if (result != null) {
-      setState(() => address = result);
+
+    final location = await LocationService.getExactLocation();
+
+    if (location != null) {
+      setState(() {
+        address = location.address;
+        lat = location.lat;
+        lon = location.lon;
+      });
     }
   }
 
@@ -76,7 +81,6 @@ class _DashboardScreensState extends State<DashboardScreens>
 
   /// ================= LOCATION BOTTOM SHEET =================
   void _openLocationBottomSheet() {
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -87,11 +91,13 @@ class _DashboardScreensState extends State<DashboardScreens>
       builder: (_) {
         return BlocProvider(
           create: (_) => GetAddressBloc(
-            GetAddressRepository(DioClient(
-              dio: Dio(),
-              networkInfo: NetworkInfo(),
-            )),
-          )..add(FetchAddressEvent()), // ✅ API CALL HERE
+            GetAddressRepository(
+              DioClient(
+                dio: Dio(),
+                networkInfo: NetworkInfo(),
+              ),
+            ),
+          )..add(FetchAddressEvent()),
           child: AddressBottomSheet(
             onSelect: (selectedAddress) {
               setState(() {
@@ -107,9 +113,16 @@ class _DashboardScreensState extends State<DashboardScreens>
   /// ================= UI =================
   @override
   Widget build(BuildContext context) {
+
+    /// ✅ WAIT UNTIL LOCATION COMES
+    if (lat == null || lon == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Column(
         children: [
 
@@ -123,12 +136,15 @@ class _DashboardScreensState extends State<DashboardScreens>
             onLocationTap: _openLocationBottomSheet,
           ),
 
-          /// ✅ PROVIDE BLOC HERE (CORRECT PLACE)
+          /// ✅ PASS LAT LON LANGUAGE
           Expanded(
             child: BlocProvider(
-              create: (_) =>
-                  BannerBloc(BannerRepository()),
-              child: const DashboardCategories(),
+              create: (_) => BannerBloc(BannerRepository()),
+              child: DashboardCategories(
+                lat: lat!,
+                lon: lon!,
+                language: language,
+              ),
             ),
           ),
         ],
