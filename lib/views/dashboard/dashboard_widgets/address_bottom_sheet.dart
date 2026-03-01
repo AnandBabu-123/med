@@ -152,6 +152,7 @@ class AddressBottomSheet extends StatelessWidget {
                         ),
                       ),
 
+
                       onTap: () {
                         onSelect(item.address);
                         Navigator.pop(context);
