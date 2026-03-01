@@ -17,24 +17,32 @@ class AddressBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    /// Fixed Height BottomSheet
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
 
+      /// ✅ WHITE BACKGROUND
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+
       child: Column(
         children: [
 
-          /// HEADER
+          /// ================= HEADER =================
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 "Your Addresses",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                  fontFamily: 'Poppins',
                 ),
               ),
               IconButton(
@@ -46,33 +54,36 @@ class AddressBottomSheet extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          /// USE EXACT LOCATION BUTTON
+          /// ================= USE EXACT LOCATION =================
           SizedBox(
             width: double.infinity,
-            height: 40,
+            height: 42,
             child: ElevatedButton.icon(
               onPressed: () async {
-                // Open location settings
                 await Geolocator.openLocationSettings();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lightblue.withOpacity(0.8),
+                backgroundColor:
+                AppColors.lightblue.withOpacity(0.85),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              icon: const Icon(Icons.my_location, color: Colors.white, size: 18),
+              icon: const Icon(Icons.my_location,
+                  color: Colors.white, size: 18),
               label: const Text(
                 "Use Exact Location",
                 style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
           /// ================= ADDRESS LIST =================
           Expanded(
@@ -89,74 +100,163 @@ class AddressBottomSheet extends StatelessWidget {
                 /// ERROR
                 if (state.status == GetAddressStatus.failure) {
                   return Center(
-                    child: Text(state.message),
+                    child: Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   );
                 }
 
                 /// EMPTY
                 if (state.addresses.isEmpty) {
                   return const Center(
-                    child: Text("No addresses found"),
+                    child: Text(
+                      "No addresses found",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   );
                 }
 
-                /// LIST (SCROLLABLE)
-                return ListView.separated(
+                /// ================= LIST =================
+                return ListView.builder(
                   itemCount: state.addresses.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-
                     final item = state.addresses[index];
 
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-
-                      leading: const Icon(
-                        Icons.location_on,
-                        color: AppColors.lightblue,
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color:
+                          AppColors.lightblue.withOpacity(0.15),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                            Colors.black.withOpacity(0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
 
-                      title: Text(
-                        item.address,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Poppins',
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          onSelect(item.address);
+                          Navigator.pop(context);
+                        },
+
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                            /// ✅ LEFT ICON
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightblue
+                                    .withOpacity(0.1),
+                                borderRadius:
+                                BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                item.addressType
+                                    .toLowerCase() ==
+                                    "home"
+                                    ? Icons.location_on
+                                    : Icons.work_rounded,
+                                color: AppColors.lightblue,
+                                size: 20,
+                              ),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            /// TEXT SECTION
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+
+                                  /// ADDRESS TYPE
+                                  Text(
+                                    item.addressType,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight:
+                                      FontWeight.w500,
+                                      color:
+                                      AppColors.lightblue,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 4),
+
+                                  /// ADDRESS
+                                  Text(
+                                    item.address,
+                                    maxLines: 2,
+                                    overflow:
+                                    TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight:
+                                      FontWeight.w500,
+                                      color:
+                                      AppColors.black,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 2),
+
+                                  /// CITY + STATE
+                                  Text(
+                                    "${item.city}, ${item.state}",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight:
+                                      FontWeight.w500,
+                                      color: Colors.black,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            /// RIGHT ARROW
+                            Container(
+                              padding:
+                              const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightblue
+                                    .withOpacity(0.1),
+                                borderRadius:
+                                BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons
+                                    .arrow_forward_ios_rounded,
+                                size: 14,
+                                color: AppColors.lightblue,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-
-                      subtitle: Text(
-                        "${item.city}, ${item.state}",
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-
-                      /// ✅ RIGHT SIDE ARROW
-                      trailing: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppColors.lightblue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 16,
-                          color: AppColors.lightblue,
-                        ),
-                      ),
-
-
-                      onTap: () {
-                        onSelect(item.address);
-                        Navigator.pop(context);
-                      },
                     );
                   },
                 );
@@ -172,7 +272,7 @@ class AddressBottomSheet extends StatelessWidget {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pop(context); // close sheet
+                  Navigator.pop(context);
                   Navigator.pushNamed(
                     context,
                     RoutesName.addAddress,
@@ -184,12 +284,15 @@ class AddressBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: const Icon(Icons.add,
+                    color: Colors.white),
                 label: const Text(
                   "Add New Address",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
                   ),
                 ),
               ),

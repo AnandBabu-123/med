@@ -5,15 +5,17 @@ import '../dashboard_banner_list/dashboard_banner_list.dart';
 
 
 class DashboardCategories extends StatelessWidget {
-  final String lat;
-  final String lon;
+  final String? lat;
+  final String? lon;
   final String language;
+  final VoidCallback onLocationRequired;
 
   const DashboardCategories({
     super.key,
     required this.lat,
     required this.lon,
     required this.language,
+    required this.onLocationRequired,
   });
 
   @override
@@ -29,8 +31,6 @@ class DashboardCategories extends StatelessWidget {
       {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": null},
       {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},
       {"image": "assets/image_six.png", "title": "Blood Test", "route": null},
-
-      /// ✅ DIAGNOSTICS
       {
         "image": "assets/image_seven.png",
         "title": "More Services",
@@ -41,21 +41,31 @@ class DashboardCategories extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          /// Horizontal Scroll with fixed-height items
+
+          /// CATEGORY LIST
           SizedBox(
-            height: 130, // fix the total height of each item
+            height: 130,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               itemCount: categories.length,
               itemBuilder: (context, index) {
+
                 final cat = categories[index];
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: GestureDetector(
+
                     onTap: cat["route"] != null
                         ? () {
+
+                      /// ✅ ASK LOCATION ONLY WHEN REQUIRED
+                      if (lat == null || lon == null) {
+                        onLocationRequired();
+                        return;
+                      }
+
                       Navigator.pushNamed(
                         context,
                         cat["route"]!,
@@ -73,7 +83,7 @@ class DashboardCategories extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          /// Circular Image
+
                           Container(
                             height: 66,
                             width: 66,
@@ -82,15 +92,11 @@ class DashboardCategories extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             padding: const EdgeInsets.all(12),
-                            child: Image.asset(
-                              cat["image"]!,
-                              fit: BoxFit.contain,
-                            ),
+                            child: Image.asset(cat["image"]!),
                           ),
 
                           const SizedBox(height: 6),
 
-                          /// Fixed height for text so all items align
                           SizedBox(
                             height: 32,
                             child: Text(

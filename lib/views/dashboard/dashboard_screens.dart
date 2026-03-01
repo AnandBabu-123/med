@@ -32,6 +32,8 @@ class _DashboardScreensState extends State<DashboardScreens>
   String? lat;
   String? lon;
 
+  bool _locationSheetOpened = false;
+
   String language = "en";
 
   final ScrollController _scrollController = ScrollController();
@@ -51,12 +53,24 @@ class _DashboardScreensState extends State<DashboardScreens>
 
     final location = await LocationService.getExactLocation();
 
+    /// ✅ LOCATION FOUND
     if (location != null) {
       setState(() {
         address = location.address;
         lat = location.lat;
         lon = location.lon;
       });
+    }
+
+    /// ❌ LOCATION OFF → OPEN BOTTOM SHEET
+    else {
+      if (!_locationSheetOpened) {
+        _locationSheetOpened = true;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _openLocationBottomSheet();
+        });
+      }
     }
   }
 
@@ -85,8 +99,7 @@ class _DashboardScreensState extends State<DashboardScreens>
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.vertical(top: Radius.circular(22)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (_) {
         return BlocProvider(
@@ -113,16 +126,9 @@ class _DashboardScreensState extends State<DashboardScreens>
   /// ================= UI =================
   @override
   Widget build(BuildContext context) {
-
-    /// ✅ WAIT UNTIL LOCATION COMES
-    if (lat == null || lon == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
+
       body: Column(
         children: [
 
@@ -136,14 +142,15 @@ class _DashboardScreensState extends State<DashboardScreens>
             onLocationTap: _openLocationBottomSheet,
           ),
 
-          /// ✅ PASS LAT LON LANGUAGE
+          /// ✅ DASHBOARD ALWAYS LOADS
           Expanded(
             child: BlocProvider(
               create: (_) => BannerBloc(BannerRepository()),
               child: DashboardCategories(
-                lat: lat!,
-                lon: lon!,
+                lat: lat,
+                lon: lon,
                 language: language,
+                onLocationRequired: _openLocationBottomSheet,
               ),
             ),
           ),
