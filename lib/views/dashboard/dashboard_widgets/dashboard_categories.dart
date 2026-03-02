@@ -28,7 +28,7 @@ class DashboardCategories extends StatelessWidget {
         "title": "Online Pharmacy",
         "route": RoutesName.pharmacyScreen
       },
-      {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": null},
+      {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": RoutesName.labTestScreen},
       {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},
       {"image": "assets/image_six.png", "title": "Blood Test", "route": null},
       {

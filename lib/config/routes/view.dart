@@ -13,3 +13,4 @@ export '../../views/dashboard/dashboard_screens.dart';
 export '../../views/onboarding/signup_screen/signup_screen.dart';
 export '../../views/pharmacy/pharmacy_screen.dart';
 export '../../views/diagnostic_views/get_diagnostic_screen.dart';
+export '../../views/lab_tests/get_lab_tests.dart';

@@ -2,14 +2,17 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/bloc/diagnostics_bloc/diagnostics_bloc.dart';
+import 'package:medryder/bloc/lab_test_bloc/lab_test_bloc.dart';
 import 'package:medryder/bloc/post_address_bloc/post_address_bloc.dart';
 import 'package:medryder/config/routes/routes_name.dart';
+import 'package:medryder/repository/get_lab_test_repository/lab_test_repository.dart';
 import 'package:medryder/views/address/add_address.dart';
 import 'package:medryder/views/diagnostic_views/get_diagnostic_screen.dart';
 import 'package:medryder/views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_bookings.dart';
 import 'package:medryder/views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
+import 'package:medryder/views/lab_tests/get_lab_tests.dart';
 import 'package:medryder/views/profile/profile_screen.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
@@ -178,6 +181,36 @@ class Routes {
             ),
           ),
         );
+
+
+
+      case RoutesName.labTestScreen:
+
+        final args =
+        settings.arguments as Map<String, dynamic>?;
+
+        final String lat = args?["lat"] ?? "";
+        final String lon = args?["lon"] ?? "";
+        final String language = args?["language"] ?? "en";
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => LabTestBloc(
+              LabTestRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: GetLabTests(
+              lat: lat,
+              lon: lon,
+              language: language,
+            ),
+          ),
+        );
+
       default:
         return MaterialPageRoute(
           builder: (context) {

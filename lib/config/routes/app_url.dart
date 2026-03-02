@@ -18,6 +18,10 @@ class AppUrl {
   /// Diagnostic
   static const String getDiagnostic ="diagnostics_main_data";
 
+  /// Lab Test
+  static const String labTest ="lab_tests_main_data";
+
+
   /// PHARMACY
   static const String pharmacyCategories = "pharmacy_categories";
   static const String searchPharmacy = "pharmacy_main_data";
