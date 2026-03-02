@@ -122,13 +122,13 @@ class Routes {
         );
 
     /// PROFILE
-      case RoutesName.profileScreen:
-        return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => ProfileBloc(ProfileRepository()),
-            child: const ProfileScreen(),
-          ),
-        );
+    //   case RoutesName.profileScreen:
+    //     return MaterialPageRoute(
+    //       builder: (_) => BlocProvider(
+    //         create: (_) => ProfileBloc(ProfileRepository()),
+    //         child: const ProfileScreen(),
+    //       ),
+    //     );
 
     /// HOSPITAL BOOKINGS
       case RoutesName.hospitalMedicineBooking:

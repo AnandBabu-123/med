@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-import '../../config/app_urls.dart';
+import '../../config/routes/app_url.dart';
 import '../../models/pharmacy_model/pharmacy_category_model.dart';
 import '../../utils/session_manager.dart';
 
@@ -18,7 +17,7 @@ class PharmacyRepository {
     final token = await SessionManager.getToken();
 
     final response = await http.post(
-      Uri.parse(AppUrls.pharmacy_categories),
+      Uri.parse(AppUrl.pharmacyCategories),
       headers: {
         "Content-Type": "application/json",
       },
