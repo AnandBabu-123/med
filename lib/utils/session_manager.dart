@@ -8,6 +8,18 @@ class SessionManager {
   static const String emailKey = "email";
   static const String tokenKey = "auth_token";
 
+  static const _languageKey = "selected_language";
+
+  static Future<void> saveLanguage(String lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageKey, lang);
+  }
+
+  static Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_languageKey) ?? "en";
+  }
+
   /// SAVE
   static Future<void> saveUser({
     required int id,

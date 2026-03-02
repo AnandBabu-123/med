@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../config/routes/routes_name.dart';
-
-import 'package:flutter/material.dart';
+import '../../../network/api_constants.dart';
 
 class DashboardMenuDialog {
 
@@ -47,7 +45,20 @@ class _DashboardMenuContent extends StatelessWidget {
                   const Spacer(),
 
                   /// LANGUAGE
-                  _circleIcon(Icons.language),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      Navigator.pushNamed(
+                        context,
+                        RoutesName.languageScreen,
+                        arguments: {
+                          "from": LanguageSource.dashboard,
+                        },
+                      );
+                    },
+                    child: _circleIcon(Icons.language),
+                  ),
 
                   const SizedBox(width: 10),
 

@@ -1,4 +1,4 @@
-class ApiConstants {
-  static const String IMAGES_BASE_URL =
-      "https://medconnect.org.in/bharosa/";
+class LanguageSource {
+  static const splash = "splash";
+  static const dashboard = "dashboard";
 }

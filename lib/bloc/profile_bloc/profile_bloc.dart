@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../repository/prifile_repository/profile_repository.dart';
+import '../../repository/profile_repository/profile_repository.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 

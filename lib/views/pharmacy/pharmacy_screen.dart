@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
 
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
-import '../../bloc/pharmacy_bloc/pharmcy_state.dart';
+import '../../bloc/pharmacy_bloc/pharmacy_state.dart';
 
 class PharmacyScreen extends StatelessWidget {
   final String selectedLanguage;

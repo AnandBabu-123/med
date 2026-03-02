@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:medryder/bloc/pharmacy_bloc/pharmcy_event.dart';
-import 'package:medryder/bloc/pharmacy_bloc/pharmcy_state.dart';
+import 'package:medryder/bloc/pharmacy_bloc/pharmacy_event.dart';
+import 'package:medryder/bloc/pharmacy_bloc/pharmacy_state.dart';
 
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 

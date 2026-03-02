@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../bloc/language_bloc/langauge_bloc.dart';
+import '../../../bloc/language_bloc/language_event.dart';
 import '../../../config/colors/app_colors.dart';
 import '../../../config/routes/routes_name.dart';
-
+import '../../../network/api_constants.dart';
 
 class LanguageScreen extends StatefulWidget {
-  const LanguageScreen({super.key});
+
+  final String from;
+
+  const LanguageScreen({
+    super.key,
+    required this.from,
+  });
 
   @override
   State<LanguageScreen> createState() => _LanguageScreenState();
@@ -22,22 +31,21 @@ class _LanguageScreenState extends State<LanguageScreen> {
         child: Column(
           children: [
 
-            /// 🔹 TOP IMAGE
+            /// LOGO
             Padding(
-              padding: const EdgeInsets.only(top: 0),
+              padding: const EdgeInsets.only(top: 10),
               child: Image.asset(
-                "assets/logo.png", // change your image
+                "assets/logo.png",
                 height: 120,
                 width: 180,
               ),
             ),
 
-            /// 🔹 DIVIDER
             const Divider(thickness: 1),
 
             const SizedBox(height: 15),
 
-            /// 🔹 TEXTFIELDS
+            /// TEXT
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -46,33 +54,31 @@ class _LanguageScreenState extends State<LanguageScreen> {
                     "Welcome to Med Rayder App. Choose below language",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: AppColors.blue,   // using your color
+                      color: AppColors.blue,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',   // your font name
+                      fontFamily: 'Poppins',
                     ),
                   ),
 
                   const SizedBox(height: 12),
 
-                 Align(
-                 //  alignment: Alignment.topLeft,
-                   child: Text("Select your language",
-                   textAlign: TextAlign.left,
-                   style: TextStyle(
-                     color: AppColors.red,
-                     fontSize: 24,
-                     fontWeight: FontWeight.w700,
-                     fontFamily: 'Poppins'
-                   ),),
-                 )
+                  Text(
+                    "Select your language",
+                    style: TextStyle(
+                      color: AppColors.red,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ],
               ),
             ),
 
             const SizedBox(height: 25),
 
-            /// 🔹 LANGUAGE LIST
+            /// LANGUAGE OPTIONS
             _languageTile("English", "E"),
             _languageTile("Telugu", "త"),
           ],
@@ -83,17 +89,15 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
   /// ================= LANGUAGE TILE =================
   Widget _languageTile(String language, String letter) {
-    final bool isSelected = selectedLanguage == language;
+    final isSelected = selectedLanguage == language;
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedLanguage = language;
-        });
+        setState(() => selectedLanguage = language);
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8 ),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -103,33 +107,28 @@ class _LanguageScreenState extends State<LanguageScreen> {
         child: Row(
           children: [
 
-            /// 🔹 LANGUAGE ICON LETTER
             CircleAvatar(
               radius: 20,
               backgroundColor: Colors.grey.shade200,
               child: Text(
                 letter,
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
             ),
 
             const SizedBox(width: 15),
 
-            /// 🔹 LANGUAGE NAME
             Expanded(
               child: Text(
                 language,
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
               ),
             ),
 
-            /// 🔹 SELECT ICON
             if (isSelected)
               const Icon(
                 Icons.check_circle,
@@ -151,20 +150,36 @@ class _LanguageScreenState extends State<LanguageScreen> {
         width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) => OnboardingScreen(
-            //       selectedLanguage: selectedLanguage,
-            //     ),
-            //   ),
-            // );
 
-            Navigator.pushNamed(
-              context,
-              RoutesName.onBoardingScreen,
-              arguments: selectedLanguage,
+            /// UI → API language
+            String langCode =
+            selectedLanguage == "English" ? "en" : "te";
+
+            /// Save language globally
+            context.read<LanguageBloc>().add(
+              ChangeLanguage(langCode),
             );
+
+            /// ========= NAVIGATION DECISION =========
+
+            if (widget.from == LanguageSource.dashboard) {
+
+              /// User changed language inside dashboard
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RoutesName.dashBoardScreens,
+                    (route) => false,
+              );
+
+            } else {
+
+              /// First time app open
+              Navigator.pushReplacementNamed(
+                context,
+                RoutesName.onBoardingScreen,
+                arguments: langCode,
+              );
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.lightblue,

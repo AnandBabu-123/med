@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../config/routes/routes_name.dart';
 import 'dart:async';
+import '../../network/api_constants.dart';
 import '../../utils/session_manager.dart';
 
 
@@ -40,13 +41,21 @@ class _SplashScreenState extends State<SplashScreen>
       final token = await SessionManager.getToken();
 
       if (userId != null && token != null && token.isNotEmpty) {
-        // ✅ User is logged in → go Dashboard
+        //  User is logged in → go Dashboard
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, RoutesName.dashBoardScreens);
       } else {
-        // ❌ Not logged in → go Language Screen
+        //  Not logged in → go Language Screen
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, RoutesName.languageScreen);
+        // Navigator.pushReplacementNamed(context, RoutesName.languageScreen);
+
+        Navigator.pushReplacementNamed(
+          context,
+          RoutesName.languageScreen,
+          arguments: {
+            "from": LanguageSource.splash,
+          },
+        );
       }
     });
   }

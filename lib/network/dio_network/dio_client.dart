@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import '../../utils/session_manager.dart';
 import 'api_exception.dart';
 import 'network_info.dart';
 
@@ -11,38 +12,84 @@ class DioClient {
     required this.dio,
     required this.networkInfo,
   }) {
+
+    /// ================= BASE OPTIONS =================
     dio.options = BaseOptions(
       baseUrl: "https://medconnect.org.in/bharosa/app/ws/",
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),
+      sendTimeout: const Duration(seconds: 20),
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
+    );
+
+    /// ================= INTERCEPTOR =================
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+
+          ///  GET SAVED LANGUAGE
+          final language = await SessionManager.getLanguage();
+
+          /// ---------- BODY PARAM ----------
+          if (options.data != null && options.data is Map) {
+            final body = Map<String, dynamic>.from(options.data);
+            body["language"] = language;
+            options.data = body;
+          }
+
+          /// ---------- QUERY PARAM ----------
+          options.queryParameters["language"] = language;
+
+          handler.next(options);
+        },
+
+        onError: (error, handler) {
+          handler.next(error);
+        },
+      ),
     );
   }
 
-  /// ================= GET =================
-  Future<dynamic> get(String url,
-      {Map<String, dynamic>? query}) async {
+  // =====================================================
+  // ====================== GET ==========================
+  // =====================================================
+
+  Future<dynamic> get(
+      String url, {
+        Map<String, dynamic>? query,
+      }) async {
+
     if (!await networkInfo.isConnected) {
       throw ApiException("No Internet Connection");
     }
 
     try {
-      final response = await dio.get(url, queryParameters: query);
+      final response =
+      await dio.get(url, queryParameters: query);
+
       return _handleResponse(response);
+
     } on DioException catch (e) {
       throw _handleDioError(e);
     } on SocketException {
       throw ApiException("Network Error");
-    } catch (e) {
+    } catch (_) {
       throw ApiException("Something went wrong");
     }
   }
 
-  /// ================= POST =================
-  Future<dynamic> post(String url,
-      {dynamic data}) async {
+  // =====================================================
+  // ====================== POST =========================
+  // =====================================================
+
+  Future<dynamic> post(
+      String url, {
+        dynamic data,
+      }) async {
+
     if (!await networkInfo.isConnected) {
       throw ApiException("No Internet Connection");
     }
@@ -50,25 +97,36 @@ class DioClient {
     try {
       final response = await dio.post(url, data: data);
       return _handleResponse(response);
+
     } on DioException catch (e) {
       throw _handleDioError(e);
+    } on SocketException {
+      throw ApiException("Network Error");
     } catch (_) {
       throw ApiException("Unexpected Error");
     }
   }
 
-  /// ================= RESPONSE =================
+  // =====================================================
+  // ================= RESPONSE HANDLER ==================
+  // =====================================================
+
   dynamic _handleResponse(Response response) {
+
     if (response.statusCode == 200 ||
         response.statusCode == 201) {
       return response.data;
-    } else {
-      throw ApiException(
-          response.data["message"] ?? "Server Error");
     }
+
+    throw ApiException(
+      response.data?["message"] ?? "Server Error",
+    );
   }
 
-  /// ================= ERROR HANDLER =================
+  // =====================================================
+  // ================= ERROR HANDLER =====================
+  // =====================================================
+
   ApiException _handleDioError(DioException e) {
 
     if (e.error is SocketException) {
@@ -101,6 +159,7 @@ class DioClient {
         return ApiException("No Internet Connection");
 
       case DioExceptionType.unknown:
+      default:
         return ApiException("Something went wrong");
     }
   }
