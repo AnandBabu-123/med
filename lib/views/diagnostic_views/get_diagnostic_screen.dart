@@ -9,7 +9,6 @@ import '../../config/components/app_text_styles/app_text_styles.dart';
 
 
 class DiagnosticsScreen extends StatefulWidget {
-
   final String lat;
   final String lon;
   final String language;
@@ -22,22 +21,19 @@ class DiagnosticsScreen extends StatefulWidget {
   });
 
   @override
-  State<DiagnosticsScreen> createState()
-  => _DiagnosticsScreenState();
+  State<DiagnosticsScreen> createState() => _DiagnosticsScreenState();
 }
 
-class _DiagnosticsScreenState
-    extends State<DiagnosticsScreen> {
+class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
 
   final ScrollController scrollController = ScrollController();
-  final TextEditingController searchController =
-  TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-    /// FIRST LOAD
+    /// FIRST API CALL
     context.read<DiagnosticsBloc>().add(
       FetchDiagnostics(
         lat: widget.lat,
@@ -53,7 +49,6 @@ class _DiagnosticsScreenState
 
   /// ================= PAGINATION =================
   void _onScroll() {
-
     if (!scrollController.hasClients) return;
 
     final bloc = context.read<DiagnosticsBloc>();
@@ -79,8 +74,6 @@ class _DiagnosticsScreenState
 
   /// ================= SEARCH =================
   void _onSearch(String value) {
-
-    /// call API only after 2 letters
     if (value.length >= 2 || value.isEmpty) {
       context.read<DiagnosticsBloc>().add(
         FetchDiagnostics(
@@ -105,17 +98,20 @@ class _DiagnosticsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-      appBar: AppBar(title: const Text("Diagnostics",style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor),),
-        /// ✅ BACK ARROW COLOR
-        iconTheme: const IconThemeData(
-          color: Colors.white,
+
+      /// ================= APPBAR =================
+      appBar: AppBar(
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          "Diagnostics",
+            style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor)
         ),
-      backgroundColor: AppColors.lightblue,),
+      ),
 
       body: Column(
         children: [
 
-          /// SEARCH BAR
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -124,163 +120,153 @@ class _DiagnosticsScreenState
               decoration: InputDecoration(
                 hintText: "Search diagnostics",
                 prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.grey.shade100,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
           ),
 
-          /// LIST
+
+
+          /// ================= LIST =================
           Expanded(
             child: BlocBuilder<DiagnosticsBloc, DiagnosticsState>(
               builder: (context, state) {
 
                 if (state.status == DiagnosticsStatus.loading &&
                     state.list.isEmpty) {
-                  return const Center(
-                      child: CircularProgressIndicator());
-                }
-
-                if (state.status == DiagnosticsStatus.failure) {
-                  return const Center(
-                      child: Text("No diagnostics found"));
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (state.list.isEmpty) {
                   return const Center(
-                      child: Text("No diagnostics found"));
+                    child: Text(
+                      "No diagnostics found",
+                      style: TextStyle(fontFamily: 'Poppins'),
+                    ),
+                  );
                 }
 
                 return ListView.builder(
                   controller: scrollController,
-                  itemCount: state.list.length +
-                      (state.hasReachedMax ? 0 : 1),
+                  padding: const EdgeInsets.only(bottom: 12),
+                  itemCount:
+                  state.list.length + (state.hasReachedMax ? 0 : 1),
                   itemBuilder: (_, index) {
 
+                    /// Pagination loader
                     if (index >= state.list.length) {
                       return const Padding(
                         padding: EdgeInsets.all(16),
-                        child: Center(
-                            child: CircularProgressIndicator()),
+                        child: Center(child: CircularProgressIndicator()),
                       );
                     }
 
                     final item = state.list[index];
 
-                    // return Card(
-                    //   margin: const EdgeInsets.symmetric(
-                    //       horizontal: 12, vertical: 6),
-                    //   child: ListTile(
-                    //     leading: ClipRRect(
-                    //       borderRadius: BorderRadius.circular(8),
-                    //       child: Image.network(
-                    //         AppUrl.imageBaseUrl+item.logo,
-                    //         width: 55,
-                    //         height: 55,
-                    //         fit: BoxFit.cover,
-                    //       ),
-                    //     ),
-                    //
-                    //     title: Text(
-                    //       item.name,
-                    //       style: const TextStyle(
-                    //         fontWeight: FontWeight.w700,
-                    //       ),
-                    //     ),
-                    //
-                    //     /// ✅ MULTIPLE TEXTS
-                    //     subtitle: Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //
-                    //         /// Location
-                    //         Text(
-                    //           item.location,
-                    //           maxLines: 2,
-                    //           overflow: TextOverflow.ellipsis,
-                    //           style: TextStyle( fontWeight: FontWeight.w600,
-                    //             fontSize: 13
-                    //           ),
-                    //         ),
-                    //
-                    //         const SizedBox(height: 4),
-                    //
-                    //         /// Row text (example)
-                    //         Row(
-                    //           children: [
-                    //             const Icon(Icons.access_time, size: 14, color: Colors.black,fontWeight: FontWeight.w500,),
-                    //             const SizedBox(width: 4),
-                    //
-                    //             Text(
-                    //               "Opens/${item.openTime} - Closed/${item.closeTime}",
-                    //               style: const TextStyle(
-                    //                 fontSize: 12,
-                    //                 fontWeight: FontWeight.w500,
-                    //                 color: Colors.black,
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // );
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.all(12),
 
-                    return Card(
-                      elevation: 0,
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(10),
-                        leading: ClipOval(
-                          child: Image.network(
-                            "https://medconnect.org.in/bharosa/${item.logo}",
-                            width: 65,
-                            height: 65,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ],
+                      ),
 
-                        title: Text(
-                          item.name,
-                          style: AppTextStyles.title,
-                        ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            const SizedBox(height: 4),
-
-                            /// Opens text
-                            Text(
-                              "Opens ${item.openTime} / Closed ${item.closeTime}",
-                              style: AppTextStyles.timing,
+                          /// LAB LOGO
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.network(
+                              "https://medconnect.org.in/bharosa/${item.logo}",
+                              width: 65,
+                              height: 65,
+                              fit: BoxFit.cover,
                             ),
+                          ),
 
-                            const SizedBox(height: 6),
+                          const SizedBox(width: 12),
 
-                            /// Location row
-                            Row(
+                          /// DETAILS
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.location_on,
-                                    size: 16, color: Colors.black54),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    item.location,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTextStyles.location,
+
+                                /// NAME
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                    color: AppColors.black,
                                   ),
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                /// TIMINGS
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time,
+                                        size: 16,
+                                        color: Colors.black54),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "Open ${item.openTime} • Close ${item.closeTime}",
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                /// LOCATION
+                                Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(Icons.location_on,
+                                        size: 16,
+                                        color: Colors.redAccent),
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Text(
+                                        item.location,
+                                        maxLines: 2,
+                                        overflow:
+                                        TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 13,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
