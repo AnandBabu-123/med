@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/language_bloc/langauge_bloc.dart';
+import 'bloc/language_bloc/language_bloc.dart';
 import 'bloc/language_bloc/language_event.dart';
 import 'config/routes/routes.dart';
 import 'config/routes/routes_name.dart';

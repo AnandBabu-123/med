@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../config/colors/app_colors.dart';
 import 'dart:async';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../config/language/app_strings.dart';
 import '../../../config/routes/routes_name.dart';
-import '../signup_screen/signup_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String selectedLanguage;
@@ -71,14 +69,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final getStarted =
-    AppStrings.get(widget.selectedLanguage, "getStarted");
+    final language = widget.selectedLanguage;
 
-    final enterMobile =
-    AppStrings.get(widget.selectedLanguage, "enterMobile");
+    final enterMobile = AppStrings.get(language, "enterMobile");
+    final hintMobile = AppStrings.get(language, "hintMobile");
 
-    final hintMobile =
-    AppStrings.get(widget.selectedLanguage, "hintMobile");
+    final getStarted = AppStrings.get(language, "getStarted");
+
+
 
     return Scaffold(
       body: SafeArea(
@@ -137,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// 🔹 LETS GET STARTED
               Text(
-                "Get Started",
+                getStarted,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -150,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// 🔹 ENTER MOBILE
               Text(
-                "Enter Mobile Number",
+                enterMobile,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

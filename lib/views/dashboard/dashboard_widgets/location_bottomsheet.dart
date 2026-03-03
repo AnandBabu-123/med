@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter/material.dart';
+import '../../../bloc/language_bloc/language_bloc.dart';
+import '../../../bloc/language_bloc/language_state.dart';
+import '../../../config/language/app_strings.dart';
 
 class LocationBottomSheet {
 
@@ -11,38 +14,55 @@ class LocationBottomSheet {
         borderRadius:
         BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          height: 220,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      builder: (sheetContext) {
+        return BlocBuilder<LanguageBloc, LanguageState>(
+          builder: (context, state) {
 
-              const Text(
-                "Select Address",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
+            final language = state.language;
+
+            final selectAddress =
+            AppStrings.get(language, "selectAddress");
+
+            final noAddress =
+            AppStrings.get(language, "noAddressFound");
+
+            final addNewAddress =
+            AppStrings.get(language, "addNewAddress");
+
+            return Container(
+              padding: const EdgeInsets.all(20),
+              height: 220,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Text(
+                    selectAddress,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Text(address ?? noAddress),
+
+                  const Spacer(),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(sheetContext);
+                      },
+                      child: Text(addNewAddress),
+                    ),
+                  )
+                ],
               ),
-
-              const SizedBox(height: 15),
-
-              Text(address ?? "No Address Found"),
-
-              const Spacer(),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Add New Address"),
-                ),
-              )
-            ],
-          ),
+            );
+          },
         );
       },
     );

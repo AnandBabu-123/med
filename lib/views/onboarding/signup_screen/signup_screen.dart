@@ -41,23 +41,18 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final enterMobile =
-    AppStrings.get(widget.selectedLanguage, "enterMobile");
 
-    final phone =
-    AppStrings.get(widget.selectedLanguage, "phone");
 
-    final hintMobile =
-    AppStrings.get(widget.selectedLanguage, "hintMobile");
 
-    final referral =
-    AppStrings.get(widget.selectedLanguage, "referralOptional");
 
-    final hintReferral =
-    AppStrings.get(widget.selectedLanguage, "hintReferral");
+    final language = widget.selectedLanguage;
 
-    final continueText =
-    AppStrings.get(widget.selectedLanguage, "continue");
+    final enterMobile = AppStrings.get(language, "enterMobile");
+    final phone = AppStrings.get(language, "phone");
+    final hintMobile = AppStrings.get(language, "hintMobile");
+    final referral = AppStrings.get(language, "referralOptional");
+    final hintReferral = AppStrings.get(language, "hintReferral");
+    final continueText = AppStrings.get(language, "continue");
 
     return BlocListener<SignupBloc, SignupState>(
 
@@ -118,7 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 20),
 
                 Text(
-                  "Enter Mobile Number",
+                  enterMobile,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -127,7 +122,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 20),
 
-                Text("Phone"),
+                Text(phone),
 
                 const SizedBox(height: 8),
 
@@ -148,7 +143,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 20),
 
-                Text("Referral code"),
+                Text(referral),
 
                 const SizedBox(height: 8),
 
@@ -239,7 +234,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               )
                   : Text(
-                "Continue",
+                continueText,
                 style: const TextStyle(
                     color: Colors.white),
               ),

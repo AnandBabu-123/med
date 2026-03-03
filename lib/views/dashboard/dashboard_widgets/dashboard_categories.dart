@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../config/routes/routes_name.dart';
 import '../dashboard_banner_list/dashboard_banner_list.dart';
-
 
 class DashboardCategories extends StatelessWidget {
   final String? lat;
@@ -23,18 +21,11 @@ class DashboardCategories extends StatelessWidget {
 
     final categories = [
       {"image": "assets/image_three.png", "title": "Ambulance", "route": null},
-      {
-        "image": "assets/image_one.png",
-        "title": "Online Pharmacy",
-        "route": RoutesName.pharmacyScreen
-      },
+      {"image": "assets/image_one.png", "title": "Online Pharmacy", "route": RoutesName.pharmacyScreen},
       {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": RoutesName.labTestScreen},
       {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},
       {"image": "assets/image_six.png", "title": "Blood Test", "route": null},
-      {
-        "image": "assets/image_seven.png",
-        "title": "More Services",
-        "route": RoutesName.diagnosticScreen
+      {"image": "assets/image_seven.png", "title": "More Services", "route": RoutesName.diagnosticScreen
       },
     ];
 
