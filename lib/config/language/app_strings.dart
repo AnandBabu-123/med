@@ -62,6 +62,15 @@ class AppStrings {
 // Lab Sub Menu
       "medrayderLabsHistory": "MedRayder Labs History",
       "labTestsBookings": "Lab Tests Bookings",
+
+      "addAddress": "Add Address",
+      "address": "Address",
+      "houseNo": "House No",
+      "buildingBlock": "Building / Block",
+      "landmark": "Landmark",
+      "confirmAddress": "Confirm Address",
+      "selectLocation": "Please select location",
+      "locationPermissionDenied": "Location permission denied"
     },
 
     "te": {
@@ -120,6 +129,15 @@ class AppStrings {
 
       "medrayderLabsHistory": "మెడ్‌రేడర్ ల్యాబ్స్ చరిత్ర",
       "labTestsBookings": "ల్యాబ్ టెస్ట్స్ బుకింగ్స్",
+
+      "addAddress": "చిరునామా జోడించండి",
+      "address": "చిరునామా",
+      "houseNo": "ఇంటి నంబర్",
+      "buildingBlock": "బిల్డింగ్ / బ్లాక్",
+      "landmark": "ల్యాండ్‌మార్క్",
+      "confirmAddress": "చిరునామా నిర్ధారించండి",
+      "selectLocation": "దయచేసి లొకేషన్ ఎంచుకోండి",
+      "locationPermissionDenied": "లొకేషన్ అనుమతి నిరాకరించబడింది"
     }
 
   };

@@ -5,8 +5,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:medryder/bloc/post_address_bloc/post_address_bloc.dart';
 import 'package:medryder/bloc/post_address_bloc/post_address_state.dart';
 import 'package:medryder/config/colors/app_colors.dart';
-
+import '../../bloc/language_bloc/language_bloc.dart';
+import '../../bloc/language_bloc/language_state.dart';
 import '../../bloc/post_address_bloc/post_address_event.dart';
+import '../../config/language/app_strings.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({super.key});
@@ -32,15 +34,16 @@ class _AddAddressState extends State<AddAddress> {
   String addressType = "Home";
 
   /// ================= GET LOCATION =================
-  Future<void> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation(String permissionDeniedText) async {
 
     LocationPermission permission =
     await Geolocator.requestPermission();
 
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Location permission denied")),
+        SnackBar(content: Text(permissionDeniedText)),
       );
       return;
     }
@@ -72,7 +75,6 @@ class _AddAddressState extends State<AddAddress> {
     });
   }
 
-  /// ================= COMMON TEXTFIELD =================
   Widget _textField(String hint, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -88,213 +90,243 @@ class _AddAddressState extends State<AddAddress> {
     );
   }
 
-  /// ================= BUILD =================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.lightblue,
-        title: const Text(
-          "Add Address",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: AppColors.whiteColor),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
 
-      /// ================= BUTTON =================
-      bottomNavigationBar:
-      BlocConsumer<PostAddressBloc, PostAddressState>(
-        listener: (context, state) {
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, langState) {
 
-          if (state.status == PostAddressStatus.success) {
+        final language = langState.language;
+        String tr(String key) => AppStrings.get(language, key);
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.message,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                ),
-                behavior: SnackBarBehavior.floating, // makes it float above bottom
-                margin: const EdgeInsets.all(16), // spacing from edges
-                backgroundColor: Colors.blue, // or any color you want
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16), // round corners
-                ),
-                duration: const Duration(seconds: 2), // visible duration
-              ),
-            );
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.lightblue,
+            title: Text(
+              tr("addAddress"),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back,
+                  color: AppColors.whiteColor),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
 
-            Future.delayed(const Duration(milliseconds: 300), () {
-              Navigator.pop(context);
-            });
-          }
+          /// ================= BUTTON =================
+          bottomNavigationBar:
+          BlocConsumer<PostAddressBloc, PostAddressState>(
+            listener: (context, state) {
 
-          if (state.status == PostAddressStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.message,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                ),
-                behavior: SnackBarBehavior.floating, // makes it float above bottom
-                margin: const EdgeInsets.all(16), // spacing from edges
-                backgroundColor: Colors.blue, // or any color you want
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16), // round corners
-                ),
-                duration: const Duration(seconds: 2), // visible duration
-              ),
-            );
-          }
-        },
+              if (state.status == PostAddressStatus.success ||
+                  state.status == PostAddressStatus.failure) {
 
-        builder: (context, blocState) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed:
-                blocState.status == PostAddressStatus.loading
-                    ? null
-                    : () {
-
-                  /// LOCATION VALIDATION
-                  if (latitude == null ||
-                      longitude == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          "Please select location",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        behavior: SnackBarBehavior.floating, // makes it float above bottom
-                        margin: const EdgeInsets.all(16), // distance from edges
-                        backgroundColor: Colors.black, // choose a color to indicate warning
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16), // rounded corners
-                        ),
-                        duration: const Duration(seconds: 2), // visible duration
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      state.message, // or your message
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
                       ),
-
-                    );
-                    return;
-                  }
-
-                  /// FIRE EVENT
-                  context
-                      .read<PostAddressBloc>()
-                      .add(
-                    SubmitAddressEvent(
-                      address:
-                      addressController.text,
-                      hno: houseController.text,
-                      buildingNo:
-                      buildingController.text,
-                      landmark:
-                      landmarkController.text,
-                      lat: latitude.toString(),
-                      lon: longitude.toString(),
-                      state: stateName,
-                      city: cityName,
-                      pincode: pinCode,
-                      addressType: addressType,
                     ),
-                  );
-                },
+                    backgroundColor: Colors.black, // change if needed
+                    behavior: SnackBarBehavior.floating,
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: 16, // 👈 sticks to bottom
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // 👈 radius 10
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+                if (state.status ==
+                    PostAddressStatus.success) {
+                  Future.delayed(
+                      const Duration(milliseconds: 300),
+                          () {
+                        Navigator.pop(context);
+                      });
+                }
+              }
+            },
+            builder: (context, blocState) {
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.lightblue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(10),
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: blocState.status ==
+                        PostAddressStatus.loading
+                        ? null
+                        : () {
+
+                      if (latitude == null ||
+                          longitude == null) {
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              tr("selectLocation"),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            backgroundColor: Colors.black,
+                            behavior: SnackBarBehavior.floating,   // 👈 makes it float
+                            margin: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              bottom: 16,   // 👈 keeps it at bottom
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // 👈 radius 10
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+                      }
+
+                      context
+                          .read<PostAddressBloc>()
+                          .add(
+                        SubmitAddressEvent(
+                          address:
+                          addressController.text,
+                          hno:
+                          houseController.text,
+                          buildingNo:
+                          buildingController.text,
+                          landmark:
+                          landmarkController.text,
+                          lat: latitude.toString(),
+                          lon: longitude.toString(),
+                          state: stateName,
+                          city: cityName,
+                          pincode: pinCode,
+                          addressType:
+                          addressType,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                      AppColors.lightblue,
+                      shape:
+                      RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: blocState.status ==
+                        PostAddressStatus.loading
+                        ? const SizedBox(
+                      height: 22,
+                      width: 22,
+                      child:
+                      CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                        : Text(
+                      tr("confirmAddress"),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight:
+                        FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          /// ================= BODY =================
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    tr("address"),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const SizedBox(height: 3),
+
+                TextField(
+                  controller: addressController,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    hintText: tr("address"),
+                    border: OutlineInputBorder(
+                      borderRadius:
+                      BorderRadius.circular(10),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: const Icon(
+                          Icons.my_location,
+                          color: Colors.blue),
+                      onPressed: () =>
+                          _getCurrentLocation(
+                              tr("locationPermissionDenied")),
+                    ),
                   ),
                 ),
 
-                child: blocState.status ==
-                    PostAddressStatus.loading
-                    ? const SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                    : const Text(
-                  "Confirm Address",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(height: 20),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    tr("houseNo"),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+                const SizedBox(height: 3),
+                _textField("", houseController),
 
-      /// ================= BODY =================
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-
-            /// Address + Location Picker
-            Align(
-              alignment: Alignment.topLeft,
-                child: Text("Address",style: TextStyle(fontWeight: FontWeight.w500),)),
-            SizedBox(height: 3,),
-            TextField(
-              controller: addressController,
-              maxLines: 2,
-              decoration: InputDecoration(
-                hintText: "Address",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    tr("buildingBlock"),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.my_location,
-                      color: Colors.blue),
-                  onPressed: _getCurrentLocation,
+                const SizedBox(height: 3),
+                _textField("", buildingController),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    tr("landmark"),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 3),
+                _textField("", landmarkController),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text("House No",style: TextStyle(fontWeight: FontWeight.w500),),
-            ),
-            SizedBox(height: 3,),
-            _textField("", houseController),
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text("Building / Block",style: TextStyle(fontWeight: FontWeight.w500),),
-            ),
-            SizedBox(height: 3,),
-            _textField("", buildingController),
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text("Landmark",style: TextStyle(fontWeight: FontWeight.w500),),
-            ),
-            SizedBox(height: 3,),
-            _textField("", landmarkController),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
