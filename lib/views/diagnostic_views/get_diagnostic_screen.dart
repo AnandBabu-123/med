@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
-import 'package:medryder/config/routes/app_url.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_event.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_state.dart';
-import '../../config/components/app_text_styles/app_text_styles.dart';
 
 
 class DiagnosticsScreen extends StatefulWidget {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../bloc/language_bloc/language_bloc.dart';
 import '../../../bloc/language_bloc/language_state.dart';
 import '../../../config/language/app_strings.dart';

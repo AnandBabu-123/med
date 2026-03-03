@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../bloc/banner_bloc/banner_bloc.dart';
 import '../../../bloc/banner_bloc/banner_event.dart';
 import '../../../bloc/banner_bloc/banner_state.dart';
-
-
 import 'dart:async';
-
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DashboardBannerList extends StatefulWidget {

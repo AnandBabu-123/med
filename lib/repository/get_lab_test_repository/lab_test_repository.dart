@@ -40,7 +40,7 @@ class LabTestRepository {
     print("===== DIAGNOSTIC RESPONSE =====");
     print(response);
 
-    /// ✅ SAFETY CHECK
+    ///  SAFETY CHECK
     if (response == null) {
       throw Exception("Null API response");
     }

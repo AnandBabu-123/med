@@ -1,6 +1,5 @@
 import '../../config/routes/app_url.dart';
 import '../../models/diagnostic_model/diagnostic_response.dart';
-import '../../models/get_address/get_address_model.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../utils/session_manager.dart';
 

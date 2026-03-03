@@ -5,11 +5,8 @@ import '../../../bloc/signup_bloc/signup_event.dart';
 import '../../../bloc/signup_bloc/signup_state.dart';
 import '../../../config/language/app_strings.dart';
 import '../../../config/routes/routes_name.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignupScreen extends StatefulWidget {
   final String selectedLanguage;

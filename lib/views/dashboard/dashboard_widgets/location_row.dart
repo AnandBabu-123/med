@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'location_bottomsheet.dart';
 
 class LocationRow extends StatelessWidget {
   final String? address;

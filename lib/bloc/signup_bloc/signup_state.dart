@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 abstract class SignupState {}
 
 class SignupInitial extends SignupState {}
