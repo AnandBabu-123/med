@@ -35,13 +35,13 @@ class SessionManager {
     await prefs.setString(tokenKey, token);
   }
 
-  /// ✅ GET USER ID
+  ///  GET USER ID
   static Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(userIdKey);
   }
 
-  /// ✅ GET TOKEN
+  ///  GET TOKEN
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(tokenKey);

@@ -3,7 +3,7 @@ import 'dart:io';
 
 class ImageUtils {
 
-  /// ✅ Convert image to BASE64 WITH PREFIX
+  ///  Convert image to BASE64 WITH PREFIX
   static Future<String> convertToBase64(File imageFile) async {
     try {
 
@@ -15,7 +15,7 @@ class ImageUtils {
 
       final base64Image = base64Encode(bytes);
 
-      /// IMPORTANT 🔥 add prefix
+      /// IMPORTANT  add prefix
       final finalImage =
           "data:image/jpeg;base64,$base64Image";
 

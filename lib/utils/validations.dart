@@ -1,5 +1,5 @@
 class Validations {
-  /// 📧 Email Validation
+  ///  Email Validation
   static bool validateEmail(String email) {
     final emailRegex =
     RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');

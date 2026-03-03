@@ -1,7 +1,6 @@
 export '../../views/splash/splash_screen.dart';
 export '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
 export '../../views/onboarding/otp_screen/otp_screen.dart';
-export '../../views/dashboard_screen/dashboard_screen.dart';
 export '../../views/profile/profile_screen.dart';
 export '../../views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
 export '../../views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';

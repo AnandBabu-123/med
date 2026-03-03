@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
+import 'package:medryder/utils/loader_circular.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_event.dart';
 import '../../bloc/lab_test_bloc/lab_test_state.dart';
@@ -120,7 +121,7 @@ class _GetLabTestsState extends State<GetLabTests> {
                 if (state.status == LabTestStatus.loading &&
                     state.list.isEmpty) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularLineLoader(),
                   );
                 }
 
@@ -168,7 +169,7 @@ class _GetLabTestsState extends State<GetLabTests> {
                       child: Row(
                         children: [
 
-                          /// ✅ CIRCULAR IMAGE
+                          ///  CIRCULAR IMAGE
                           CircleAvatar(
                             radius: 28,
                             backgroundColor: Colors.blue.shade50,
