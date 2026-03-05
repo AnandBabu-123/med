@@ -212,6 +212,7 @@ class _DashboardMenuContent extends StatelessWidget {
       BuildContext context,
       IconData icon,
       String title) {
+
     return ListTile(
       leading: Icon(icon),
       title: Text(
@@ -221,9 +222,15 @@ class _DashboardMenuContent extends StatelessWidget {
             fontWeight: FontWeight.w500),
       ),
       onTap: () {
+
         Navigator.pushNamed(
-            context,
-            RoutesName.profileScreen);
+          context,
+          RoutesName.profileScreen,
+          arguments: {
+            "language": "en"
+          },
+        );
+
       },
     );
   }

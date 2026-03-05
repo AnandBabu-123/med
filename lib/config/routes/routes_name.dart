@@ -19,5 +19,6 @@ class RoutesName {
   static const String pharmacyScreen ="pharmacy_screen";
   static const String diagnosticScreen ="diagnostic_screen";
   static const String labTestScreen ="lab_test_screen";
+  static const String test_diagnostic ="test_diagnostic";
 
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medryder/config/colors/app_colors.dart';
 import 'dart:async';
 import '../../../bloc/otp_bloc/otp_bloc.dart';
 import '../../../bloc/otp_bloc/otp_event.dart';
@@ -81,8 +82,7 @@ class _OtpScreenState extends State<OtpScreen> {
       if (response.data["status"] == true) {
 
         ///  correct path
-        currentOtp =
-            response.data["response"]["otp"].toString();
+        currentOtp = response.data["response"]["otp"].toString();
 
         // print("NEW OTP $currentOtp");
 
@@ -155,8 +155,8 @@ class _OtpScreenState extends State<OtpScreen> {
                   String enteredOtp =
                   controllers.map((e) => e.text).join();
 
-                  // print("ENTERED OTP $enteredOtp");
-                  // print("CURRENT OTP $currentOtp");
+                  print("ENTERED OTP $enteredOtp");
+                  print("CURRENT OTP $currentOtp");
 
                   if (enteredOtp.length < 4) {
                     _showSnack("Enter OTP");
@@ -179,7 +179,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 },
 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.lightblue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -300,7 +300,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: seconds == 0
-                                    ? Colors.blue
+                                    ? AppColors.lightblue
                                     : Colors.grey,
                               ),
                             ),

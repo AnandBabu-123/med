@@ -1,12 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medryder/bloc/diagnostic_test_event/diagnostic_tests_bloc.dart';
+import 'package:medryder/bloc/profile_bloc/profile_bloc.dart';
+import 'package:medryder/config/routes/view.dart';
+import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
+import 'package:medryder/repository/profile_repository/profile_repository.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_event.dart';
 import '../../bloc/post_address_bloc/post_address_bloc.dart';
+import '../../bloc/profile_bloc/profile_event.dart';
 import '../../bloc/signup_bloc/signup_bloc.dart';
 import '../../config/routes/routes_name.dart';
 import '../../network/api_constants.dart';
@@ -20,6 +26,7 @@ import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
 import '../../views/address/add_address.dart';
 import '../../views/dashboard/dashboard_screens.dart';
+import '../../views/diagnostic_tests_screen/diagnostic_tests_screen.dart';
 import '../../views/diagnostic_views/get_diagnostic_screen.dart';
 import '../../views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
 import '../../views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
@@ -119,14 +126,25 @@ class Routes {
         );
 
     /// PROFILE
-    //   case RoutesName.profileScreen:
-    //     return MaterialPageRoute(
-    //       builder: (_) => BlocProvider(
-    //         create: (_) => ProfileBloc(ProfileRepository()),
-    //         child: const ProfileScreen(),
-    //       ),
-    //     );
+      case RoutesName.profileScreen:
 
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => ProfileBloc(
+              ProfileRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            )..add(
+              LoadProfileDropdowns(
+                language: "en",
+              ),
+            ),
+            child: const ProfileScreen(),
+          ),
+        );
     /// HOSPITAL BOOKINGS
       case RoutesName.hospitalMedicineBooking:
         return MaterialPageRoute(
@@ -204,6 +222,28 @@ class Routes {
             ),
           ),
         );
+
+      case RoutesName.test_diagnostic:
+
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => DiagnosticTestsBloc(
+              DiagnosticTestsRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: DiagnosticTestsScreen(
+              diagnosticId: args["diagnostic_id"],
+              language: args["language"],
+            ),
+          ),
+        );
+
 
     /// LAB TEST
       case RoutesName.labTestScreen:

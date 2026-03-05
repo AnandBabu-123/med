@@ -4,6 +4,8 @@ import 'package:medryder/config/colors/app_colors.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_event.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_state.dart';
+import '../../config/routes/routes_name.dart';
+import '../diagnostic_tests_screen/diagnostic_tests_screen.dart';
 
 
 class DiagnosticsScreen extends StatefulWidget {
@@ -149,8 +151,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                 return ListView.builder(
                   controller: scrollController,
                   padding: const EdgeInsets.only(bottom: 12),
-                  itemCount:
-                  state.list.length + (state.hasReachedMax ? 0 : 1),
+                  itemCount: state.list.length + (state.hasReachedMax ? 0 : 1),
                   itemBuilder: (_, index) {
 
                     /// Pagination loader
@@ -163,112 +164,123 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
 
                     final item = state.list[index];
 
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
-                      padding: const EdgeInsets.all(12),
+                    return GestureDetector(
+                      onTap: () {
 
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          )
-                        ],
-                      ),
+                        /// NAVIGATE TO DIAGNOSTIC TESTS SCREEN
+                        Navigator.pushNamed(
+                          context,
+                          RoutesName.test_diagnostic,
+                          arguments: {
+                            "diagnostic_id": item.id,
+                            "language": widget.language,
+                          },
+                        );
 
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.all(12),
 
-                          /// LAB LOGO
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Image.network(
-                              "https://medconnect.org.in/bharosa/${item.logo}",
-                              width: 65,
-                              height: 65,
-                              fit: BoxFit.cover,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
+                        ),
+
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            /// LAB LOGO
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Image.network(
+                                "https://medconnect.org.in/bharosa/${item.logo}",
+                                width: 65,
+                                height: 65,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
 
-                          const SizedBox(width: 12),
+                            const SizedBox(width: 12),
 
-                          /// DETAILS
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
+                            /// DETAILS
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
 
-                                /// NAME
-                                Text(
-                                  item.name,
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                    color: AppColors.black,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 6),
-
-                                /// TIMINGS
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time,
-                                        size: 16,
-                                        color: Colors.black54),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      "Open ${item.openTime} • Close ${item.closeTime}",
-                                      style: const TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 12,
-                                        color: Colors.black54,
-                                      ),
+                                  /// NAME
+                                  Text(
+                                    item.name,
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      color: AppColors.black,
                                     ),
-                                  ],
-                                ),
+                                  ),
 
-                                const SizedBox(height: 6),
+                                  const SizedBox(height: 6),
 
-                                /// LOCATION
-                                Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.location_on,
-                                        size: 16,
-                                        color: Colors.redAccent),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                      child: Text(
-                                        item.location,
-                                        maxLines: 2,
-                                        overflow:
-                                        TextOverflow.ellipsis,
+                                  /// TIMINGS
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.access_time,
+                                          size: 16,
+                                          color: Colors.black54),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        "Open ${item.openTime} • Close ${item.closeTime}",
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',
-                                          fontSize: 13,
-                                          color: Colors.black87,
+                                          fontSize: 12,
+                                          color: Colors.black54,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  /// LOCATION
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          size: 16,
+                                          color: Colors.redAccent),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: Text(
+                                          item.location,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 13,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },
-                );
+                );;
               },
             ),
           ),

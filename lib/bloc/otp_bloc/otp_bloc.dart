@@ -41,6 +41,7 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       print("✅ API SUCCESS RECEIVED");
 
       /// ✅ RAW RESPONSE DEBUG
+        print("MESSAGEsss => ${response.response}");
       print("MESSAGE => ${response.message}");
       print("USER ID => ${response.response.id}");
       print("MOBILE => ${response.response.mobile}");

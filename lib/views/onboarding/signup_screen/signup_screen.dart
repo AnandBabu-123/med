@@ -53,13 +53,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return BlocListener<SignupBloc, SignupState>(
 
-      /// ✅ VERY IMPORTANT (prevents multiple calls)
+      ///  VERY IMPORTANT (prevents multiple calls)
       listenWhen: (previous, current) =>
       previous.runtimeType != current.runtimeType,
 
       listener: (context, state) {
 
-        /// ✅ OTP SUCCESS → NAVIGATE
+        ///  OTP SUCCESS → NAVIGATE
         if (state is SignupOtpSent) {
 
           Navigator.pushReplacementNamed(
@@ -73,7 +73,7 @@ class _SignupScreenState extends State<SignupScreen> {
           );
         }
 
-        /// ❌ ERROR STATE
+        ///  ERROR STATE
         if (state is SignupError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
@@ -187,7 +187,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 final mobile =
                 mobileController.text.trim();
 
-                /// ✅ SAME VALIDATION AS ANDROID
+                ///  SAME VALIDATION AS ANDROID
                 if (!RegExp(r'^[6-9]\d{9}$')
                     .hasMatch(mobile)) {
 
@@ -201,7 +201,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   return;
                 }
 
-                /// ✅ CALL BLOC EVENT
+                /// CALL BLOC EVENT
                 context.read<SignupBloc>().add(
                   SendOtpEvent(
                     mobile: mobile,
