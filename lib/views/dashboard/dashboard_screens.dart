@@ -53,7 +53,7 @@ class _DashboardScreensState extends State<DashboardScreens>
 
     final location = await LocationService.getExactLocation();
 
-    /// ✅ LOCATION FOUND
+    ///  LOCATION FOUND
     if (location != null) {
       setState(() {
         address = location.address;
@@ -62,7 +62,7 @@ class _DashboardScreensState extends State<DashboardScreens>
       });
     }
 
-    /// ❌ LOCATION OFF → OPEN BOTTOM SHEET
+    ///  LOCATION OFF → OPEN BOTTOM SHEET
     else {
       if (!_locationSheetOpened) {
         _locationSheetOpened = true;
@@ -142,7 +142,7 @@ class _DashboardScreensState extends State<DashboardScreens>
             onLocationTap: _openLocationBottomSheet,
           ),
 
-          /// ✅ DASHBOARD ALWAYS LOADS
+          ///  DASHBOARD ALWAYS LOADS
           Expanded(
             child: BlocProvider(
               create: (_) => BannerBloc(BannerRepository()),

@@ -7,7 +7,6 @@ import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_event.dart';
 import '../../bloc/post_address_bloc/post_address_bloc.dart';
-import '../../bloc/profile_bloc/profile_bloc.dart';
 import '../../bloc/signup_bloc/signup_bloc.dart';
 import '../../config/routes/routes_name.dart';
 import '../../network/api_constants.dart';
@@ -18,7 +17,6 @@ import '../../repository/get_lab_test_repository/lab_test_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 import '../../repository/post_address_repository/post_address_repository.dart';
-import '../../repository/profile_repository/profile_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
 import '../../views/address/add_address.dart';
 import '../../views/dashboard/dashboard_screens.dart';
@@ -33,7 +31,6 @@ import '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
 import '../../views/onboarding/otp_screen/otp_screen.dart';
 import '../../views/onboarding/signup_screen/signup_screen.dart';
 import '../../views/pharmacy/pharmacy_screen.dart';
-import '../../views/profile/profile_screen.dart';
 import '../../views/splash/splash_screen.dart';
 
 class Routes {

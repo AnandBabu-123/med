@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../models/otp_verify_request.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../utils/session_manager.dart';
 import 'otp_event.dart';

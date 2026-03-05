@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import '../../models/diagnostic_model/diagnostic_response.dart';
 
 enum DiagnosticsStatus { initial, loading, success, failure }

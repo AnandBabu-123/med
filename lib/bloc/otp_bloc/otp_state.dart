@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
 
-import 'package:equatable/equatable.dart';
-import '../../models/login_response_model.dart';
 
 enum OtpStatus { initial, loading, success, failure }
 
