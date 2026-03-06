@@ -23,6 +23,7 @@ class AppUrl {
   static const String getDiagnostic ="diagnostics_main_data";
   static const String diagnosticTests ="diagnostic_tests";
   static const String diagnosticBooking ="diagnostic_prescription_booking";
+  static const String diagnosticPrescriptionBooking ="diagnostic_prescription_booking";
 
   /// Lab Test
   static const String labTest ="lab_tests_main_data";

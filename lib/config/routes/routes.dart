@@ -6,6 +6,7 @@ import 'package:medryder/bloc/profile_bloc/profile_bloc.dart';
 import 'package:medryder/config/routes/view.dart';
 import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
+import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
@@ -19,6 +20,7 @@ import '../../network/api_constants.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/diagnostic_repository/diagnostic_repository.dart';
+import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_booking.dart';
 import '../../repository/get_lab_test_repository/lab_test_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
@@ -240,6 +242,30 @@ class Routes {
             child: DiagnosticTestsScreen(
               diagnosticId: args["diagnostic_id"],
               language: args["language"],
+            ),
+          ),
+        );
+
+      case RoutesName.attachPrescriptionScreen:
+
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => DiagnosticPrescriptionBloc(
+              DiagnosticPrescriptionRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: AttachPrescriptionScreen(
+              diagnosticId: args["diagnostic_id"],
+              language: args["language"],
+              location: args["location"],
+
+
             ),
           ),
         );

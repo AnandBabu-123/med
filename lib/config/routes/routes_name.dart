@@ -5,7 +5,7 @@ class RoutesName {
 
   static const String languageScreen ="language_screen";
   static const String onBoardingScreen ="onboarding_screen";
-  static const signupScreen = "signup_screen";   // ✅ ADD THIS
+  static const signupScreen = "signup_screen";
   static const String otpScreen ="otp_screen";
   // static const String dashBoardScreen ="dashboard_screen";
   static const String profileScreen ="profile_screen";
@@ -20,5 +20,7 @@ class RoutesName {
   static const String diagnosticScreen ="diagnostic_screen";
   static const String labTestScreen ="lab_test_screen";
   static const String test_diagnostic ="test_diagnostic";
+  static const String attachPrescriptionScreen ="attach_prescription_screen";
+  static const String cartScreen ="cart_screen";
 
 }

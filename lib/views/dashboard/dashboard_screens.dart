@@ -7,6 +7,7 @@ import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/banner_repository/banner_repository.dart';
 import '../../repository/get_address_repository/get_address_repository.dart';
+import '../../utils/session_manager.dart';
 import 'dashboard_widgets/address_bottom_sheet.dart';
 import 'dashboard_widgets/dashboard_bottom_nav.dart';
 import 'dashboard_widgets/dashboard_categories.dart';
@@ -43,18 +44,40 @@ class _DashboardScreensState extends State<DashboardScreens>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
+    _loadSavedAddress();
     _fetchLocation();
     _autoScroll();
   }
 
+  Future<void> _loadSavedAddress() async {
+
+    final savedAddress = await SessionManager.getAddress();
+    final savedLat = await SessionManager.getLat();
+    final savedLon = await SessionManager.getLon();
+
+    if (savedAddress != null) {
+      setState(() {
+        address = savedAddress;
+        lat = savedLat;
+        lon = savedLon;
+      });
+    }
+  }
   /// ================= LOCATION =================
+  ///
   Future<void> _fetchLocation() async {
 
     final location = await LocationService.getExactLocation();
 
-    ///  LOCATION FOUND
     if (location != null) {
+
+      /// SAVE TO SESSION
+      await SessionManager.saveAddress(
+        location.address,
+        location.lat,
+        location.lon,
+      );
+
       setState(() {
         address = location.address;
         lat = location.lat;
@@ -62,7 +85,6 @@ class _DashboardScreensState extends State<DashboardScreens>
       });
     }
 
-    ///  LOCATION OFF → OPEN BOTTOM SHEET
     else {
       if (!_locationSheetOpened) {
         _locationSheetOpened = true;
@@ -73,6 +95,30 @@ class _DashboardScreensState extends State<DashboardScreens>
       }
     }
   }
+  // Future<void> _fetchLocation() async {
+  //
+  //   final location = await LocationService.getExactLocation();
+  //
+  //   ///  LOCATION FOUND
+  //   if (location != null) {
+  //     setState(() {
+  //       address = location.address;
+  //       lat = location.lat;
+  //       lon = location.lon;
+  //     });
+  //   }
+  //
+  //   ///  LOCATION OFF → OPEN BOTTOM SHEET
+  //   else {
+  //     if (!_locationSheetOpened) {
+  //       _locationSheetOpened = true;
+  //
+  //       WidgetsBinding.instance.addPostFrameCallback((_) {
+  //         _openLocationBottomSheet();
+  //       });
+  //     }
+  //   }
+  // }
 
   /// ================= AUTO SCROLL =================
   void _autoScroll() {
@@ -111,8 +157,24 @@ class _DashboardScreensState extends State<DashboardScreens>
               ),
             ),
           )..add(FetchAddressEvent()),
+          // child: AddressBottomSheet(
+          //   onSelect: (selectedAddress) {
+          //     setState(() {
+          //       address = selectedAddress;
+          //     });
+          //   },
+          // ),
+
           child: AddressBottomSheet(
-            onSelect: (selectedAddress) {
+            onSelect: (selectedAddress) async {
+
+              /// SAVE ADDRESS
+              await SessionManager.saveAddress(
+                selectedAddress,
+                lat ?? "",
+                lon ?? "",
+              );
+
               setState(() {
                 address = selectedAddress;
               });

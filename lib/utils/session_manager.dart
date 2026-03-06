@@ -10,6 +10,41 @@ class SessionManager {
 
   static const _languageKey = "selected_language";
 
+  static const _addressKey = "user_address";
+  static const _latKey = "user_lat";
+  static const _lonKey = "user_lon";
+
+
+  /// SAVE ADDRESS
+  static Future<void> saveAddress(
+      String address,
+      String lat,
+      String lon,
+      ) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_addressKey, address);
+    await prefs.setString(_latKey, lat);
+    await prefs.setString(_lonKey, lon);
+  }
+
+  /// GET ADDRESS
+  static Future<String?> getAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_addressKey);
+  }
+
+  static Future<String?> getLat() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_latKey);
+  }
+
+  static Future<String?> getLon() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_lonKey);
+  }
+
   static Future<void> saveLanguage(String lang) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_languageKey, lang);

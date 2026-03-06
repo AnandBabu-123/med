@@ -168,14 +168,31 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                       onTap: () {
 
                         /// NAVIGATE TO DIAGNOSTIC TESTS SCREEN
-                        Navigator.pushNamed(
-                          context,
-                          RoutesName.test_diagnostic,
-                          arguments: {
-                            "diagnostic_id": item.id,
-                            "language": widget.language,
-                          },
-                        );
+
+
+                          Navigator.pushNamed(
+                            context,
+                            RoutesName.attachPrescriptionScreen,
+                            arguments: {
+                              "diagnostic_id": item.id,
+                              "language": widget.language,
+                              "location": item.location,
+                              "lab_name": item.name,
+                              "open_time": item.openTime,
+                              "close_time": item.closeTime,
+                            },
+                          );
+
+
+
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   RoutesName.test_diagnostic,
+                        //   arguments: {
+                        //     "diagnostic_id": item.id,
+                        //     "language": widget.language,
+                        //   },
+                        // );
 
                       },
                       child: Container(
