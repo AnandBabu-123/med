@@ -33,7 +33,6 @@ class DiagnosticPrescriptionRepository {
       "mobile": mobile,
       "family_member_id": familyMemberId,
       "language": language
-
     };
 
     final response = await dioClient.post(
@@ -42,11 +41,8 @@ class DiagnosticPrescriptionRepository {
     );
 
     if (response["status"] == true) {
-
       return response;
-
     } else {
-
       throw Exception(response["message"]);
 
     }

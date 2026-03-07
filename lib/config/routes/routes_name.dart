@@ -22,5 +22,6 @@ class RoutesName {
   static const String test_diagnostic ="test_diagnostic";
   static const String attachPrescriptionScreen ="attach_prescription_screen";
   static const String cartScreen ="cart_screen";
+  static const String labScreen ="lab_screen";
 
 }

@@ -13,7 +13,9 @@ class AppUrl {
 
   /// Family Members
   static const String userDropdowns = "user_dropdowns";
-  static const String familyMembersCount = "family_members_count";
+ // static const String familyMembersCount = "family_members_count";
+  static const String familyMembersCount = "add_family_members";
+  static const String familyMembers = "family_members_count";
 
   /// ADDRESS
   static const String postAddress = "user_address";
@@ -27,6 +29,8 @@ class AppUrl {
 
   /// Lab Test
   static const String labTest ="lab_tests_main_data";
+  static const String labList ="lab_tests";
+
 
 
   /// PHARMACY

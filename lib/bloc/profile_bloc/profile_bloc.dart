@@ -77,32 +77,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Future<void> _submitProfile(
       SubmitProfileEvent event,
-      Emitter<ProfileState> emit
+      Emitter<ProfileState> emit,
       ) async {
 
     emit(state.copyWith(status: ProfileStatus.loading));
 
     try {
 
-      final prefs = await SharedPreferences.getInstance();
-
-      final userId = prefs.getInt("user_id") ?? 0;
-      final token = prefs.getString("auth_token") ?? "";
-
-      String base64Image = "";
-
-      if (event.image != null) {
-        List<int> imageBytes = await event.image!.readAsBytes();
-        base64Image = base64Encode(imageBytes);
-      }
-
-      /// FINAL BODY
-
       final body = event.request.toJson();
-
-      body["user_id"] = userId;
-      body["auth_token"] = token;
-      body["image"] = base64Image;
 
       print("========= PROFILE REQUEST BODY =========");
       print(body);

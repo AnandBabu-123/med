@@ -6,6 +6,8 @@ import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_event.dart';
 import '../../bloc/lab_test_bloc/lab_test_state.dart';
 import '../../config/routes/app_url.dart';
+import '../../config/routes/routes_name.dart';
+import 'lab_test_screen.dart';
 
 class GetLabTests extends StatefulWidget {
   final String lat;
@@ -151,72 +153,86 @@ class _GetLabTestsState extends State<GetLabTests> {
 
                     final lab = state.list[index];
 
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(.05),
-                            blurRadius: 6,
-                          )
-                        ],
-                      ),
+                    return GestureDetector(
+                      onTap: () {
 
-                      child: Row(
-                        children: [
+                        Navigator.pushNamed(
+                          context,
+                          RoutesName.labScreen,
+                          arguments: {
+                            "lab_test_id": lab.id,
+                            "language": "en",
+                          },
+                        );
 
-                          ///  CIRCULAR IMAGE
-                          CircleAvatar(
-                            radius: 28,
-                            backgroundColor: Colors.blue.shade50,
-                            backgroundImage: NetworkImage(
-                              "${AppUrl.imageBaseUrl}/${lab.logo}",
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.05),
+                              blurRadius: 6,
+                            )
+                          ],
+                        ),
+                      
+                        child: Row(
+                          children: [
+                      
+                            ///  CIRCULAR IMAGE
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundColor: Colors.blue.shade50,
+                              backgroundImage: NetworkImage(
+                                "${AppUrl.imageBaseUrl}/${lab.logo}",
+                              ),
                             ),
-                          ),
-
-                          const SizedBox(width: 14),
-
-                          /// NAME + LOCATION
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-
-                                Text(
-                                  lab.name,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
+                      
+                            const SizedBox(width: 14),
+                      
+                            /// NAME + LOCATION
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                      
+                                  Text(
+                                    lab.name,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-
-                                const SizedBox(height: 4),
-
-                                Text(
-                                  lab.location,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade600,
+                      
+                                  const SizedBox(height: 4),
+                      
+                                  Text(
+                                    lab.location,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-
-                                Text(
-                                  "Opens ${lab.openTime}/Close ${lab.closeTime}",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade600,
+                                  const SizedBox(height: 4),
+                      
+                                  Text(
+                                    "Opens ${lab.openTime}/Close ${lab.closeTime}",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

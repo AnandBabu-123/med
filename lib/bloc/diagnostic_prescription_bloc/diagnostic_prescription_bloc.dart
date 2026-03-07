@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_booking.dart';
+import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_repository.dart';
 import 'diagnostic_prescription_event.dart';
 import 'diagnostic_prescription_state.dart';
 

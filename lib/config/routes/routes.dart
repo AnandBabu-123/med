@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/bloc/diagnostic_test_event/diagnostic_tests_bloc.dart';
+import 'package:medryder/bloc/lab_bloc/lab_bloc.dart';
 import 'package:medryder/bloc/profile_bloc/profile_bloc.dart';
 import 'package:medryder/config/routes/view.dart';
 import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
+import 'package:medryder/repository/get_lab_test_repository/lab_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
@@ -20,7 +22,7 @@ import '../../network/api_constants.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/diagnostic_repository/diagnostic_repository.dart';
-import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_booking.dart';
+import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_repository.dart';
 import '../../repository/get_lab_test_repository/lab_test_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
@@ -270,6 +272,27 @@ class Routes {
           ),
         );
 
+
+      case RoutesName.labScreen:
+
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => LabBloc(
+              LabRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: LabTestScreen(
+              labTestId: args["lab_test_id"],
+              language: args["language"],
+            ),
+          ),
+        );
 
     /// LAB TEST
       case RoutesName.labTestScreen:

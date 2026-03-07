@@ -11,10 +11,6 @@ import '../../bloc/profile_bloc/profile_state.dart';
 import '../../config/routes/routes_name.dart';
 import '../../models/profile_request_model/profile_request_model.dart';
 
-
-
-
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -114,9 +110,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> pickImage(ImageSource source) async {
 
-    final XFile? image = await picker.pickImage(source: source);
+    final XFile? image = await picker.pickImage(
+      source: source,
+      imageQuality: 70, // compress image like native
+      maxHeight: 512,
+      maxWidth: 512,
+    );
 
-    if(image != null){
+    if (image != null) {
       setState(() {
         profileImage = File(image.path);
       });
@@ -126,8 +127,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ================= IMAGE BASE64 =================
 
   Future<String> convertImageToBase64(File image) async {
+
     List<int> imageBytes = await image.readAsBytes();
-    return base64Encode(imageBytes);
+
+    String base64Image = base64Encode(imageBytes);
+
+    print("BASE64 LENGTH : ${base64Image.length}");
+
+    return base64Image;
   }
 
   // ================= SUBMIT PROFILE =================
@@ -157,6 +164,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (profileImage != null) {
       base64Image = await convertImageToBase64(profileImage!);
+      print("IMAGE BASE64 GENERATED");
+    } else {
+      print("NO IMAGE SELECTED");
     }
 
     final request = ProfileRequestModel(
@@ -174,6 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       image: base64Image,
     );
+
 
     /// PRINT BODY
     print("========= PROFILE REQUEST BODY =========");
@@ -295,24 +306,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: 25),
 
-                      buildTextField("Name", nameController),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Name",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
+                      buildTextField("", nameController),
+                      SizedBox(height: 10,),
 
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Phone",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildTextField(
-                        "Phone",
+                        "",
                         phoneController,
                         keyboardType: TextInputType.phone,
                       ),
 
+                SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Email",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildTextField(
-                        "Email",
+                        "",
                         emailController,
                         keyboardType: TextInputType.emailAddress,
                       ),
 
+                      SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Date of Birth",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildDateField(),
 
+                      SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Gender",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildDropdown(
-                        label: "Gender",
+                        label: "",
                         value: gender,
                         items: genderList,
                         onChanged: (val){
@@ -322,8 +387,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
 
+                      SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Blood Group",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildDropdown(
-                        label: "Blood Group",
+                        label: "",
                         value: bloodGroup,
                         items: bloodGroupList,
                         onChanged: (val){
@@ -333,8 +409,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
 
+                      SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Coverage",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildDropdown(
-                        label: "Coverage",
+                        label: "",
                         value: coverage,
                         items: coverageList,
                         onChanged: (val){
@@ -344,8 +430,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
 
+                      SizedBox(height: 4,),
+                      Align(
+                          alignment: Alignment.topLeft,
+                          child: Row(
+                            children: [
+                              Text("Relationship",style: TextStyle(fontSize: 14,color: AppColors.black,fontWeight: FontWeight.w500),),
+                              SizedBox(width: 2,),
+                              Text("*",style: TextStyle(color: Colors.red),)
+                            ],
+                          )),
+                      SizedBox(height: 0,),
                       buildDropdownRelationShip(
-                        label: "Relationship",
+                        label: "",
                         value: relationship,
                         items: relationshipList,
                         onChanged: (val){
@@ -361,10 +458,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:AppColors.lightblue, // button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // radius
+                            ),
+                          ),
                           onPressed: state.status == ProfileStatus.loading
                               ? null
                               : submitProfile,
-                          child: const Text("Update"),
+                          child: const Text("Update",style: TextStyle(color: AppColors.whiteColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),),
                         ),
                       )
 
@@ -432,7 +537,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         v == null || v.isEmpty ? "Select DOB" : null,
 
         decoration: InputDecoration(
-          labelText: "Date of Birth",
+          labelText: "",
           suffixIcon: const Icon(Icons.calendar_today),
 
           border: OutlineInputBorder(
