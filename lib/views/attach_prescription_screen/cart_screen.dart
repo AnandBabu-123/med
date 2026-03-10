@@ -10,60 +10,56 @@ class CartScreen extends StatefulWidget {
 
   final File? file;
   final String name;
-  final int familyId;
+  final List<int> familyIds;
   final int diagnosticId;
   final String language;
   final String location;
-
+  final String mobile;
   const CartScreen({
     super.key,
     this.file,
     required this.name,
-    required this.familyId,
+    required this.familyIds,
     required this.diagnosticId,
     required this.language,
     required this.location,
+    required this.mobile,
   });
 
   @override
   State<CartScreen> createState() => _CartScreenState();
 }
+
 class _CartScreenState extends State<CartScreen> {
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
 
   Future<String> convertToBase64(File file) async {
     List<int> bytes = await file.readAsBytes();
     return base64Encode(bytes);
   }
 
-
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-    backgroundColor: AppColors.whiteColor,
+      backgroundColor: AppColors.whiteColor,
+
       appBar: AppBar(
-        title: const Text("Cart",
+        title: const Text(
+          "Cart",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w500,
-          ),),
+          ),
+        ),
         backgroundColor: AppColors.lightblue,
-        foregroundColor: Colors.white,
       ),
-
-
 
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
 
-        child:
-        BlocConsumer<DiagnosticPrescriptionBloc, DiagnosticPrescriptionState>(
+        child: BlocConsumer<DiagnosticPrescriptionBloc,
+            DiagnosticPrescriptionState>(
+
           listener: (context, state) {
 
             if (state.success) {
@@ -71,9 +67,6 @@ class _CartScreenState extends State<CartScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
-
-              print("BOOKING SUCCESS");
-
             }
 
             if (!state.success && state.message.isNotEmpty) {
@@ -86,217 +79,176 @@ class _CartScreenState extends State<CartScreen> {
 
           builder: (context, state) {
 
-            return
-              ElevatedButton(
+            return ElevatedButton(
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:AppColors.lightblue, // button color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // radius
-                  ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.lightblue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
+              ),
 
-                onPressed: state.loading
-                    ? null
-                    : () async {
+              onPressed: state.loading
+                  ? null
+                  : () async {
 
-                  if (widget.file == null) {
+                if (widget.file == null) {
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Please upload prescription"),
-                      ),
-                    );
-
-                    return;
-                  }
-
-                  String base64Image = await convertToBase64(widget.file!);
-
-                  context.read<DiagnosticPrescriptionBloc>().add(
-                    UploadPrescriptionEvent(
-                      diagnosticId: widget.diagnosticId,
-                      base64Image: base64Image,
-                      name: widget.name,
-                      mobile: "7901010115",
-                      familyMemberId: widget.familyId,
-                      language: widget.language,
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please upload prescription"),
                     ),
                   );
-                },
 
-                child: state.loading
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
+                  return;
+                }
+
+                String base64Image =
+                await convertToBase64(widget.file!);
+
+                context.read<DiagnosticPrescriptionBloc>().add(
+
+                  UploadPrescriptionEvent(
+                    diagnosticId: widget.diagnosticId,
+                    base64Image: base64Image,
+                    name: widget.name,
+                    mobile: widget.mobile, // ✅ FIXED
+                    familyMemberId: widget.familyIds,
+                    language: widget.language,
                   ),
-                )
-                    : const Text(
-                  "Confirm",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+                );
+              },
+
+              child: state.loading
+                  ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
                 ),
-              );
+              )
+                  : const Text(
+                "Confirm",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
           },
-        )
+        ),
       ),
 
+      body: Padding(
+        padding: const EdgeInsets.all(16),
 
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          children: [
 
-              Text("Prescription Order",style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.black,
-                  fontWeight: FontWeight.w600
-              ),),
-              SizedBox(height: 20,),
+            const Text(
+              "Prescription Order",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Container(
+              padding: const EdgeInsets.all(14),
+
+              decoration: BoxDecoration(
+                color: AppColors.light_green,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+
+              child: Row(
+                children: [
+
+                  const Icon(Icons.location_on,color: Colors.green),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                    child: Text(widget.location),
+                  ),
+
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Change",
+                      style: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            if (widget.file != null)
               Container(
-                padding: const EdgeInsets.all(14),
+                height: 140,
+                width: double.infinity,
+
                 decoration: BoxDecoration(
-                  color: AppColors.light_green,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
 
-                    const Icon(
-                      Icons.location_on,
-                      color: Colors.green,
-                      size: 22,
-                    ),
+                child: widget.file!.path.endsWith(".pdf")
 
-                    const SizedBox(width: 10),
+                    ? const Icon(Icons.picture_as_pdf,size: 70,color: Colors.red)
 
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Delivery Address",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          Text(
-                            widget.location,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        "Change",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    : Image.file(widget.file!,fit: BoxFit.contain),
               ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              if (widget.file != null)
-                Container(
-                  height: 140,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: widget.file!.path.endsWith(".pdf")
+            Container(
+              padding: const EdgeInsets.all(14),
 
-                        ? const Center(
-                      child: Icon(
-                        Icons.picture_as_pdf,
-                        size: 70,
-                        color: Colors.red,
-                      ),
-                    )
-
-                        : Image.file(
-                      widget.file!,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-
-                    const Icon(
-                      Icons.person,
-                      color: Colors.blue,
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        const Text(
-                          "Patient Name",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          widget.name,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-            ],
-          ),
+
+              child: Row(
+                children: [
+
+                  const Icon(Icons.person,color: Colors.blue),
+
+                  const SizedBox(width: 10),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      const Text(
+                        "Patient Name",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(widget.name),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

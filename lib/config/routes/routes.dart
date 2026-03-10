@@ -8,6 +8,7 @@ import 'package:medryder/config/routes/view.dart';
 import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
 import 'package:medryder/repository/get_lab_test_repository/lab_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
+import '../../bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_bloc.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
@@ -25,6 +26,7 @@ import '../../repository/diagnostic_repository/diagnostic_repository.dart';
 import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_repository.dart';
 import '../../repository/get_lab_test_repository/lab_test_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
+import '../../repository/pharmacy_repository/confirm_address_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
@@ -186,19 +188,61 @@ class Routes {
           ),
         );
 
-    /// PHARMACY
+
       case RoutesName.pharmacyScreen:
 
-        final language =
-            settings.arguments as String? ?? "en";
+        final args = settings.arguments as Map<String, dynamic>?;
 
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (_) => PharmacyBloc(
-              PharmacyRepository(),
-            )..add(FetchPharmacyCategories(language)),
+              PharmacyRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
             child: PharmacyScreen(
-              selectedLanguage: language,
+              lat: args?["lat"] ?? "",
+              lon: args?["lon"] ?? "",
+              language: args?["language"] ?? "en",
+            ),
+          ),
+        );
+
+      case RoutesName.pharmacyDetailsScreen:
+
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          builder: (_) => PharmacyDetailsScreen(
+            pharmacyId: args?["pharmacyId"] ?? 0,
+            language: args?["language"] ?? "en",
+          ),
+        );
+
+
+
+      case RoutesName.confirmPharmacyScreen:
+
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => ConfirmPharmacyOrderBloc(
+              ConfirmAddressRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: ConfirmPharmacyOrderScreen(
+              file: args?["file"],
+              pharmacyId: args?["pharmacyId"] ?? 0,
+              orderType: args?["orderType"] ?? "home_delivery",
+              language: args?["language"] ?? "en",
             ),
           ),
         );

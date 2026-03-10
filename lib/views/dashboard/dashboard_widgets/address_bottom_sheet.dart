@@ -8,9 +8,11 @@ import '../../../bloc/language_bloc/language_state.dart';
 import '../../../config/colors/app_colors.dart';
 import '../../../config/language/app_strings.dart';
 import '../../../config/routes/routes_name.dart';
+import '../../../models/get_address/get_address_model.dart';
 
 class AddressBottomSheet extends StatelessWidget {
-  final Function(String) onSelect;
+ // final Function(String) onSelect;
+  final Function(AddressItem) onSelect;
 
   const AddressBottomSheet({
     super.key,
@@ -110,27 +112,18 @@ class AddressBottomSheet extends StatelessWidget {
 
               /// ================= ADDRESS LIST =================
               Expanded(
-                child: BlocBuilder<GetAddressBloc,
-                    GetAddressState>(
+                child: BlocBuilder<GetAddressBloc, GetAddressState>(
                   builder: (context, state) {
 
-                    if (state.status ==
-                        GetAddressStatus.loading) {
+                    if (state.status == GetAddressStatus.loading) {
                       return const Center(
-                        child:
-                        CircularProgressIndicator(),
+                        child: CircularProgressIndicator(),
                       );
                     }
 
-                    if (state.status ==
-                        GetAddressStatus.failure) {
+                    if (state.status == GetAddressStatus.failure) {
                       return Center(
-                        child: Text(
-                          state.message,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight:
-                            FontWeight.w500,
+                        child: Text(state.message, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500,
                           ),
                         ),
                       );
@@ -138,8 +131,7 @@ class AddressBottomSheet extends StatelessWidget {
 
                     if (state.addresses.isEmpty) {
                       return Center(
-                        child: Text(
-                          noAddressesFound,
+                        child: Text(noAddressesFound,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight:
@@ -156,132 +148,73 @@ class AddressBottomSheet extends StatelessWidget {
                         state.addresses[index];
 
                         return Container(
-                          margin:
-                          const EdgeInsets.only(
-                              bottom: 10),
-                          padding:
-                          const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                            BorderRadius.circular(
-                                12),
-                            border: Border.all(
-                              color: AppColors
-                                  .lightblue
-                                  .withOpacity(0.15),
+                            color: Colors.white, borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.lightblue.withOpacity(0.15),
                             ),
                           ),
 
                           child: InkWell(
-                            borderRadius:
-                            BorderRadius.circular(
-                                12),
+                            borderRadius: BorderRadius.circular(12),
+                            // onTap: () {
+                            //   onSelect(item.address);
+                            //   Navigator.pop(context);
+                            // },
                             onTap: () {
-                              onSelect(
-                                  item.address);
-                              Navigator.pop(
-                                  context);
+                              onSelect(item);
+                              Navigator.pop(context);
                             },
                             child: Row(
                               children: [
 
                                 /// ICON
-                                Container(
-                                  padding:
-                                  const EdgeInsets
-                                      .all(8),
-                                  decoration:
-                                  BoxDecoration(
-                                    color: AppColors
-                                        .lightblue
-                                        .withOpacity(
-                                        0.1),
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                        10),
-                                  ),
+                                Container(padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(color: AppColors.lightblue.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),),
                                   child: Icon(
-                                    item.addressType
-                                        .toLowerCase() ==
-                                        "home"
-                                        ? Icons
-                                        .location_on
-                                        : Icons
-                                        .work_rounded,
-                                    color: AppColors
-                                        .lightblue,
-                                    size: 20,
+                                    item.addressType.toLowerCase() =="home" ? Icons.location_on
+                                        : Icons.work_rounded, color: AppColors.lightblue, size: 20,
                                   ),
                                 ),
 
-                                const SizedBox(
-                                    width: 12),
+                                const SizedBox(width: 12),
 
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
 
                                       /// ADDRESS TYPE
                                       Text(
                                         item.addressType,
-                                        style:
-                                        const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight:
-                                          FontWeight
-                                              .w500,
-                                          color: AppColors
-                                              .lightblue,
-                                          fontFamily:
-                                          'Poppins',
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500,
+                                          color: AppColors.lightblue,
+                                          fontFamily: 'Poppins',
                                         ),
                                       ),
 
-                                      const SizedBox(
-                                          height: 4),
+                                      const SizedBox(height: 4),
 
                                       /// ADDRESS
-                                      Text(
-                                        item.address,
-                                        maxLines: 2,
-                                        overflow:
-                                        TextOverflow
-                                            .ellipsis,
-                                        style:
-                                        const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight:
-                                          FontWeight
-                                              .w500,
-                                          color:
-                                          AppColors
-                                              .black,
-                                          fontFamily:
-                                          'Poppins',
+                                      Text(item.address, maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 13, fontWeight: FontWeight.w500,
+                                          color: AppColors.black,
+                                          fontFamily: 'Poppins',
                                         ),
                                       ),
 
-                                      const SizedBox(
-                                          height: 2),
+                                      const SizedBox(height: 2),
 
                                       /// CITY STATE
                                       Text(
                                         "${item.city}, ${item.state}",
-                                        style:
-                                        const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight:
-                                          FontWeight
-                                              .w500,
-                                          color: Colors
-                                              .black,
-                                          fontFamily:
-                                          'Poppins',
+                                        style: const TextStyle(fontSize: 13, fontWeight:FontWeight.w500,
+                                          color: Colors.black,
+                                          fontFamily: 'Poppins',
                                         ),
                                       ),
                                     ],
@@ -289,11 +222,8 @@ class AddressBottomSheet extends StatelessWidget {
                                 ),
 
                                 const Icon(
-                                  Icons
-                                      .arrow_forward_ios_rounded,
-                                  size: 14,
-                                  color: AppColors
-                                      .lightblue,
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 14, color: AppColors.lightblue,
                                 ),
                               ],
                             ),

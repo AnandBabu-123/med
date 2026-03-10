@@ -16,7 +16,8 @@ class DiagnosticPrescriptionBloc
 
   Future<void> _uploadPrescription(
       UploadPrescriptionEvent event,
-      Emitter<DiagnosticPrescriptionState> emit) async {
+      Emitter<DiagnosticPrescriptionState> emit,
+      ) async {
 
     try {
 
@@ -27,7 +28,7 @@ class DiagnosticPrescriptionBloc
         image: event.base64Image,
         name: event.name,
         mobile: event.mobile,
-        familyMemberId: event.familyMemberId,
+        familyMemberId: event.familyMemberId, // now List<int>
         language: event.language,
       );
 
@@ -36,7 +37,7 @@ class DiagnosticPrescriptionBloc
       emit(state.copyWith(
         loading: false,
         success: true,
-        message: response["message"],
+        message: response["message"] ?? "Success",
       ));
 
     } catch (e) {

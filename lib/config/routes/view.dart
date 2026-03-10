@@ -17,3 +17,5 @@ export '../../views/diagnostic_tests_screen/diagnostic_tests_screen.dart';
 export '../../views/attach_prescription_screen/attach_prescription_screen.dart';
 export '../../views/attach_prescription_screen/cart_screen.dart';
 export '../../views/lab_tests/lab_test_screen.dart';
+export '../../views/pharmacy/pharmacy_details_screen.dart';
+export '../../views/pharmacy/confirm_pharmacy_screen.dart';

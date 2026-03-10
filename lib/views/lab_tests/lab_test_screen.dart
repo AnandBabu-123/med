@@ -220,74 +220,74 @@ class _LabTestScreenState extends State<LabTestScreen> {
                             ],
                           ),
 
-                          ElevatedButton(
-                              onPressed: () async {
-
-                                final repo = FamilyCountRepository(
-                                  DioClient(
-                                    dio: Dio(),
-                                    networkInfo: NetworkInfo(),
-                                  ),
-                                );
-
-                                try {
-
-                                  final result = await repo.getFamilyCount();
-
-                                  print("Family Count: ${result.response.count}");
-
-                                  if (result.response.count == 0) {
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Please add family member first"),
-                                      ),
-                                    );
-
-                                  } else {
-
-                                    print("Proceed booking");
-
-                                  }
-
-                                } catch (e) {
-
-                                  print(e);
-
-                                }
-
-                              },
-                            child: const Text("Continue"),
-                          )
-
-                          /// BOOK BUTTON
                           // ElevatedButton(
+                          //     onPressed: () async {
                           //
-                          //   onPressed: () {
+                          //       final repo = FamilyCountRepository(
+                          //         DioClient(
+                          //           dio: Dio(),
+                          //           networkInfo: NetworkInfo(),
+                          //         ),
+                          //       );
                           //
-                          //     setState(() {
+                          //       try {
                           //
-                          //       if (isSelected) {
-                          //         selectedPackages.removeWhere(
-                          //                 (e) => e.id == package.id);
-                          //       } else {
-                          //         selectedPackages.add(package);
+                          //         final result = await repo.getFamilyCount();
+                          //
+                          //         print("Family Count: ${result.response.count}");
+                          //
+                          //         if (result.response.count == 0) {
+                          //
+                          //           ScaffoldMessenger.of(context).showSnackBar(
+                          //             const SnackBar(
+                          //               content: Text("Please add family member first"),
+                          //             ),
+                          //           );
+                          //
+                          //         } else {
+                          //
+                          //           print("Proceed booking");
+                          //
+                          //         }
+                          //
+                          //       } catch (e) {
+                          //
+                          //         print(e);
+                          //
                           //       }
                           //
-                          //     });
-                          //
-                          //   },
-                          //
-                          //   style: ElevatedButton.styleFrom(
-                          //     backgroundColor: isSelected
-                          //         ? Colors.red
-                          //         : Colors.blue,
-                          //   ),
-                          //
-                          //   child: Text(
-                          //     isSelected ? "Remove" : "Book",
-                          //   ),
+                          //     },
+                          //   child: const Text("Continue"),
                           // )
+
+                          /// BOOK BUTTON
+                          ElevatedButton(
+
+                            onPressed: () {
+
+                              setState(() {
+
+                                if (isSelected) {
+                                  selectedPackages.removeWhere(
+                                          (e) => e.id == package.id);
+                                } else {
+                                  selectedPackages.add(package);
+                                }
+
+                              });
+
+                            },
+
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? Colors.red
+                                  : Colors.blue,
+                            ),
+
+                            child: Text(
+                              isSelected ? "Remove" : "Book",
+                            ),
+                          )
                         ],
                       )
                     ],

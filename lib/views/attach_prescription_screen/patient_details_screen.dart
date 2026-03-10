@@ -1,18 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../config/colors/app_colors.dart';
+import '../../models/family_member_model/total_family_members_model.dart';
 import 'cart_screen.dart';
+import '../../bloc/get_family_members_bloc/get_family_members_bloc.dart';
+import '../../bloc/get_family_members_bloc/get_family_members_state.dart';
+
 
 class PatientDetailsScreen extends StatefulWidget {
-
   final File? file;
   final int diagnosticId;
   final String language;
   final String location;
-
 
   const PatientDetailsScreen({
     super.key,
@@ -20,56 +21,58 @@ class PatientDetailsScreen extends StatefulWidget {
     required this.diagnosticId,
     required this.language,
     required this.location,
-
   });
 
   @override
   State<PatientDetailsScreen> createState() => _PatientDetailsScreenState();
 }
 
-class _PatientDetailsScreenState
-    extends State<PatientDetailsScreen> {
+class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
 
-  int selectedIndex = 0;
-
-  List<String> members = [
-    "Shareef",
-    "Ahmed",
-    "Rahman"
-  ];
-
-  List<int> familyIds = [
-    558,
-    559,
-    560
-  ];
+  List<int> selectedIds = [];
+  List<String> selectedNames = [];
+  List<int> selectedMobiles = [];
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-    backgroundColor: AppColors.whiteColor,
+      backgroundColor: AppColors.whiteColor,
+
+      /// APPBAR
       appBar: AppBar(
-        title: const Text("Add Patient Details",style: TextStyle(
-          fontSize: 20,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),),
+        title: const Text(
+          "Add Patient Details",
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         backgroundColor: AppColors.lightblue,
-        foregroundColor: Colors.white,
       ),
 
+      /// CONTINUE BUTTON
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
 
         child: ElevatedButton(
+
           style: ElevatedButton.styleFrom(
-            backgroundColor:AppColors.lightblue, // button color
+            backgroundColor: AppColors.lightblue,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10), // radius
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
+
           onPressed: () {
+
+            if (selectedIds.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Please select a patient")),
+              );
+              return;
+            }
 
             Navigator.push(
               context,
@@ -78,45 +81,83 @@ class _PatientDetailsScreenState
                   value: context.read<DiagnosticPrescriptionBloc>(),
                   child: CartScreen(
                     file: widget.file,
-                    name: members[selectedIndex],
-                    familyId: familyIds[selectedIndex],
+                    name: selectedNames.join(", "),
+                    familyIds: selectedIds,
                     diagnosticId: widget.diagnosticId,
                     language: widget.language,
                     location: widget.location,
-
+                    mobile: selectedMobiles.first.toString(),
                   ),
                 ),
               ),
             );
           },
 
-          child: const Text("Continue", style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),),
+          child: const Text(
+            "Continue",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
 
-      body: ListView.builder(
+      /// BODY
+      body: BlocBuilder<GetFamilyMembersBloc, GetFamilyMembersState>(
 
-        itemCount: members.length,
+        builder: (context, state) {
 
-        itemBuilder: (context, index) {
+          if (state.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          return ListTile(
+          if (state.error.isNotEmpty) {
+            return Center(child: Text(state.error));
+          }
 
-            title: Text(members[index]),
+          if (state.members.isEmpty) {
+            return const Center(child: Text("No family members found"));
+          }
 
-            leading: Radio(
-              value: index,
-              groupValue: selectedIndex,
+          return ListView.builder(
 
-              onChanged: (v) {
-                setState(() {
-                  selectedIndex = v!;
-                });
-              },
-            ),
+            itemCount: state.members.length,
+
+            itemBuilder: (context, index) {
+
+              final FamilyMember member = state.members[index];
+
+              final selected = selectedIds.contains(member.id);
+
+              return CheckboxListTile(
+
+                title: Text(member.name),
+
+                value: selected,
+
+                onChanged: (value) {
+
+                  setState(() {
+
+                    if (value == true) {
+
+                      selectedIds.add(member.id);
+                      selectedNames.add(member.name);
+                      selectedMobiles.add(member.mobile);
+
+                    } else {
+
+                      selectedIds.remove(member.id);
+                      selectedNames.remove(member.name);
+                      selectedMobiles.remove(member.mobile);
+                    }
+
+                  });
+
+                },
+              );
+            },
           );
         },
       ),

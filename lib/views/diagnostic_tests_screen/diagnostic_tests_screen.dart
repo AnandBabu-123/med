@@ -191,7 +191,7 @@ class _DiagnosticTestsScreenState extends State<DiagnosticTestsScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          "https://medconnect.org.in/bharosa/${test.image}",
+                          "https://medrayder.in/bharosa/${test.image}",
                           width: 65,
                           height: 65,
                           fit: BoxFit.cover,

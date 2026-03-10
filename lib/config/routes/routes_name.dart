@@ -23,5 +23,6 @@ class RoutesName {
   static const String attachPrescriptionScreen ="attach_prescription_screen";
   static const String cartScreen ="cart_screen";
   static const String labScreen ="lab_screen";
-
+  static const String pharmacyDetailsScreen ="pharmacy_details_screen";
+  static const String confirmPharmacyScreen ="confirm_pharmacy_screen";
 }

@@ -6,7 +6,7 @@ class UploadPrescriptionEvent extends DiagnosticPrescriptionEvent {
   final String base64Image;
   final String name;
   final String mobile;
-  final int familyMemberId;
+  final List<int> familyMemberId;
   final String language;
 
   UploadPrescriptionEvent({

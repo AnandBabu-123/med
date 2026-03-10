@@ -2,47 +2,45 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../config/routes/app_url.dart';
 import '../../models/pharmacy_model/pharmacy_category_model.dart';
+import '../../network/dio_network/dio_client.dart';
 import '../../utils/session_manager.dart';
+
+
 
 class PharmacyRepository {
 
-  static const String imageBaseUrl =
-      "https://medconnect.org.in/bharosa/";
+  final DioClient dioClient;
 
-  Future<List<PharmacyCategoryModel>> fetchCategories(
-      String language) async
-  {
+  PharmacyRepository(this.dioClient);
+
+  Future<PharmacyResponseModel> getPharmacies({
+    required String lat,
+    required String lon,
+    required String language,
+    required int page,
+    required String search,
+  }) async {
 
     final userId = await SessionManager.getUserId();
     final token = await SessionManager.getToken();
 
-    final response = await http.post(
-      Uri.parse(AppUrl.pharmacyCategories),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "user_id": userId.toString(),
-        "auth_token": token,
-        "language": language,
-      }),
+    final body = {
+      "user_id": userId,
+      "auth_token": token,
+      "lat": lat,
+      "lon": lon,
+      "page": page,
+      "search": search,
+      "language": language,
+    };
+
+    final response = await dioClient.post(
+      AppUrl.pharmacyCategories,
+      data: body,
     );
 
-    print("STATUS => ${response.statusCode}");
-    print("BODY => ${response.body}");
+    print("PHARMACY RESPONSE => $response");
 
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200 && data["status"] == true) {
-
-      final List list =
-      data["response"]["pharmacy_categories"];
-
-      return list
-          .map((e) => PharmacyCategoryModel.fromJson(e))
-          .toList();
-    } else {
-      throw Exception(data["message"]);
-    }
+    return PharmacyResponseModel.fromJson(response);
   }
 }

@@ -2,7 +2,7 @@ class AppUrl {
 
   /// Only for image loading
   static const String imageBaseUrl =
-      "https://medconnect.org.in/bharosa/";
+      "https://medrayder.org.in/bharosa/";
 
   /// AUTH
   static const String login = "login";
@@ -16,6 +16,7 @@ class AppUrl {
  // static const String familyMembersCount = "family_members_count";
   static const String familyMembersCount = "add_family_members";
   static const String familyMembers = "family_members_count";
+  static const String totalFamilyMembers ="family_members";
 
   /// ADDRESS
   static const String postAddress = "user_address";
@@ -23,6 +24,7 @@ class AppUrl {
 
   /// Diagnostic
   static const String getDiagnostic ="diagnostics_main_data";
+  static const String diagnosticDetails ="diagnostic_tests";
   static const String diagnosticTests ="diagnostic_tests";
   static const String diagnosticBooking ="diagnostic_prescription_booking";
   static const String diagnosticPrescriptionBooking ="diagnostic_prescription_booking";
@@ -34,7 +36,9 @@ class AppUrl {
 
 
   /// PHARMACY
-  static const String pharmacyCategories = "pharmacy_categories";
+  static const String pharmacyCategories = "pharmacy_main_data";
+  static const String pharmacyDetailsCategories = "total_pharmacy_main_data";
+  static const String confirmDetailsCategories = "pharmacy_medicine_booking";
   static const String searchPharmacy = "pharmacy_main_data";
   static const String pharmacyItem = "total_pharmacy_main_data";
 }

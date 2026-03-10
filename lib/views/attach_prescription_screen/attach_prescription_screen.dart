@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medryder/config/colors/app_colors.dart';
 import 'package:medryder/views/attach_prescription_screen/patient_details_screen.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
+import '../../bloc/get_family_members_bloc/get_family_members_bloc.dart';
+import '../../bloc/get_family_members_bloc/get_family_members_event.dart';
+import '../../network/dio_network/dio_client.dart';
+import '../../network/dio_network/network_info.dart';
+import '../../repository/get_family_members_reposotory/get_family_members_reposotory.dart';
 
 class AttachPrescriptionScreen extends StatefulWidget {
 
@@ -14,11 +20,13 @@ class AttachPrescriptionScreen extends StatefulWidget {
   final String location;
 
 
+
   const AttachPrescriptionScreen({
     super.key,
     required this.diagnosticId,
     required this.language,
     required this.location,
+
 
   });
 
@@ -107,8 +115,28 @@ class _AttachPrescriptionScreenState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<DiagnosticPrescriptionBloc>(),
+                builder: (_) => MultiBlocProvider(
+                  providers: [
+
+                    /// EXISTING BLOC
+                    BlocProvider.value(
+                      value: context.read<DiagnosticPrescriptionBloc>(),
+                    ),
+
+                    /// FAMILY MEMBERS BLOC
+                    BlocProvider(
+                      create: (_) => GetFamilyMembersBloc(
+                        GetFamilyMembersRepository(
+                          DioClient(
+                            dio: Dio(),
+                            networkInfo: NetworkInfo(),
+                          ),
+                        ),
+                      )..add(FetchFamilyMembersEvent()),
+                    ),
+
+                  ],
+
                   child: PatientDetailsScreen(
                     file: selectedFile,
                     diagnosticId: widget.diagnosticId,

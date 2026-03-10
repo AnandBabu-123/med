@@ -14,7 +14,7 @@ class DiagnosticPrescriptionRepository {
     required String image,
     required String name,
     required String mobile,
-    required int familyMemberId,
+    required List<int> familyMemberId,
     required String language,
 
   }) async {

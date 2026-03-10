@@ -9,7 +9,17 @@ class SignupRepository {
   Future<String> login(LoginRequestModel request) async {
 
     final response = await http.post(
-      Uri.parse("https://medconnect.org.in/bharosa/app/ws/login"),
+     // Uri.parse("https://medconnect.org.in/bharosa/app/ws/login"),
+      Uri.parse("https://medrayder.in/bharosa/app/ws/login"),
+
+    //   const val BASE_URL = "https://medrayder.in/bharosa/app/ws/"
+    // const val IMAGES_BASE_URL = "https://medrayder.in/bharosa/"
+
+    // Testing
+
+    /*const val BASE_URL = "https://medconnect.org.in/bharosa/app/ws/"
+    const val IMAGES_BASE_URL = "https://medconnect.org.in/bharosa/"*/
+
       headers: {
         "Content-Type": "application/json",
       },

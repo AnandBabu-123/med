@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
@@ -5,7 +6,9 @@ import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_event.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_state.dart';
 import '../../config/routes/routes_name.dart';
-import '../diagnostic_tests_screen/diagnostic_tests_screen.dart';
+import '../../network/dio_network/dio_client.dart';
+import '../../network/dio_network/network_info.dart';
+import '../../repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
 
 
 class DiagnosticsScreen extends StatefulWidget {
@@ -165,36 +168,83 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                     final item = state.list[index];
 
                     return GestureDetector(
-                      onTap: () {
 
-                        /// NAVIGATE TO DIAGNOSTIC TESTS SCREEN
+                        onTap: () async {
 
-
-                          Navigator.pushNamed(
-                            context,
-                            RoutesName.attachPrescriptionScreen,
-                            arguments: {
-                              "diagnostic_id": item.id,
-                              "language": widget.language,
-                              "location": item.location,
-                              "lab_name": item.name,
-                              "open_time": item.openTime,
-                              "close_time": item.closeTime,
-                            },
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => const Center(child: CircularProgressIndicator()),
                           );
 
+                          try {
 
+                            final repository = DiagnosticTestsRepository(
+                              DioClient(
+                                dio: Dio(),
+                                networkInfo: NetworkInfo(),
+                              ),
+                            );
 
-                        // Navigator.pushNamed(
-                        //   context,
-                        //   RoutesName.test_diagnostic,
-                        //   arguments: {
-                        //     "diagnostic_id": item.id,
-                        //     "language": widget.language,
-                        //   },
-                        // );
+                            final tests = await repository.getDiagnosticTests(
+                              diagnosticId: item.id,
+                              page: 1,
+                              language: widget.language,
+                            );
 
-                      },
+                            Navigator.pop(context);
+
+                            /// TESTS AVAILABLE
+                            if (tests.isNotEmpty) {
+
+                              Navigator.pushNamed(
+                                context,
+                                RoutesName.test_diagnostic,
+                                arguments: {
+                                  "diagnostic_id": item.id,
+                                  "language": widget.language,
+                                },
+                              );
+
+                            } else {
+
+                              /// EMPTY LIST
+                              Navigator.pushNamed(
+                                context,
+                                RoutesName.attachPrescriptionScreen,
+                                arguments: {
+                                  "diagnostic_id": item.id,
+                                  "language": widget.language,
+                                  "location": item.location,
+                                  "lab_name": item.name,
+                                  "open_time": item.openTime,
+                                  "close_time": item.closeTime,
+                                },
+                              );
+
+                            }
+
+                          } catch (e) {
+
+                            /// CLOSE LOADER
+                            Navigator.pop(context);
+
+                            /// API RETURNED NO TESTS → GO TO PRESCRIPTION
+                            Navigator.pushNamed(
+                              context,
+                              RoutesName.attachPrescriptionScreen,
+                              arguments: {
+                                "diagnostic_id": item.id,
+                                "language": widget.language,
+                                "location": item.location,
+                                "lab_name": item.name,
+                                "open_time": item.openTime,
+                                "close_time": item.closeTime,
+                              },
+                            );
+
+                          }
+                        },
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                         padding: const EdgeInsets.all(12),
@@ -219,7 +269,8 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(50),
                               child: Image.network(
-                                "https://medconnect.org.in/bharosa/${item.logo}",
+                              //  "https://medconnect.org.in/bharosa/${item.logo}",
+                                "https://medrayder.in/bharosa/${item.logo}",
                                 width: 65,
                                 height: 65,
                                 fit: BoxFit.cover,
@@ -297,7 +348,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
                       ),
                     );
                   },
-                );;
+                );
               },
             ),
           ),

@@ -76,6 +76,7 @@ class _DashboardScreensState extends State<DashboardScreens>
         location.address,
         location.lat,
         location.lon,
+        0, // GPS location → no addressId
       );
 
       setState(() {
@@ -95,30 +96,7 @@ class _DashboardScreensState extends State<DashboardScreens>
       }
     }
   }
-  // Future<void> _fetchLocation() async {
-  //
-  //   final location = await LocationService.getExactLocation();
-  //
-  //   ///  LOCATION FOUND
-  //   if (location != null) {
-  //     setState(() {
-  //       address = location.address;
-  //       lat = location.lat;
-  //       lon = location.lon;
-  //     });
-  //   }
-  //
-  //   ///  LOCATION OFF → OPEN BOTTOM SHEET
-  //   else {
-  //     if (!_locationSheetOpened) {
-  //       _locationSheetOpened = true;
-  //
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         _openLocationBottomSheet();
-  //       });
-  //     }
-  //   }
-  // }
+
 
   /// ================= AUTO SCROLL =================
   void _autoScroll() {
@@ -157,8 +135,18 @@ class _DashboardScreensState extends State<DashboardScreens>
               ),
             ),
           )..add(FetchAddressEvent()),
+
+
           // child: AddressBottomSheet(
-          //   onSelect: (selectedAddress) {
+          //   onSelect: (selectedAddress) async {
+          //
+          //     /// SAVE ADDRESS
+          //     await SessionManager.saveAddress(
+          //       selectedAddress,
+          //       lat ?? "",
+          //       lon ?? "",
+          //     );
+          //
           //     setState(() {
           //       address = selectedAddress;
           //     });
@@ -166,17 +154,19 @@ class _DashboardScreensState extends State<DashboardScreens>
           // ),
 
           child: AddressBottomSheet(
-            onSelect: (selectedAddress) async {
+            onSelect: (item) async {
 
-              /// SAVE ADDRESS
               await SessionManager.saveAddress(
-                selectedAddress,
-                lat ?? "",
-                lon ?? "",
+                item.address,
+                item.lat,
+                item.lon,
+                item.id, // ✅ address id saved
               );
 
               setState(() {
-                address = selectedAddress;
+                address = item.address;
+                lat = item.lat;
+                lon = item.lon;
               });
             },
           ),

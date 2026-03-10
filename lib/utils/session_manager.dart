@@ -15,11 +15,13 @@ class SessionManager {
   static const _lonKey = "user_lon";
 
 
-  /// SAVE ADDRESS
+  static const String _addressIdKey = "id";
+
   static Future<void> saveAddress(
       String address,
       String lat,
       String lon,
+      int addressId,
       ) async {
 
     final prefs = await SharedPreferences.getInstance();
@@ -27,6 +29,12 @@ class SessionManager {
     await prefs.setString(_addressKey, address);
     await prefs.setString(_latKey, lat);
     await prefs.setString(_lonKey, lon);
+    await prefs.setInt(_addressIdKey, addressId);
+
+    print("Saved Address ID: $addressId");
+    print("Saved Address: $address");
+    print("Saved Lat: $lat");
+    print("Saved Lon: $lon");
   }
 
   /// GET ADDRESS

@@ -8,32 +8,63 @@ class PharmacyBloc extends Bloc<PharmacyEvent, PharmacyState> {
 
   final PharmacyRepository repository;
 
-  PharmacyBloc(this.repository)
-      : super(const PharmacyState()) {
+  PharmacyBloc(this.repository) : super(const PharmacyState()) {
 
     on<FetchPharmacyCategories>(_fetch);
   }
 
   Future<void> _fetch(
       FetchPharmacyCategories event,
-      Emitter<PharmacyState> emit) async {
+      Emitter<PharmacyState> emit,
+      ) async {
 
     try {
-      emit(state.copyWith(status: PharmacyStatus.loading));
 
-      final data =
-      await repository.fetchCategories(event.language);
+      if (!event.isLoadMore) {
+        emit(state.copyWith(status: PharmacyStatus.loading));
+      }
 
-      emit(state.copyWith(
-        status: PharmacyStatus.success,
-        categories: data,
-      ));
+      final response = await repository.getPharmacies(
+        lat: event.lat,
+        lon: event.lon,
+        language: event.language,
+        page: event.page,
+        search: event.search,
+      );
+
+      final newList = response.response.mainData;
+
+      if (event.isLoadMore) {
+
+        emit(
+          state.copyWith(
+            status: PharmacyStatus.success,
+            categories: List.of(state.categories)..addAll(newList),
+            page: event.page,
+            hasReachedMax: newList.isEmpty,
+          ),
+        );
+
+      } else {
+
+        emit(
+          state.copyWith(
+            status: PharmacyStatus.success,
+            categories: newList,
+            page: 1,
+            hasReachedMax: false,
+          ),
+        );
+      }
 
     } catch (e) {
-      emit(state.copyWith(
-        status: PharmacyStatus.failure,
-        message: e.toString(),
-      ));
+
+      emit(
+        state.copyWith(
+          status: PharmacyStatus.failure,
+          message: e.toString(),
+        ),
+      );
     }
   }
 }
