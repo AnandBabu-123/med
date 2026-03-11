@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/bloc/diagnostic_test_event/diagnostic_tests_bloc.dart';
 import 'package:medryder/bloc/lab_bloc/lab_bloc.dart';
+import 'package:medryder/bloc/pharmacy_ongoing_orders_bloc/pharmacy_ongoing_orders_bloc.dart';
 import 'package:medryder/bloc/profile_bloc/profile_bloc.dart';
 import 'package:medryder/config/routes/view.dart';
 import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
 import 'package:medryder/repository/get_lab_test_repository/lab_repository.dart';
+import 'package:medryder/repository/hospital_repository/hospital_filter_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
 import '../../bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_bloc.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
+import '../../bloc/hospital_bloc/hospital_bloc.dart';
+import '../../bloc/hospital_filter_bloc/hospital_filter_bloc.dart';
+import '../../bloc/hospital_filter_bloc/hospital_filter_event.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
@@ -24,8 +29,10 @@ import '../../network/dio_network/network_info.dart';
 import '../../repository/diagnostic_repository/diagnostic_repository.dart';
 import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_repository.dart';
 import '../../repository/get_lab_test_repository/lab_test_repository.dart';
+import '../../repository/hospital_repository/hospital_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../repository/pharmacy_repository/confirm_address_repository.dart';
+import '../../repository/pharmacy_repository/pharmacy_orders_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
@@ -138,9 +145,25 @@ class Routes {
           ),
         );
     /// HOSPITAL BOOKINGS
-      case RoutesName.hospitalMedicineBooking:
+      case RoutesName.pharmacyMedicineBooking:
+
+        final language =
+            settings.arguments as String? ?? "en";
+
         return MaterialPageRoute(
-          builder: (_) => const HospitalMedicalBookings(),
+          builder: (_) => BlocProvider(
+            create: (_) => PharmacyOngoingOrdersBloc(
+              PharmacyOrdersRepository(
+                DioClient(
+                  dio: Dio(),
+                  networkInfo: NetworkInfo(),
+                ),
+              ),
+            ),
+            child: PharmacyMedicineBooking(
+              language: language,
+            ),
+          ),
         );
 
       case RoutesName.hospitalAdmissionBookings:
@@ -174,6 +197,62 @@ class Routes {
           ),
         );
 
+///  Hospital Screen
+
+      case RoutesName.hospitalScreen:
+
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          builder: (_) {
+
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+            );
+
+            final repository = HospitalRepository(dioClient);
+
+            return BlocProvider(
+              create: (_) => HospitalBloc(repository),
+              child: HospitalScreen(
+                lat: args?["lat"] ?? "",
+                lon: args?["lon"] ?? "",
+                language: args?["language"] ?? "en",
+              ),
+            );
+          },
+        );
+
+
+      case RoutesName.hospitalFilterScreen:
+
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          builder: (_) {
+
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+            );
+
+            final repository = HospitalFilterRepository(dioClient);
+
+            return BlocProvider(
+              create: (_) => HospitalFilterBloc(repository)
+                ..add(
+                  LoadHospitalFilter(args?["language"] ?? "en"),
+                ),
+              child: HospitalFilterScreen(
+                language: args?["language"] ?? "en",
+              ),
+            );
+          },
+        );
+
+
+        /// Pharmacy Screen
 
       case RoutesName.pharmacyScreen:
 
@@ -234,6 +313,7 @@ class Routes {
             ),
           ),
         );
+
 
     /// DIAGNOSTICS
       case RoutesName.diagnosticScreen:

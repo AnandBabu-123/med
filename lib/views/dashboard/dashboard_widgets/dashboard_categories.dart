@@ -20,7 +20,7 @@ class DashboardCategories extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final categories = [
-      {"image": "assets/image_three.png", "title": "Ambulance", "route": null},
+      {"image": "assets/image_three.png", "title": "Ambulance", "route": RoutesName.hospitalScreen},
       {"image": "assets/image_one.png", "title": "Online Pharmacy", "route": RoutesName.pharmacyScreen},
       {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": RoutesName.labTestScreen},
       {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},

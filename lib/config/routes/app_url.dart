@@ -2,7 +2,7 @@ class AppUrl {
 
   /// Only for image loading
   static const String imageBaseUrl =
-      "https://medrayder.org.in/bharosa/";
+      "https://medrayder.in/bharosa/";
 
   /// AUTH
   static const String login = "login";
@@ -39,6 +39,12 @@ class AppUrl {
   static const String pharmacyCategories = "pharmacy_main_data";
   static const String pharmacyDetailsCategories = "total_pharmacy_main_data";
   static const String confirmDetailsCategories = "pharmacy_medicine_booking";
+  static const String pharmacyOngoingOrders = "pharmacy_ongoing_bookings";
   static const String searchPharmacy = "pharmacy_main_data";
   static const String pharmacyItem = "total_pharmacy_main_data";
+
+  /// Hospitals
+  static const String hospitalMainData = "main_data";
+  static const String hospitalFilter = "filters";
+
 }

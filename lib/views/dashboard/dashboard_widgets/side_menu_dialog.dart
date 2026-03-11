@@ -255,7 +255,7 @@ class _DashboardMenuContent extends StatelessWidget {
         _subMenuRoute(
             context,
             tr("hospitalMedicineBookings"),
-            RoutesName.hospitalMedicineBooking),
+            RoutesName.pharmacyMedicineBooking),
 
         _subMenuRoute(
             context,

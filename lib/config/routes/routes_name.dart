@@ -25,4 +25,7 @@ class RoutesName {
   static const String labScreen ="lab_screen";
   static const String pharmacyDetailsScreen ="pharmacy_details_screen";
   static const String confirmPharmacyScreen ="confirm_pharmacy_screen";
+  static const String pharmacyMedicineBooking = "pharmacy_medicine_booking";
+  static const String hospitalScreen ="hospital_screen";
+  static const String hospitalFilterScreen="hospital_filter_screen";
 }
