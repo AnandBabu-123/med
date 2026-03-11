@@ -4,12 +4,18 @@ import '../../bloc/hospital_filter_bloc/hospital_filter_bloc.dart';
 import '../../bloc/hospital_filter_bloc/hospital_filter_event.dart';
 import '../../bloc/hospital_filter_bloc/hospital_filter_state.dart';
 import '../../config/colors/app_colors.dart';
+import '../../config/routes/routes_name.dart';
+import '../../utils/session_manager.dart';
 
 class HospitalFilterScreen extends StatelessWidget {
 
   final String language;
 
-  const HospitalFilterScreen({super.key, required this.language});
+  const HospitalFilterScreen({
+    super.key,
+    required this.language,
+
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +68,7 @@ class HospitalFilterScreen extends StatelessWidget {
 
                           itemCount: categories.length,
 
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (_, _) =>
                           const Divider(height: 1),
 
                           itemBuilder: (context, index) {
@@ -104,7 +110,7 @@ class HospitalFilterScreen extends StatelessWidget {
 
                           itemCount: specialities.length,
 
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (_, _) =>
                           const Divider(height: 1),
 
                           itemBuilder: (context, index) {
@@ -201,29 +207,48 @@ class HospitalFilterScreen extends StatelessWidget {
                       /// APPLY BUTTON
                       Expanded(
                         child: ElevatedButton(
-
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
+                          onPressed: () async {
 
-                          onPressed: () {
+                            final state = context.read<HospitalFilterBloc>().state;
 
-                            final selected = context
-                                .read<HospitalFilterBloc>()
-                                .state
-                                .selectedSpecialities;
+                            final selectedCategoryId =
+                                state.categories[state.selectedCategoryIndex].categoryId;
 
-                            Navigator.pop(context, selected);
+                            final selectedIds = state.selectedSpecialities;
+
+                            final lat = await SessionManager.getLat();
+                            final lon = await SessionManager.getLon();
+
+
+                            Navigator.pushNamed(
+                              context,
+                              RoutesName.hospitalApplyFilterScreen,
+                              arguments: {
+                                "language": language,
+                                "lat": lat,
+                                "lon": lon,
+                                "subCatId": selectedCategoryId,
+                                "subSubCatIds": selectedIds.join(","),
+                              },
+                            );
                           },
-
                           child: const Text(
                             "Apply Filter",
                             style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 )

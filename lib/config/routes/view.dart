@@ -22,3 +22,4 @@ export '../../views/pharmacy/confirm_pharmacy_screen.dart';
 export '../../views/pharmacy/pharmacy_medicine_booking.dart';
 export '../../views/hospitals/hospital_screen.dart';
 export '../../views/hospitals/hospital_filter_screen.dart';
+export '../../views/hospitals/hospital_apply_filter_screen.dart';

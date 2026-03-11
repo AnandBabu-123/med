@@ -46,5 +46,6 @@ class AppUrl {
   /// Hospitals
   static const String hospitalMainData = "main_data";
   static const String hospitalFilter = "filters";
+  static const String hospitalApplyFilter = "filter_data";
 
 }
