@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
-import 'package:medryder/bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_event.dart';
-import 'package:medryder/bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_state.dart';
+import 'package:medryder/bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_event.dart';
+import 'package:medryder/bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_state.dart';
 import '../../repository/pharmacy_repository/confirm_address_repository.dart';
 import '../../utils/session_manager.dart';
 

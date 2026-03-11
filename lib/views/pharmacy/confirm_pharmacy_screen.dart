@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medryder/bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_bloc.dart';
-import 'package:medryder/bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_event.dart';
+import 'package:medryder/bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_bloc.dart';
+import 'package:medryder/bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_state.dart';
+import '../../bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_state.dart';
+import '../../config/colors/app_colors.dart';
 import '../../utils/session_manager.dart';
 
 
@@ -13,6 +14,7 @@ class ConfirmPharmacyOrderScreen extends StatefulWidget {
   final int pharmacyId;
   final String orderType;
   final String language;
+  final String location;
 
   const ConfirmPharmacyOrderScreen({
     super.key,
@@ -20,6 +22,7 @@ class ConfirmPharmacyOrderScreen extends StatefulWidget {
     required this.pharmacyId,
     required this.orderType,
     required this.language,
+    required this.location,
   });
 
   @override
@@ -87,13 +90,26 @@ class _ConfirmPharmacyOrderScreenState
 
         return Scaffold(
 
-          appBar: AppBar(
-            title: const Text("Confirm Order"),
+          appBar:AppBar(
+            backgroundColor: AppColors.lightblue,
+            iconTheme: const IconThemeData(color: Colors.white),
+            title: const Text(
+                "Confirm Order",
+                style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor,fontSize: 20)
+            ),
           ),
 
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.all(16),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:AppColors.lightblue, // button background
+                foregroundColor: AppColors.whiteColor, // text color
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // corner radius
+                ),
+              ),
               onPressed: () {
 
                 context.read<ConfirmPharmacyOrderBloc>().add(
@@ -107,13 +123,23 @@ class _ConfirmPharmacyOrderScreenState
                     mobile: mobile,
                   ),
                 );
+
               },
-              child: state is ConfirmOrderPharmacyLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Confirm"),
+              child: state is ConfirmOrderPharmacyLoading ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+                  : const Text("Confirm", style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -139,10 +165,17 @@ class _ConfirmPharmacyOrderScreenState
 
                 const SizedBox(height: 25),
 
-                const Text(
-                  "Delivery Address",
-                  style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                Text(
+                  widget.orderType == "pickup_order"
+                      ? "Pickup Location"
+                      : "Delivery Address",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                const SizedBox(height: 10),
+
 
                 const SizedBox(height: 10),
 
@@ -161,9 +194,11 @@ class _ConfirmPharmacyOrderScreenState
 
                       Expanded(
                         child: Text(
-                          address.isEmpty
+                          widget.orderType == "pickup_order"
+                              ? widget.location
+                              : (address.isEmpty
                               ? "No address selected"
-                              : address,
+                              : address),
                         ),
                       ),
                     ],

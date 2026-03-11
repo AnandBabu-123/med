@@ -8,13 +8,12 @@ import 'package:medryder/config/routes/view.dart';
 import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests_repository.dart';
 import 'package:medryder/repository/get_lab_test_repository/lab_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
-import '../../bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_bloc.dart';
+import '../../bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_bloc.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
-import '../../bloc/pharmacy_bloc/pharmacy_event.dart';
 import '../../bloc/post_address_bloc/post_address_bloc.dart';
 import '../../bloc/profile_bloc/profile_event.dart';
 import '../../bloc/signup_bloc/signup_bloc.dart';
@@ -30,21 +29,8 @@ import '../../repository/pharmacy_repository/confirm_address_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_repository.dart';
 import '../../repository/post_address_repository/post_address_repository.dart';
 import '../../repository/signup_repository/signup_repository.dart';
-import '../../views/address/add_address.dart';
-import '../../views/dashboard/dashboard_screens.dart';
-import '../../views/diagnostic_tests_screen/diagnostic_tests_screen.dart';
-import '../../views/diagnostic_views/get_diagnostic_screen.dart';
-import '../../views/hospital_bookings/hospital_admission_bookings/hospital_admission_bookings.dart';
-import '../../views/hospital_bookings/hospital_diagnostic_bookings/hospital_diagnostic_bookings.dart';
-import '../../views/hospital_bookings/hospital_doctor_bookings/hospital_doctor_bookings.dart';
-import '../../views/hospital_bookings/hospital_medical_booking/hospital_medical_bookings.dart';
-import '../../views/lab_tests/get_lab_tests.dart';
 import '../../views/onboarding/language_screen/language_screen.dart';
-import '../../views/onboarding/onboarding_screen/onboarding_screen.dart';
-import '../../views/onboarding/otp_screen/otp_screen.dart';
-import '../../views/onboarding/signup_screen/signup_screen.dart';
-import '../../views/pharmacy/pharmacy_screen.dart';
-import '../../views/splash/splash_screen.dart';
+
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -219,6 +205,7 @@ class Routes {
           builder: (_) => PharmacyDetailsScreen(
             pharmacyId: args?["pharmacyId"] ?? 0,
             language: args?["language"] ?? "en",
+            location: args?["location"] ?? "",
           ),
         );
 
@@ -243,6 +230,7 @@ class Routes {
               pharmacyId: args?["pharmacyId"] ?? 0,
               orderType: args?["orderType"] ?? "home_delivery",
               language: args?["language"] ?? "en",
+              location: args?["location"] ?? "",
             ),
           ),
         );

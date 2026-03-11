@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
@@ -12,11 +12,13 @@ class PharmacyDetailsScreen extends StatefulWidget {
 
   final int pharmacyId;
   final String language;
+  final String location;
 
   const PharmacyDetailsScreen({
     super.key,
     required this.pharmacyId,
     required this.language,
+    required this.location,
   });
 
   @override
@@ -60,7 +62,7 @@ class _PharmacyDetailsScreenState extends State<PharmacyDetailsScreen> {
             ),
             title: Text(
               pharmacy?.name ?? "Pharmacy Details",
-              style: const TextStyle(fontSize: 18,color: AppColors.whiteColor),
+              style: const TextStyle(fontSize: 18,color: AppColors.whiteColor,fontWeight: FontWeight.w500),
             ),
             centerTitle: true,
           ),
@@ -79,6 +81,7 @@ class _PharmacyDetailsScreenState extends State<PharmacyDetailsScreen> {
                     builder: (_) => AttachPharmacyPrescriptionScreen(
                       pharmacyId: widget.pharmacyId,
                       language: widget.language,
+                      location: widget.location,
                     ),
                   ),
                 );

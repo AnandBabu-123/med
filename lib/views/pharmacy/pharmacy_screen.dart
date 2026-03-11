@@ -96,7 +96,7 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
 
           /// HEADER
           Container(
-            color: Colors.blue,
+            color: AppColors.lightblue,
             padding: const EdgeInsets.only(
               top: 40,
               left: 12,
@@ -115,15 +115,11 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
                         color: Colors.white,
                       ),
                     ),
+                    SizedBox(width: 30,),
                     const Expanded(
                       child: Text(
-                        "Pharmacy",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          "Pharmacy",
+                          style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor,fontSize: 22)
                       ),
                     ),
                     const SizedBox(width: 48)
@@ -230,6 +226,7 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
                               child: PharmacyDetailsScreen(
                                 pharmacyId: item.id,
                                 language: widget.language,
+                                location: item.location,
                               ),
                             ),
                           ),

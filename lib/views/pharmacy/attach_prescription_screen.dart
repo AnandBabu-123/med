@@ -1,25 +1,22 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-
-import '../../bloc/confirm_pharmcyorder_bloc/confirm_pharmacyorder_bloc.dart';
+import '../../config/colors/app_colors.dart';
 import '../../config/routes/routes_name.dart';
-import '../../network/dio_network/dio_client.dart';
-import '../../repository/pharmacy_repository/confirm_address_repository.dart';
-import 'confirm_pharmacy_screen.dart';
+
 
 class AttachPharmacyPrescriptionScreen extends StatefulWidget {
 
   final int pharmacyId;
   final String language;
+  final String location;
 
   const AttachPharmacyPrescriptionScreen({
     super.key,
     required this.pharmacyId,
     required this.language,
+    required this.location
   });
 
   @override
@@ -112,6 +109,7 @@ class _AttachPharmacyPrescriptionScreenState
                       "pharmacyId": widget.pharmacyId,
                       "orderType": selectedOrderType,
                       "language": widget.language,
+                      "location": widget.location,
                     },
                   );
                 },
@@ -121,7 +119,17 @@ class _AttachPharmacyPrescriptionScreenState
                 leading: const Icon(Icons.store, color: Colors.blue),
                 title: const Text("Pickup Order"),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    RoutesName.confirmPharmacyScreen,
+                    arguments: {
+                      "file": selectedFile,
+                      "pharmacyId": widget.pharmacyId,
+                      "orderType": "pickup_order",
+                      "language": widget.language,
+                      "location": widget.location,
+                    },
+                  );
                 },
               ),
             ],
@@ -137,19 +145,22 @@ class _AttachPharmacyPrescriptionScreenState
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Attach Pharmacy Prescription"),
-        centerTitle: true,
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+            "Attach Prescription",
+            style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor)
+        ),
       ),
-
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 14),
-            backgroundColor: Colors.blue,
+            backgroundColor: AppColors.lightblue,
           ),
           onPressed: selectedFile == null ? null : showOrderType,
-          child: const Text("Continue"),
+          child: const Text("Continue",style: TextStyle(color: AppColors.whiteColor,),),
         ),
       ),
 
@@ -172,7 +183,7 @@ class _AttachPharmacyPrescriptionScreenState
 
             const Text(
               "Please upload images of valid prescription from your doctor",
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Colors.black),
             ),
 
             const SizedBox(height: 25),
