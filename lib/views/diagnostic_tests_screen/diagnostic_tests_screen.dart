@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/diagnostic_test_event/diagnostic_tests_bloc.dart';
 import '../../bloc/diagnostic_test_event/diagnostic_tests_event.dart';
 import '../../bloc/diagnostic_test_event/diagnostic_tests_state.dart';
+import '../../config/routes/app_url.dart';
 
 class DiagnosticTestsScreen extends StatefulWidget {
   final int diagnosticId;
@@ -189,12 +190,27 @@ class _DiagnosticTestsScreenState extends State<DiagnosticTestsScreen> {
 
                       /// IMAGE
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          "https://medrayder.in/bharosa/${test.image}",
-                          width: 65,
-                          height: 65,
+                        borderRadius: BorderRadius.circular(8),
+                        child: (test.image.isEmpty || test.image == "null")
+                            ? Image.asset(
+                          "assets/logo.png",
+                          width: 70,
+                          height: 100,
                           fit: BoxFit.cover,
+                        )
+                            : Image.network(
+                          "${AppUrl.imageBaseUrl}/${test.image}",
+                          width: 70,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              "assets/logo.png",
+                              width: 70,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                       ),
 

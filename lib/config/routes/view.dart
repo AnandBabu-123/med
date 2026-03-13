@@ -23,3 +23,5 @@ export '../../views/pharmacy/pharmacy_medicine_booking.dart';
 export '../../views/hospitals/hospital_screen.dart';
 export '../../views/hospitals/hospital_filter_screen.dart';
 export '../../views/hospitals/hospital_apply_filter_screen.dart';
+export '../../views/hospitals/hospital_subcat_filter_screen.dart';
+export '../../views/online_doctors/online_doctors_screen.dart';

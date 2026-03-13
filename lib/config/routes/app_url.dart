@@ -1,8 +1,14 @@
 class AppUrl {
 
   /// Only for image loading
-  static const String imageBaseUrl =
-      "https://medrayder.in/bharosa/";
+
+  /// Production
+
+  // static const String imageBaseUrl = "https://medrayder.in/bharosa/";
+
+  /// Testing
+
+  static const String imageBaseUrl = "https://medconnect.org.in/bharosa/";
 
   /// AUTH
   static const String login = "login";
@@ -47,5 +53,12 @@ class AppUrl {
   static const String hospitalMainData = "main_data";
   static const String hospitalFilter = "filters";
   static const String hospitalApplyFilter = "filter_data";
+  static const String hospitalSubCatFilter ="sub_cat_main_data";
+
+
+  /// Online doctors
+  static const String onlineDoctors ="online_doctor_specialities";
+  static const String onlineDoctorsSpeciality ="online_doctors";
+  static const String onlineDoctorDates ="online_doctor_booking_details";
 
 }

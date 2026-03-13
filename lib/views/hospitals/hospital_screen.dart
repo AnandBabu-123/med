@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../bloc/hospital_bloc/hospital_bloc.dart';
 import '../../bloc/hospital_bloc/hospital_event.dart';
 import '../../bloc/hospital_bloc/hospital_state.dart';

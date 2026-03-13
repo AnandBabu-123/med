@@ -8,6 +8,7 @@ import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_event.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_state.dart';
 import '../../bloc/pharmacy_details_bloc/pharmacy_details_bloc.dart';
+import '../../config/routes/app_url.dart';
 import '../../config/routes/routes_name.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
@@ -251,12 +252,27 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
 
                             /// Pharmacy Image
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                imageUrl,
-                                height: 65,
-                                width: 65,
+                              borderRadius: BorderRadius.circular(8),
+                              child: (item.name.isEmpty || item.name == "null")
+                                  ? Image.asset(
+                                "assets/logo.png",
+                                width: 70,
+                                height: 100,
                                 fit: BoxFit.cover,
+                              )
+                                  : Image.network(
+                                "${AppUrl.imageBaseUrl}/${item.name}",
+                                width: 70,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    "assets/logo.png",
+                                    width: 70,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
 

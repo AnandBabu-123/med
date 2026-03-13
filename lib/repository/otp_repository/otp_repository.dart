@@ -26,7 +26,7 @@ class OtpRepository {
       },
     );
 
-   // print("OTP RESPONSE => $response");
+    print("OTP RESPONSE => $response");
 
     /// response already decoded by Dio
     if (response["status"] == true) {

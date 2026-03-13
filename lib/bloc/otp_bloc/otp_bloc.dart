@@ -24,13 +24,13 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
 
       print("========== OTP BLOC START ==========");
 
-      /// ✅ EVENT DATA
+      ///  EVENT DATA
       print("EVENT MOBILE => ${event.mobile}");
       print("EVENT OTP => ${event.otp}");
 
       emit(state.copyWith(status: OtpStatus.loading));
 
-      /// ✅ API CALL
+      ///  API CALL
       print("CALLING VERIFY OTP API...");
 
       final response = await repository.verifyOtp(
@@ -38,9 +38,9 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
         otp: event.otp,
       );
 
-      print("✅ API SUCCESS RECEIVED");
+      print(" API SUCCESS RECEIVED");
 
-      /// ✅ RAW RESPONSE DEBUG
+      ///  RAW RESPONSE DEBUG
         print("MESSAGEsss => ${response.response}");
       print("MESSAGE => ${response.message}");
       print("USER ID => ${response.response.id}");
@@ -48,7 +48,7 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       print("EMAIL => ${response.response.email}");
       print("TOKEN => ${response.response.authToken}");
 
-      /// ✅ SAVE USER DATA
+      ///  SAVE USER DATA
       print("SAVING USER INTO SHARED PREFS...");
 
       await SessionManager.saveUser(
@@ -58,13 +58,13 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
         token: response.response.authToken,
       );
 
-      print("✅ USER SAVED SUCCESS");
+      print(" USER SAVED SUCCESS");
 
-      /// ✅ VERIFY SAVED DATA (VERY IMPORTANT)
+      ///  VERIFY SAVED DATA (VERY IMPORTANT)
       final savedId = await SessionManager.getUserId();
       final savedToken = await SessionManager.getToken();
 
-      print("🔎 VERIFY PREF DATA");
+      print(" VERIFY PREF DATA");
       print("SAVED USER ID => $savedId");
       print("SAVED TOKEN => $savedToken");
 

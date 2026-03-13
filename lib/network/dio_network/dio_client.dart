@@ -15,8 +15,8 @@ class DioClient {
 
     /// ================= BASE OPTIONS =================
     dio.options = BaseOptions(
-      baseUrl: "https://medrayder.in/bharosa/app/ws/",
-       // baseUrl: "https://medconnect.org.in/bharosa/app/ws/",
+   //   baseUrl: "https://medrayder.in/bharosa/app/ws/",
+        baseUrl: "https://medconnect.org.in/bharosa/app/ws/",
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),
       sendTimeout: const Duration(seconds: 20),

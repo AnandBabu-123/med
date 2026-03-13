@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/bloc/diagnostic_test_event/diagnostic_tests_bloc.dart';
 import 'package:medryder/bloc/lab_bloc/lab_bloc.dart';
+import 'package:medryder/bloc/online_doctor_speciality_bloc/online_doctor_speciality_event.dart';
 import 'package:medryder/bloc/pharmacy_ongoing_orders_bloc/pharmacy_ongoing_orders_bloc.dart';
 import 'package:medryder/bloc/profile_bloc/profile_bloc.dart';
 import 'package:medryder/config/routes/view.dart';
@@ -10,6 +11,8 @@ import 'package:medryder/repository/diagnostic_tests_repository/diagnostic_tests
 import 'package:medryder/repository/get_lab_test_repository/lab_repository.dart';
 import 'package:medryder/repository/hospital_repository/hospital_apply_filter_repository.dart';
 import 'package:medryder/repository/hospital_repository/hospital_filter_repository.dart';
+import 'package:medryder/repository/hospital_repository/hospital_sub_cat_filter_repository.dart';
+import 'package:medryder/repository/online_doctors_repository/online_doctor_repository.dart';
 import 'package:medryder/repository/profile_repository/profile_repository.dart';
 import '../../bloc/confirm_pharmacy_order_bloc/confirm_pharmacy_order_bloc.dart';
 import '../../bloc/diagnostic_prescription_bloc/diagnostic_prescription_bloc.dart';
@@ -18,7 +21,12 @@ import '../../bloc/hospital_apply_filter_bloc/hospital_apply_filter_bloc.dart';
 import '../../bloc/hospital_bloc/hospital_bloc.dart';
 import '../../bloc/hospital_filter_bloc/hospital_filter_bloc.dart';
 import '../../bloc/hospital_filter_bloc/hospital_filter_event.dart';
+import '../../bloc/hospital_sub_cat_filter_bloc/hospital_sub_cat_filter_bloc.dart';
+import '../../bloc/hospital_sub_cat_filter_bloc/hospital_sub_cat_filter_event.dart';
 import '../../bloc/lab_test_bloc/lab_test_bloc.dart';
+import '../../bloc/online_doctor_bloc/online_doctor_bloc.dart';
+import '../../bloc/online_doctor_bloc/online_doctor_event.dart' hide FetchOnlineDoctorsEvent;
+import '../../bloc/online_doctor_speciality_bloc/online_doctor_speciality_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/post_address_bloc/post_address_bloc.dart';
@@ -32,6 +40,7 @@ import '../../repository/diagnostic_repository/diagnostic_repository.dart';
 import '../../repository/dignoastic_prescription_booking/diagnostic_prescription_repository.dart';
 import '../../repository/get_lab_test_repository/lab_test_repository.dart';
 import '../../repository/hospital_repository/hospital_repository.dart';
+import '../../repository/online_doctors_repository/online_doctor_speciality_repository.dart';
 import '../../repository/otp_repository/otp_repository.dart';
 import '../../repository/pharmacy_repository/confirm_address_repository.dart';
 import '../../repository/pharmacy_repository/pharmacy_orders_repository.dart';
@@ -293,6 +302,41 @@ class Routes {
         );
 
 
+      case RoutesName.hospitalSubCatFilterScreen:
+
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          builder: (_) {
+
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+            );
+
+            final repository = HospitalSubCatFilterRepository(dioClient);
+
+            return BlocProvider(
+              create: (_) => HospitalSubCatFilterBloc(repository)
+                ..add(
+                  LoadHospitalSubCatFilterEvent(
+                    language: args?["language"] ?? "en",
+                    lat: args?["lat"] ?? "",
+                    lon: args?["lon"] ?? "",
+                    subCatId: args?["subCatId"] ?? 0,
+                    page: 1,
+                  ),
+                ),
+
+              child: HospitalSubCatFilterScreen(
+                lat: args?["lat"] ?? "",
+                lon: args?["lon"] ?? "",
+                language: args?["language"] ?? "en",
+                subCatId: args?["subCatId"] ?? 0,
+              ),
+            );
+          },
+        );
 
 
     /// Pharmacy Screen
@@ -353,6 +397,33 @@ class Routes {
               orderType: args?["orderType"] ?? "home_delivery",
               language: args?["language"] ?? "en",
               location: args?["location"] ?? "",
+            ),
+          ),
+        );
+
+        /// Online Doctors
+
+      case RoutesName.onLineDoctorsScreen:
+
+        final args = settings.arguments as Map<String, dynamic>;
+
+        final dioClient = DioClient(
+          dio: Dio(),
+          networkInfo: NetworkInfo(),
+        );
+
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => OnlineDoctorSpecialityBloc(
+              OnlineDoctorRepository(dioClient),
+              OnlineDoctorSpecialityRepository(dioClient),
+            )..add(
+              FetchOnlineDoctorsEvent(
+                language: args["language"],
+              ),
+            ),
+            child: OnlineDoctorsScreen(
+              language: args["language"],
             ),
           ),
         );

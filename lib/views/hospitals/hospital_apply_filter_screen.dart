@@ -4,6 +4,7 @@ import '../../bloc/hospital_apply_filter_bloc/hospital_apply_filter_bloc.dart';
 import '../../bloc/hospital_apply_filter_bloc/hospital_apply_filter_event.dart';
 import '../../bloc/hospital_apply_filter_bloc/hospital_apply_filter_state.dart';
 import '../../config/colors/app_colors.dart';
+import '../../config/routes/routes_name.dart';
 
 
 class HospitalApplyFilterScreen extends StatefulWidget {
@@ -95,6 +96,17 @@ class _HospitalApplyFilterScreenState extends State<HospitalApplyFilterScreen> {
                 ),
                 child: ListTile(
 
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      RoutesName.hospitalSubCatFilterScreen,
+                      arguments: {
+                        "subCatId": hospital.subCatId,
+                        "lat": hospital.lat.toString(),
+                        "lon": hospital.lon.toString(),
+                      },
+                    );
+                  },
                   /// HOSPITAL IMAGE
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),

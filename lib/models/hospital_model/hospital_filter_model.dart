@@ -57,16 +57,20 @@ class HospitalCategory {
 class Speciality {
   final int specialityId;
   final String specialityName;
+  final String specialityImage;
 
   Speciality({
     required this.specialityId,
     required this.specialityName,
+    required this.specialityImage
   });
 
   factory Speciality.fromJson(Map<String, dynamic> json) {
     return Speciality(
       specialityId: json['speciality_id'] ?? 0,
       specialityName: json['speciality_name'] ?? '',
+      specialityImage: json['speciality_image'] ?? '',
+
     );
   }
 }

@@ -1,20 +1,19 @@
-import 'package:medryder/models/hospital_model/hospital_apply_filter_model.dart';
 import '../../config/routes/app_url.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../utils/session_manager.dart';
 
-class HospitalApplyFilterRepository {
+class HospitalSubCatFilterRepository {
 
   final DioClient dioClient;
 
-  HospitalApplyFilterRepository(this.dioClient);
+  HospitalSubCatFilterRepository(this.dioClient);
 
-  Future<ApplyFilterModel> hospitalApplyFilterData({
+  Future<dynamic> hospitalSubCatFilterData({
     required String language,
     required String lat,
     required String lon,
     required int subCatId,
-    required String subSubCatIds,
+
     required int page,
   }) async {
 
@@ -27,16 +26,13 @@ class HospitalApplyFilterRepository {
     print("lat: $lat");
     print("lon: $lon");
     print("subCatId: $subCatId");
-    print("subSubCatIds: $subSubCatIds");
     print("page: $page");
 
     /// CREATE REQUEST BODY
     final body = {
       "user_id": userId,
       "auth_token": token,
-      "cat_id": 1,
       "sub_cat_id": subCatId.toString(),
-      "sub_sub_cat_id": subSubCatIds,
       "lat": lat,
       "lon": lon,
       "page": page,
@@ -54,14 +50,15 @@ class HospitalApplyFilterRepository {
 
     /// API CALL
     final response = await dioClient.post(
-      AppUrl.hospitalApplyFilter,
+      AppUrl.hospitalSubCatFilter,
       data: body,
     );
 
     /// PRINT RESPONSE
+    /// PRINT RESPONSE
     print("===== HOSPITAL APPLY FILTER RESPONSE =====");
     print(response);
 
-    return ApplyFilterModel.fromJson(response);
+    return response;
   }
 }

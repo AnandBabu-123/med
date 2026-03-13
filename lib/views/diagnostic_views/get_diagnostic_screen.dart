@@ -5,6 +5,7 @@ import 'package:medryder/config/colors/app_colors.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_bloc.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_event.dart';
 import '../../bloc/diagnostics_bloc/diagnostics_state.dart';
+import '../../config/routes/app_url.dart';
 import '../../config/routes/routes_name.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
@@ -267,13 +268,27 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
 
                             /// LAB LOGO
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.network(
-                              //  "https://medconnect.org.in/bharosa/${item.logo}",
-                                "https://medrayder.in/bharosa/${item.logo}",
-                                width: 65,
-                                height: 65,
+                              borderRadius: BorderRadius.circular(8),
+                              child: (item.logo.isEmpty || item.logo == "null")
+                                  ? Image.asset(
+                                "assets/logo.png",
+                                width: 70,
+                                height: 100,
                                 fit: BoxFit.cover,
+                              )
+                                  : Image.network(
+                                "${AppUrl.imageBaseUrl}/${item.logo}",
+                                width: 70,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    "assets/logo.png",
+                                    width: 70,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
 

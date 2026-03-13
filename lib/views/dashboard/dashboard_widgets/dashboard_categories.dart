@@ -23,7 +23,7 @@ class DashboardCategories extends StatelessWidget {
       {"image": "assets/image_three.png", "title": "Ambulance", "route": RoutesName.hospitalScreen},
       {"image": "assets/image_one.png", "title": "Online Pharmacy", "route": RoutesName.pharmacyScreen},
       {"image": "assets/image_four.png", "title": "Lab Tests Booking", "route": RoutesName.labTestScreen},
-      {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": null},
+      {"image": "assets/image_five.png", "title": "Doctor Appointment", "route": RoutesName.onLineDoctorsScreen},
       {"image": "assets/image_six.png", "title": "Blood Test", "route": null},
       {"image": "assets/image_seven.png", "title": "More Services", "route": RoutesName.diagnosticScreen
       },
@@ -51,7 +51,19 @@ class DashboardCategories extends StatelessWidget {
                     onTap: cat["route"] != null
                         ? () {
 
-                      /// ✅ ASK LOCATION ONLY WHEN REQUIRED
+                      /// Doctor Appointment → No location required
+                      if (cat["route"] == RoutesName.onLineDoctorsScreen) {
+                        Navigator.pushNamed(
+                          context,
+                          cat["route"]!,
+                          arguments: {
+                            "language": language,
+                          },
+                        );
+                        return;
+                      }
+
+                      /// Other services → Need location
                       if (lat == null || lon == null) {
                         onLocationRequired();
                         return;

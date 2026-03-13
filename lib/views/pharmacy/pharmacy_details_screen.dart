@@ -5,6 +5,7 @@ import 'package:medryder/config/colors/app_colors.dart';
 import '../../bloc/pharmacy_details_bloc/pharmacy_details_bloc.dart';
 import '../../bloc/pharmacy_details_bloc/pharmacy_details_event.dart';
 import '../../bloc/pharmacy_details_bloc/pharmacy_details_state.dart';
+import '../../config/routes/app_url.dart';
 import 'attach_prescription_screen.dart';
 
 
@@ -126,13 +127,28 @@ class _PharmacyDetailsScreenState extends State<PharmacyDetailsScreen> {
           /// BIG IMAGE
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageBaseUrl + pharmacy.logo,
-                height: 220,
-                width: double.infinity,
+            child:  ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: (pharmacy.logo.isEmpty || pharmacy.logo == "null")
+                  ? Image.asset(
+                "assets/logo.png",
+                width: 70,
+                height: 100,
                 fit: BoxFit.cover,
+              )
+                  : Image.network(
+                "${AppUrl.imageBaseUrl}/${pharmacy.logo}",
+                width: 70,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    "assets/logo.png",
+                    width: 70,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
             ),
           ),

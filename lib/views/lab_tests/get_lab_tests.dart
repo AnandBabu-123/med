@@ -185,11 +185,28 @@ class _GetLabTestsState extends State<GetLabTests> {
                           children: [
                       
                             ///  CIRCULAR IMAGE
-                            CircleAvatar(
-                              radius: 28,
-                              backgroundColor: Colors.blue.shade50,
-                              backgroundImage: NetworkImage(
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: (lab.logo.isEmpty || lab.logo == "null")
+                                  ? Image.asset(
+                                "assets/logo.png",
+                                width: 70,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              )
+                                  : Image.network(
                                 "${AppUrl.imageBaseUrl}/${lab.logo}",
+                                width: 70,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    "assets/logo.png",
+                                    width: 70,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
                       
