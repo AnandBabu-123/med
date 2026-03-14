@@ -4,10 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/bloc/lab_bloc/lab_bloc.dart';
 import '../../bloc/lab_bloc/lab_event.dart';
 import '../../bloc/lab_bloc/lab_state.dart';
+import '../../bloc/lab_booking_bloc/lab_booking_bloc.dart';
 import '../../models/lab_test_models/lab_model.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/get_address_repository/family_count_repository.dart';
+import '../../repository/get_lab_test_repository/lab_test_booking_repository.dart';
+import 'lab_test_prescription_booking_screen.dart';
 
 class LabTestScreen extends StatefulWidget {
 
@@ -96,31 +99,65 @@ class _LabTestScreenState extends State<LabTestScreen> {
             ),
 
             /// CONTINUE BUTTON
+            // ElevatedButton(
+            //   onPressed: () {
+            //
+            //     /// DO NOT NAVIGATE
+            //     /// HANDLE BOOKING HERE
+            //
+            //     print("Selected package IDs:");
+            //     print(selectedPackages.map((e) => e.id).toList());
+            //
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       const SnackBar(
+            //         content: Text("Proceeding with booking"),
+            //       ),
+            //     );
+            //
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     padding: const EdgeInsets.symmetric(
+            //       horizontal: 32,
+            //       vertical: 14,
+            //     ),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //   ),
+            //   child: const Text("Continue"),
+            // )
+
             ElevatedButton(
               onPressed: () {
 
-                /// DO NOT NAVIGATE
-                /// HANDLE BOOKING HERE
+                final selectedId = selectedPackages.first.id;
+                final selectedPrice = selectedPackages.first.price;
+                final name = selectedPackages.first.name;
+                final image =selectedPackages.first.image;
 
-                print("Selected package IDs:");
-                print(selectedPackages.map((e) => e.id).toList());
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Proceeding with booking"),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => LabBookingBloc(
+                        LabTestBookingRepository(
+                          DioClient(
+                            dio: Dio(),
+                            networkInfo: NetworkInfo(),
+                          ),
+                        ),
+                      ),
+                      child: LabTestPrescriptionBookingScreen(
+                        labTestId: widget.labTestId,
+                        testId: selectedId,
+                        price: selectedPrice,
+                        name: name,
+                        image: image,
+                      ),
+                    ),
                   ),
                 );
-
               },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
               child: const Text("Continue"),
             )
           ],

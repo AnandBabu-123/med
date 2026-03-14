@@ -1,43 +1,51 @@
-import 'package:medryder/models/lab_test_models/lab_model.dart';
-import 'package:medryder/models/lab_test_models/lab_test_model.dart';
+
 import '../../config/routes/app_url.dart';
+import '../../models/lab_test_models/lab_booking_model.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../utils/session_manager.dart';
 
-class LabRepository {
+class LabTestBookingRepository {
 
   final DioClient dioClient;
 
-  LabRepository(this.dioClient);
+  LabTestBookingRepository(this.dioClient);
 
-  Future<LabModel> LabTests({
+  Future<LabBookingModel> labBookingRepository({
+
     required int labTestId,
-    required int page,
-    required String language,
+    required int testId,
+    required int fee,
+    required String viewType,
+    required String date,
+
   }) async {
 
     final userId = await SessionManager.getUserId();
     final token = await SessionManager.getToken();
 
     final body = {
+
       "user_id": userId,
       "auth_token": token,
+      "view_type": viewType,
       "lab_test_id": labTestId,
-      "page": page,
-      "language": language
+      "test_id": testId,
+      "date": date,
+      "fee": fee,
+      "family_member_id": "562",
+      "count": 2,
+      "image": "",
+      "language": "en"
+
     };
 
     final response = await dioClient.post(
-      AppUrl.labList,
+      AppUrl.labTestBooking,
       data: body,
     );
 
-    print("===== lab RESPONSE =====");
-    print(response);
-
-
     if (response["status"] == true) {
-      return LabModel.fromJson(response);
+      return LabBookingModel.fromJson(response);
     } else {
       throw Exception(response["message"]);
     }

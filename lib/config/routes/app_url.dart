@@ -38,7 +38,7 @@ class AppUrl {
   /// Lab Test
   static const String labTest ="lab_tests_main_data";
   static const String labList ="lab_tests";
-
+  static const String labTestBooking ="lab_test_booking_details";
 
 
   /// PHARMACY
