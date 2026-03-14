@@ -1,49 +1,49 @@
 class OnlineDoctorBookingResponse {
   final bool status;
   final String message;
-  final BookingResponse response;
+  final BookingResponse? response;
 
   OnlineDoctorBookingResponse({
     required this.status,
     required this.message,
-    required this.response,
+    this.response,
   });
 
   factory OnlineDoctorBookingResponse.fromJson(Map<String, dynamic> json) {
     return OnlineDoctorBookingResponse(
-      status: json['status'],
-      message: json['message'],
-      response: BookingResponse.fromJson(json['response']),
+      status: json['status'] ?? false,
+      message: json['message'] ?? "",
+      response: json['response'] != null
+          ? BookingResponse.fromJson(json['response'])
+          : null,
     );
   }
 }
 
 class BookingResponse {
-  final List<DoctorDate>? dates;
-  final Slots? slots;
-  final List<FamilyMember>? familyMembers;
+  final List<DoctorDate> dates;
+  final SlotSessions? slots;
+  final List<FamilyMember> familyMembers;
 
   BookingResponse({
-    this.dates,
+    this.dates = const [],
     this.slots,
-    this.familyMembers,
+    this.familyMembers = const [],
   });
 
   factory BookingResponse.fromJson(Map<String, dynamic> json) {
     return BookingResponse(
-      dates: json['dates'] != null
-          ? (json['dates'] as List)
+      dates: (json['dates'] as List? ?? [])
           .map((e) => DoctorDate.fromJson(e))
-          .toList()
-          : null,
+          .toList(),
+
       slots: json['slots'] != null
-          ? Slots.fromJson(json['slots'])
+          ? SlotSessions.fromJson(json['slots'])
           : null,
-      familyMembers: json['family_members'] != null
-          ? (json['family_members'] as List)
+
+      familyMembers: (json['family_members'] as List? ?? [])
           .map((e) => FamilyMember.fromJson(e))
-          .toList()
-          : null,
+          .toList(),
     );
   }
 }
@@ -84,11 +84,11 @@ class Slots {
 
   factory Slots.fromJson(Map<String, dynamic> json) {
     return Slots(
-      id: json['id'],
-      time: json['time'],
-      session: json['session'],
-      bookingStatus: json['booking_status'],
-      date: json['date'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      time: json['time']?.toString() ?? "",
+      session: json['session']?.toString() ?? "",
+      bookingStatus: json['booking_status']?.toString() ?? "",
+      date: json['date']?.toString() ?? "",
     );
   }
 }
@@ -105,9 +105,67 @@ class FamilyMember {
 
   factory FamilyMember.fromJson(Map<String, dynamic> json) {
     return FamilyMember(
-      id: json['id'],
-      name: json['name'],
-      type: json['type'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      name: json['name']?.toString() ?? "",
+      type: json['type']?.toString() ?? "",
+    );
+  }
+}
+
+class SlotSessions {
+  final List<Slots> morning;
+  final List<Slots> afternoon;
+  final List<Slots> evening;
+
+  SlotSessions({
+    this.morning = const [],
+    this.afternoon = const [],
+    this.evening = const [],
+  });
+
+  factory SlotSessions.fromJson(Map<String, dynamic> json) {
+    return SlotSessions(
+      morning: (json['morning'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
+
+      afternoon: (json['afternoon'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
+
+      evening: (json['evening'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
+    );
+  }
+}
+class SlotsResponse {
+
+  final List<Slots> morning;
+  final List<Slots> afternoon;
+  final List<Slots> evening;
+
+  SlotsResponse({
+    required this.morning,
+    required this.afternoon,
+    required this.evening,
+  });
+
+  factory SlotsResponse.fromJson(Map<String, dynamic> json) {
+
+    return SlotsResponse(
+
+      morning: (json['morning'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
+
+      afternoon: (json['afternoon'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
+
+      evening: (json['evening'] as List? ?? [])
+          .map((e) => Slots.fromJson(e))
+          .toList(),
     );
   }
 }

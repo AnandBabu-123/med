@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/online_doctor_booking_bloc/doctor_booking_bloc.dart';
@@ -5,6 +6,8 @@ import '../../bloc/online_doctor_booking_bloc/doctor_booking_event.dart';
 import '../../config/colors/app_colors.dart';
 import '../../config/routes/app_url.dart';
 import '../../models/online_doctors_model/online_doctor_speciality_model.dart';
+import '../../network/dio_network/dio_client.dart';
+import '../../network/dio_network/network_info.dart';
 import '../../repository/online_doctors_repository/online_doctor_dates_repository.dart';
 import '../../repository/online_doctors_repository/online_doctor_repository.dart';
 import 'doctor_dates_booking.dart';
@@ -54,11 +57,18 @@ class DoctorDetailsScreen extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (_) => BlocProvider(
                     create: (_) => DoctorBookingBloc(
-                      context.read<OnlineDoctorDatesRepository>(),
+                      OnlineDoctorDatesRepository(
+                        DioClient(
+                          dio: Dio(),
+                          networkInfo: NetworkInfo(),
+                        ),
+                      ),
                     )..add(
                       FetchDoctorDatesEvent(
-                        language: "en",
+                        language: "",
                         specialityId: doctor.specialityId,
+                        doctorId: doctor.id,
+                          fee: doctor.fee
                       ),
                     ),
                     child: DoctorBookingScreen(

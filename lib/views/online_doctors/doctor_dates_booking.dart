@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medryder/views/online_doctors/patient_details_screen.dart';
 
 import '../../bloc/online_doctor_booking_bloc/doctor_booking_bloc.dart';
 import '../../bloc/online_doctor_booking_bloc/doctor_booking_event.dart';
 import '../../bloc/online_doctor_booking_bloc/doctor_booking_state.dart';
+import '../../config/colors/app_colors.dart';
+import '../../config/routes/app_url.dart';
 import '../../models/online_doctors_model/online_booking_response.dart';
 import '../../models/online_doctors_model/online_doctor_speciality_model.dart';
 
@@ -31,7 +34,13 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Book Appointment"),
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+            "Book Appointment",
+
+            style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor,fontSize: 20)
+        ),
       ),
 
       bottomNavigationBar: Padding(
@@ -45,8 +54,19 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
             onPressed: selectedSlot == null
                 ? null
                 : () {
-
-              /// CONFIRM BOOKING
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PatientDetailsScreen(
+                    doctor: widget.doctor,
+                    slot: selectedSlot!,
+                    familyMembers: context
+                        .read<DoctorBookingBloc>()
+                        .state
+                        .familyMembers,
+                  ),
+                ),
+              );
             },
             child: const Text(
               "Confirm Appointment",
@@ -91,11 +111,26 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
 
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          widget.doctor.image,
-                          width: 80,
-                          height: 80,
+                        child: (widget.doctor.image.isEmpty || widget.doctor.image == "null")
+                            ? Image.asset(
+                          "assets/logo.png",
+                          width: 90,
+                          height: 100,
                           fit: BoxFit.cover,
+                        )
+                            : Image.network(
+                          "${AppUrl.imageBaseUrl}/${widget.doctor.image}",
+                          width: 90,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              "assets/logo.png",
+                              width: 90,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                       ),
 
@@ -141,7 +176,7 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
                 const SizedBox(height: 10),
 
                 SizedBox(
-                  height: 60,
+                  height: 50,
                   child: ListView.builder(
 
                     scrollDirection: Axis.horizontal,
@@ -167,7 +202,9 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
                             FetchDoctorSlotsEvent(
                               language: "en",
                               specialityId: widget.doctor.specialityId,
+                              doctorId: widget.doctor.id,
                               date: date.date,
+                              fee: widget.doctor.fee
                             ),
                           );
                         },
@@ -198,6 +235,7 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
                                 color: isSelected
                                     ? Colors.white
                                     : Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -211,28 +249,14 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
 
                 /// ---------------- SLOTS ----------------
 
-                if (state.slots!.isNotEmpty) ...[
+                if (state.slots != null) ...[
 
-                  _buildSession(
-                    "Morning",
-                    state.slots
-                        .where((slot) => slot.session == "Morning")
-                        .toList(),
-                  ),
+                  _buildSession("Morning", state.slots!.morning),
 
-                  _buildSession(
-                    "Afternoon",
-                    state.slots
-                        .where((slot) => slot.session == "Afternoon")
-                        .toList(),
-                  ),
+                  _buildSession("Afternoon", state.slots!.afternoon),
 
-                  _buildSession(
-                    "Evening",
-                    state.slots
-                        .where((slot) => slot.session == "Evening")
-                        .toList(),
-                  ),
+                  _buildSession("Evening", state.slots!.evening),
+
                 ],
                 if (state.isLoading)
                   const Padding(
@@ -254,40 +278,57 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
   Widget _buildSession(
       String title,
       List<Slots> slots,
-      ) {
+      )
+  {
 
     if (slots.isEmpty) return const SizedBox();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
 
         const SizedBox(height: 20),
 
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+        Row(
+          children: [
+            Icon(
+              title == "Morning"
+                  ? Icons.wb_sunny
+                  : title == "Afternoon"
+                  ? Icons.wb_cloudy
+                  : Icons.nights_stay,
+              size: 18,
+              color: Colors.orange,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
 
         Wrap(
           spacing: 10,
           runSpacing: 10,
-
           children: slots.map((slot) {
 
             final isSelected =
                 selectedSlot?.id == slot.id;
 
+            final isBooked =
+                slot.bookingStatus != "available";
+
             return GestureDetector(
 
-              onTap: () {
-
+              onTap: isBooked
+                  ? null
+                  : () {
                 setState(() {
                   selectedSlot = slot;
                 });
@@ -295,20 +336,24 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
 
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8),
+                  horizontal: 16,
+                  vertical: 10,
+                ),
 
                 decoration: BoxDecoration(
 
                   color: isSelected
                       ? Colors.blue
+                      : isBooked
+                      ? Colors.grey.shade300
                       : Colors.white,
 
-                  borderRadius:
-                  BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8),
 
                   border: Border.all(
-                    color: Colors.blue,
+                    color: isSelected
+                        ? Colors.blue
+                        : Colors.grey.shade400,
                   ),
                 ),
 
@@ -317,7 +362,10 @@ class _DoctorBookingScreenState extends State<DoctorBookingScreen> {
                   style: TextStyle(
                     color: isSelected
                         ? Colors.white
+                        : isBooked
+                        ? Colors.grey
                         : Colors.black,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

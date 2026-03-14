@@ -84,6 +84,11 @@ class SessionManager {
     return prefs.getInt(userIdKey);
   }
 
+  static Future<int?> getUserMobile() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(mobileKey);
+  }
+
   ///  GET TOKEN
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

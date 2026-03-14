@@ -13,6 +13,8 @@ class OnlineDoctorDatesRepository {
     required String language,
     required int specialityId,
     required String viewType,
+    required int doctorId,
+    required int fee,
     String? date,
   }) async {
 
@@ -24,8 +26,12 @@ class OnlineDoctorDatesRepository {
       "auth_token": token,
       "language": language,
       "speciality_id": specialityId,
+      "doctor_id":  doctorId,
+      "fee":fee,
       "view_type": viewType,
-      "date": date
+      "date": date,
+      "coupon_id":0,
+      "coupon_percentage":0
     };
 
     final response = await dioClient.post(
@@ -33,6 +39,7 @@ class OnlineDoctorDatesRepository {
       data: body,
     );
 
+    print("${response}");
     return OnlineDoctorBookingResponse.fromJson(response);
   }
 }
