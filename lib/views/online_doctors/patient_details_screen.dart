@@ -42,21 +42,27 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
 
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
-
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             minimumSize: const Size(double.infinity, 50),
           ),
 
-          onPressed: selectedMember == null
-              ? null
-              : () {
+          onPressed: () {
+
+            if (selectedMember == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Please select a patient"),
+                ),
+              );
+              return;
+            }
 
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => DoctorSummaryScreen(
+                builder: (context) => DoctorSummaryScreen(
                   doctor: widget.doctor,
                   slot: widget.slot,
                   patient: selectedMember!,

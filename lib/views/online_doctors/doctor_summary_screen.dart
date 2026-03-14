@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import '../../config/colors/app_colors.dart';
 import '../../config/routes/app_url.dart';
 import '../../models/online_doctors_model/online_booking_response.dart';
+import '../../models/online_doctors_model/online_doctor_coupon_model.dart';
 import '../../models/online_doctors_model/online_doctor_speciality_model.dart';
+import 'offer_screen.dart';
 
-
-class DoctorSummaryScreen extends StatelessWidget {
-
+class DoctorSummaryScreen extends StatefulWidget {
   final Doctor doctor;
   final Slots slot;
   final FamilyMember patient;
@@ -20,7 +20,29 @@ class DoctorSummaryScreen extends StatelessWidget {
   });
 
   @override
+  State<DoctorSummaryScreen> createState() => _DoctorSummaryScreenState();
+}
+
+class _DoctorSummaryScreenState extends State<DoctorSummaryScreen> {
+
+  Coupon? selectedCoupon;
+  final TextEditingController couponController = TextEditingController();
+
+  double getTotalPrice() {
+    if (selectedCoupon == null) {
+      return widget.doctor.fee.toDouble();
+    }
+
+    final discount =
+        widget.doctor.fee * selectedCoupon!.percentage / 100;
+
+    return widget.doctor.fee - discount;
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    final totalPrice = getTotalPrice();
 
     return Scaffold(
 
@@ -28,43 +50,72 @@ class DoctorSummaryScreen extends StatelessWidget {
         backgroundColor: AppColors.lightblue,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-            "Booking Summary",
-            style: TextStyle(fontWeight: FontWeight.w500,color: AppColors.whiteColor,fontSize: 20)
+          "Booking Summary",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
       ),
 
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
-        child: Row(
-          children: [
-
-            Text(
-              "₹${doctor.fee}",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(
+              color: Colors.grey,
+              width: 0.5,
             ),
+          ),
+        ),
 
-            const Spacer(),
+        child: SafeArea(
+          child: Row(
+            children: [
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+              /// Price
+
+              Text(
+                "₹$totalPrice",
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
 
-              onPressed: () {
+              const Spacer(),
 
-                /// CALL BOOK API
-              },
+              /// Pay Button
 
-              child: const Text(
-                "Pay",
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          ],
+              SizedBox(
+                height: 48,
+                width: 140,
+
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+
+                  onPressed: () {},
+
+                  child: const Text(
+                    "Pay Now",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
 
@@ -85,7 +136,7 @@ class DoctorSummaryScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
 
                   child: Image.network(
-                    "${AppUrl.imageBaseUrl}/${doctor.image}",
+                    "${AppUrl.imageBaseUrl}/${widget.doctor.image}",
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
@@ -95,30 +146,27 @@ class DoctorSummaryScreen extends StatelessWidget {
                 const SizedBox(width: 12),
 
                 Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
 
                     Text(
-                      doctor.name,
+                      widget.doctor.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
 
-                    Text(doctor.specialization),
+                    Text(widget.doctor.specialization),
 
-                    Text("${doctor.exp} years exp"),
+                    Text("${widget.doctor.exp} years exp"),
                   ],
                 )
               ],
             ),
 
             const SizedBox(height: 20),
-
-            /// Slot Info
 
             const Text(
               "Appointment Time",
@@ -127,11 +175,9 @@ class DoctorSummaryScreen extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            Text("${slot.date}  •  ${slot.time}"),
+            Text("${widget.slot.date} | ${widget.slot.time}"),
 
             const SizedBox(height: 20),
-
-            /// Patient
 
             const Text(
               "Patient",
@@ -140,22 +186,51 @@ class DoctorSummaryScreen extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            Text(patient.name),
+            Text(widget.patient.name),
 
             const SizedBox(height: 20),
 
-            /// Coupon
+            /// Coupon Field
 
-            const TextField(
+            TextField(
+              controller: couponController,
+              readOnly: true,
+
               decoration: InputDecoration(
-                hintText: "Enter Coupon Code",
-                border: OutlineInputBorder(),
+                hintText: "Apply Offer",
+                border: const OutlineInputBorder(),
+
+                suffixIcon: TextButton(
+                  child: const Text("View"),
+
+                  onPressed: () async {
+
+                    final coupon = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OffersScreen(
+                          specialityId:
+                          widget.doctor.specialityId,
+                        ),
+                      ),
+                    );
+
+                    if (coupon != null) {
+
+                      setState(() {
+
+                        selectedCoupon = coupon;
+
+                        couponController.text =
+                            coupon.name;
+                      });
+                    }
+                  },
+                ),
               ),
             ),
 
             const SizedBox(height: 20),
-
-            /// Contact
 
             const TextField(
               decoration: InputDecoration(
@@ -178,13 +253,32 @@ class DoctorSummaryScreen extends StatelessWidget {
                 ),
 
                 Text(
-                  "₹${doctor.fee}",
+                  "₹${widget.doctor.fee}",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
-            )
+            ),
+
+            if (selectedCoupon != null)
+
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+
+                children: [
+
+                  Text("${selectedCoupon!.percentage}% OFF"),
+
+                  Text(
+                    "-₹${widget.doctor.fee * selectedCoupon!.percentage / 100}",
+                    style: const TextStyle(
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

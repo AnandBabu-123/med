@@ -61,5 +61,6 @@ class AppUrl {
   static const String onlineDoctorsSpeciality ="online_doctors";
   static const String onlineDoctorDates ="online_doctor_booking_details";
   static const String onlineDoctorSummary="online_doctor_booking";
+  static const String onlineDoctorCoupon="online_doctor_coupons";
 
 }
