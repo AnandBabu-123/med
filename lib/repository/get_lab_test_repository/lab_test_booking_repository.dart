@@ -17,6 +17,8 @@ class LabTestBookingRepository {
     required int fee,
     required String viewType,
     required String date,
+    required int familyMemberId,
+    required int count,
 
   }) async {
 
@@ -32,11 +34,10 @@ class LabTestBookingRepository {
       "test_id": testId,
       "date": date,
       "fee": fee,
-      "family_member_id": "562",
-      "count": 2,
+      "family_member_id": familyMemberId,
+      "count": count,
       "image": "",
       "language": "en"
-
     };
 
     final response = await dioClient.post(

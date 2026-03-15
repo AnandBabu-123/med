@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart';
-
+import 'package:medryder/views/lab_tests/lab_family_screen.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_bloc.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_event.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_state.dart';
-import '../../config/routes/app_url.dart';
+import '../../models/lab_test_models/lab_booking_model.dart';
+import '../../utils/session_manager.dart';
 
 class LabTestPrescriptionBookingScreen extends StatefulWidget {
-
   final int labTestId;
   final int testId;
   final int price;
@@ -33,12 +32,14 @@ class _LabTestPrescriptionBookingScreenState
     extends State<LabTestPrescriptionBookingScreen> {
 
   String? selectedDate;
+  Slot? selectedSlot;
+  FamilyMember? selectedFamilyMember;
+  Price? selectedPrice;
 
   @override
   void initState() {
     super.initState();
 
-    /// Load dates API
     context.read<LabBookingBloc>().add(
       LoadDatesEvent(
         widget.labTestId,
@@ -52,277 +53,415 @@ class _LabTestPrescriptionBookingScreenState
   Widget build(BuildContext context) {
 
     return Scaffold(
+
       appBar: AppBar(
-        title: const Text("Lab Prescription Booking"),
+        title: const Text("Lab Test Booking"),
+      ),
+
+      bottomNavigationBar: BlocBuilder<LabBookingBloc, LabBookingState>(
+        builder: (context, state) {
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+
+            child: ElevatedButton(
+
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+
+              onPressed: () {
+
+                /// DATE CHECK
+                if (selectedDate == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please select date")),
+                  );
+                  return;
+                }
+
+                /// SLOT CHECK
+                if (selectedSlot == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please select slot")),
+                  );
+                  return;
+                }
+
+
+
+                /// NAVIGATION
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FamilySelectionScreen(
+                      labTestId: widget.labTestId,
+                      testId: widget.testId,
+                      slotId: selectedSlot!.id,
+                      fee: widget.price,
+                   //   count: selectedPrice!.patientCount,
+                      date: selectedDate!,
+                      familyMembers: state.familyMembers,
+                      prices: state.prices,
+                    ),
+                  ),
+                );
+              },
+
+              child: const Text(
+                "Continue",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          );
+        },
       ),
 
       body: BlocBuilder<LabBookingBloc, LabBookingState>(
         builder: (context, state) {
 
-          if (state is LabBookingLoading) {
+          if (state.isLoading && state.dates.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is DatesLoaded || state is SlotsLoaded) {
+          return SingleChildScrollView(
 
-            final model = state is DatesLoaded
-                ? state.model
-                : (state as SlotsLoaded).model;
+            padding: const EdgeInsets.all(16),
 
-            final dates = model.response.dates ?? [];
-            final slots = model.response.slots;
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                /// ADDRESS
+                _addressCard(),
 
-                  /// --------------------------
-                  /// PACKAGE DETAILS
-                  /// --------------------------
+                const SizedBox(height: 20),
 
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
+                /// DATE SELECTOR
+                _dateSelector(state),
 
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: (widget.image.isEmpty || widget.image == "null")
-                              ? Image.asset(
-                            "assets/logo.png",
-                            width: 70,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          )
-                              : Image.network(
-                            "${AppUrl.imageBaseUrl}/${widget.image}",
-                            width: 70,
-                            height: 100,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                "assets/logo.png",
-                                width: 70,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+                const SizedBox(height: 20),
 
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-
-                              Text(
-                                widget.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              const SizedBox(height: 5),
-
-                              Text(
-                                "₹${widget.price}",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Divider(),
-
-                  /// --------------------------
-                  /// SELECT DATE
-                  /// --------------------------
-
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Select Date",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  SizedBox(
-                    height: 70,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: dates.length,
-                      itemBuilder: (context, index) {
-
-                        final date = dates[index];
-
-                        final isSelected =
-                            selectedDate == date.date;
-
-                        return GestureDetector(
-                          onTap: () {
-
-                            setState(() {
-                              selectedDate = date.date;
-                            });
-
-                            /// LOAD SLOTS
-                            context.read<LabBookingBloc>().add(
-                              LoadSlotsEvent(
-                                widget.labTestId,
-                                widget.testId,
-                                widget.price,
-                                date.date,
-                              ),
-                            );
-                          },
-
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Colors.blue
-                                  : Colors.white,
-                              borderRadius:
-                              BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.grey.shade300),
-                            ),
-                            child: Center(
-                              child: Text(
-                                date.formatDate,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  /// --------------------------
-                  /// SLOTS
-                  /// --------------------------
-
-                  if (slots != null) ...[
-
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "Available Slots",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    /// MORNING
-
-                    if (slots.morning.isNotEmpty)
-                      _buildSlotSection(
-                        "Morning",
-                        slots.morning,
-                      ),
-
-                    /// AFTERNOON
-
-                    if (slots.afternoon.isNotEmpty)
-                      _buildSlotSection(
-                        "Afternoon",
-                        slots.afternoon,
-                      ),
-
-                    /// EVENING
-
-                    if (slots.evening.isNotEmpty)
-                      _buildSlotSection(
-                        "Evening",
-                        slots.evening,
-                      ),
-                  ]
+                /// SLOTS (ONLY WHEN DATE SELECTED)
+                if (state.slots != null) ...[
+                  _buildSession("Morning", state.slots!.morning),
+                  _buildSession("Afternoon", state.slots!.afternoon),
+                  _buildSession("Evening", state.slots!.evening),
                 ],
-              ),
-            );
-          }
 
-          if (state is LabBookingError) {
-            return Center(child: Text(state.message));
-          }
+                const SizedBox(height: 25),
 
-          return const SizedBox();
+                /// FAMILY MEMBERS (ALWAYS SHOW)
+                if (state.familyMembers.isNotEmpty)
+                  _familyDropdown(state),
+
+                const SizedBox(height: 20),
+
+                /// PATIENT SELECTION (ALWAYS SHOW)
+                if (state.prices.isNotEmpty)
+                  _patientSelection(state),
+              ],
+            ),
+          );
         },
       ),
     );
   }
 
-  /// SLOT SECTION UI
+  /// ADDRESS
+  Widget _addressCard() {
 
-  Widget _buildSlotSection(String title, List slots) {
+    return FutureBuilder<String?>(
+      future: SessionManager.getAddress(),
+      builder: (context, snapshot) {
+
+        final address = snapshot.data ?? "No address";
+
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(color: Colors.black12, blurRadius: 5)
+            ],
+          ),
+
+          child: Row(
+            children: [
+
+              const Icon(Icons.location_on, color: Colors.blue),
+
+              const SizedBox(width: 10),
+
+              Expanded(child: Text(address)),
+
+              const Icon(Icons.edit_location_alt),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// DATE SELECTOR
+  Widget _dateSelector(LabBookingState state) {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        const Text(
+          "Select Date",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: slots.map<Widget>((slot) {
+        SizedBox(
+          height: 50,
 
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: state.dates.length,
+
+            itemBuilder: (context, index) {
+
+              final date = state.dates[index];
+              final isSelected = selectedDate == date.date;
+
+              return GestureDetector(
+
+                onTap: () {
+
+                  setState(() {
+                    selectedDate = date.date;
+                    selectedSlot = null;
+                  });
+
+                  context.read<LabBookingBloc>().add(
+                    LoadSlotsEvent(
+                      widget.labTestId,
+                      widget.testId,
+                      widget.price,
+                      date.date,
+                    ),
+                  );
+                },
+
+                child: Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 10),
+
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.blue : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue),
+                  ),
+
+                  child: Center(
+                    child: Text(
+                      date.formatDate,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
                 ),
-                child: Text(slot.time),
               );
-
-            }).toList(),
+            },
           ),
         ),
-
-        const SizedBox(height: 20),
       ],
     );
+  }
+
+  /// FAMILY DROPDOWN
+  Widget _familyDropdown(LabBookingState state) {
+
+    return DropdownButtonFormField<FamilyMember>(
+      value: selectedFamilyMember,
+
+      decoration: const InputDecoration(
+        labelText: "Select Family Member",
+        border: OutlineInputBorder(),
+      ),
+
+      items: state.familyMembers.map((member) {
+
+        return DropdownMenuItem(
+          value: member,
+          child: Text(member.name),
+        );
+
+      }).toList(),
+
+      onChanged: (value) {
+
+        setState(() {
+          selectedFamilyMember = value;
+        });
+
+      },
+    );
+  }
+
+  /// PATIENT SELECTION
+  Widget _patientSelection(LabBookingState state) {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        const Text(
+          "Select Patients",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+
+        const SizedBox(height: 10),
+
+        Column(
+          children: state.prices.map((price) {
+
+            final isSelected =
+                selectedPrice?.patientCount == price.patientCount;
+
+            return GestureDetector(
+
+              onTap: () {
+                setState(() {
+                  selectedPrice = price;
+                });
+              },
+
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isSelected ? Colors.blue : Colors.grey,
+                  ),
+                ),
+
+                child: Row(
+                  children: [
+
+                    Radio<Price>(
+                      value: price,
+                      groupValue: selectedPrice,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPrice = value;
+                        });
+                      },
+                    ),
+
+                    Expanded(
+                      child: Text("${price.patientCount} Patient"),
+                    ),
+
+                    Text(
+                      "₹${price.discountPrice}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  /// SLOT UI
+  Widget _buildSession(String title, List<Slot> slots) {
+
+    if (slots.isEmpty) return const SizedBox();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        const SizedBox(height: 20),
+
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+
+        const SizedBox(height: 10),
+
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+
+          children: slots.map((slot) {
+
+            final isSelected = selectedSlot?.id == slot.id;
+            final isBooked = slot.bookingStatus != "available";
+
+            return GestureDetector(
+
+              onTap: isBooked ? null : () {
+
+                setState(() {
+                  selectedSlot = slot;
+                });
+
+              },
+
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 10),
+
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.blue
+                      : isBooked
+                      ? Colors.grey.shade300
+                      : Colors.white,
+
+                  borderRadius: BorderRadius.circular(8),
+
+                  border: Border.all(
+                    color: isSelected
+                        ? Colors.blue
+                        : Colors.grey,
+                  ),
+                ),
+
+                child: Text(
+                  slot.time,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Colors.white
+                        : isBooked
+                        ? Colors.grey
+                        : Colors.black,
+                  ),
+                ),
+              ),
+            );
+
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  void _showMsg(String msg) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 }

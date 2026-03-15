@@ -1,28 +1,37 @@
 import '../../models/lab_test_models/lab_booking_model.dart';
 
-abstract class LabBookingState {}
+class LabBookingState {
+  final bool isLoading;
+  final List<LabDate> dates;
+  final Slots? slots;
+  final List<FamilyMember> familyMembers;
+  final List<Price> prices;
+  final String? error;
 
-class LabBookingInitial extends LabBookingState {}
+  const LabBookingState({
+    this.isLoading = false,
+    this.dates = const [],
+    this.slots,
+    this.familyMembers = const [],
+    this.prices = const [],
+    this.error,
+  });
 
-class LabBookingLoading extends LabBookingState {}
-
-class DatesLoaded extends LabBookingState {
-
-  final LabBookingModel model;
-
-  DatesLoaded(this.model);
-}
-
-class SlotsLoaded extends LabBookingState {
-
-  final LabBookingModel model;
-
-  SlotsLoaded(this.model);
-}
-
-class LabBookingError extends LabBookingState {
-
-  final String message;
-
-  LabBookingError(this.message);
+  LabBookingState copyWith({
+    bool? isLoading,
+    List<LabDate>? dates,
+    Slots? slots,
+    List<FamilyMember>? familyMembers,
+    List<Price>? prices,
+    String? error,
+  }) {
+    return LabBookingState(
+      isLoading: isLoading ?? this.isLoading,
+      dates: dates ?? this.dates,
+      slots: slots ?? this.slots,
+      familyMembers: familyMembers ?? this.familyMembers,
+      prices: prices ?? this.prices,
+      error: error ?? this.error,
+    );
+  }
 }

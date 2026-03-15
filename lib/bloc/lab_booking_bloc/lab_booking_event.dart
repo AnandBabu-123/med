@@ -1,7 +1,6 @@
 abstract class LabBookingEvent {}
 
 class LoadDatesEvent extends LabBookingEvent {
-
   final int labTestId;
   final int testId;
   final int fee;
@@ -10,11 +9,15 @@ class LoadDatesEvent extends LabBookingEvent {
 }
 
 class LoadSlotsEvent extends LabBookingEvent {
-
   final int labTestId;
   final int testId;
   final int fee;
   final String date;
 
-  LoadSlotsEvent(this.labTestId, this.testId, this.fee, this.date);
+  LoadSlotsEvent(
+      this.labTestId,
+      this.testId,
+      this.fee,
+      this.date,
+      );
 }
