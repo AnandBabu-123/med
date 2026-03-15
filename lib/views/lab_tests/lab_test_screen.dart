@@ -5,6 +5,8 @@ import 'package:medryder/bloc/lab_bloc/lab_bloc.dart';
 import '../../bloc/lab_bloc/lab_event.dart';
 import '../../bloc/lab_bloc/lab_state.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_bloc.dart';
+import '../../config/colors/app_colors.dart';
+import '../../config/routes/app_url.dart';
 import '../../models/lab_test_models/lab_model.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
@@ -58,10 +60,20 @@ class _LabTestScreenState extends State<LabTestScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Lab Tests"),
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          "Lab Test",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: AppColors.whiteColor,
+            fontSize: 20,
+          ),
+        ),
       ),
 
-      /// BOTTOM BAR
+
+    /// BOTTOM BAR
       bottomNavigationBar: selectedPackages.isEmpty
           ? null
           : Container(
@@ -98,34 +110,6 @@ class _LabTestScreenState extends State<LabTestScreen> {
               ],
             ),
 
-            /// CONTINUE BUTTON
-            // ElevatedButton(
-            //   onPressed: () {
-            //
-            //     /// DO NOT NAVIGATE
-            //     /// HANDLE BOOKING HERE
-            //
-            //     print("Selected package IDs:");
-            //     print(selectedPackages.map((e) => e.id).toList());
-            //
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       const SnackBar(
-            //         content: Text("Proceeding with booking"),
-            //       ),
-            //     );
-            //
-            //   },
-            //   style: ElevatedButton.styleFrom(
-            //     padding: const EdgeInsets.symmetric(
-            //       horizontal: 32,
-            //       vertical: 14,
-            //     ),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(10),
-            //     ),
-            //   ),
-            //   child: const Text("Continue"),
-            // )
 
             ElevatedButton(
               onPressed: () {
@@ -209,22 +193,57 @@ class _LabTestScreenState extends State<LabTestScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
 
-                      /// NAME
-                      Text(
-                        package.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+
+                      Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: (package.image.isEmpty || package.image == "null")
+                                ? Image.asset(
+                              "assets/logo.png",
+                              width: 70,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                                : Image.network(
+                              "${AppUrl.imageBaseUrl}/${package.image}",
+                              width: 70,
+                              height: 100,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  "assets/logo.png",
+                                  width: 70,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          ),
+                         SizedBox(width: 40,),
+                         Column(
+                           children: [
+                             Text(
+                               package.name,
+                               style: const TextStyle(
+                                 fontSize: 16,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+
+                             const SizedBox(height: 6),
+
+                             Text("Report in ${package.reportIn}"),
+
+                             const SizedBox(height: 6),
+
+                             Text("Fasting: ${package.fasting}"),
+
+                           ],
+                         )
+                        ],
                       ),
-
-                      const SizedBox(height: 6),
-
-                      Text("Report in ${package.reportIn}"),
-
-                      const SizedBox(height: 6),
-
-                      Text("Fasting: ${package.fasting}"),
+                      /// NAME
 
                       const SizedBox(height: 12),
 

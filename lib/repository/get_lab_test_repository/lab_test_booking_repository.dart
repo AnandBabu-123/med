@@ -26,7 +26,6 @@ class LabTestBookingRepository {
     final token = await SessionManager.getToken();
 
     final body = {
-
       "user_id": userId,
       "auth_token": token,
       "view_type": viewType,
@@ -45,10 +44,9 @@ class LabTestBookingRepository {
       data: body,
     );
 
-    if (response["status"] == true) {
-      return LabBookingModel.fromJson(response);
-    } else {
-      throw Exception(response["message"]);
-    }
+    print("===== LAB BOOKING RESPONSE =====");
+    print(response);
+
+    return LabBookingModel.fromJson(response);
   }
 }

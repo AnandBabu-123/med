@@ -11,79 +11,88 @@ class LabBookingBloc extends Bloc<LabBookingEvent, LabBookingState> {
 
   LabBookingBloc(this.repository) : super(const LabBookingState()) {
 
-    /// LOAD DATES
-    on<LoadDatesEvent>((event, emit) async {
+    on<FetchDatesEvent>(_fetchDates);
+    on<FetchSlotsEvent>(_fetchSlots);
+  }
 
-      emit(state.copyWith(isLoading: true, error: null));
+  /// FETCH DATES
+  Future<void> _fetchDates(
+      FetchDatesEvent event,
+      Emitter<LabBookingState> emit,
+      ) async {
 
-      try {
+    emit(state.copyWith(isLoading: true));
 
-        final data = await repository.labBookingRepository(
-          labTestId: event.labTestId,
-          testId: event.testId,
-          fee: event.fee,
-          viewType: "dates",
-          date: "",
-          familyMemberId: 562,
-          count: 1,
-        );
+    try {
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            dates: data.response.dates ?? [],
-            familyMembers: data.response.familyMembers ?? [],
-            prices: data.response.prices ?? [],
-            slots: null,
-            error: null,
-          ),
-        );
+      final response = await repository.labBookingRepository(
+        labTestId: event.labTestId,
+        testId: event.testId,
+        fee: event.fee,
+        viewType: "dates",
+        date: "",
+        familyMemberId: 0,
+        count: 1,
+      );
 
-      } catch (e) {
+      print("===== DATEsss API RESPONSE =====");
+      print(response);
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: e.toString(),
-          ),
-        );
-      }
-    });
+      print("DATES FROM API: ${response.response.dates}");
 
-    /// LOAD SLOTS
-    on<LoadSlotsEvent>((event, emit) async {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          dates: response.response.dates ?? [],
+        ),
+      );
 
-      emit(state.copyWith(isLoading: true, error: null));
+    } catch (e) {
 
-      try {
+      print("DATE API ERROR: $e");
 
-        final data = await repository.labBookingRepository(
-          labTestId: event.labTestId,
-          testId: event.testId,
-          fee: event.fee,
-          viewType: "slots",
-          date: event.date,
-          familyMemberId: 562,
-          count: 1,
-        );
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      ));
+    }
+  }
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            slots: data.response.slots,
-            error: null,
-          ),
-        );
+  /// FETCH SLOTS
+  Future<void> _fetchSlots(
+      FetchSlotsEvent event,
+      Emitter<LabBookingState> emit,
+      ) async {
 
-      } catch (e) {
+    emit(state.copyWith(isLoading: true));
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: e.toString(),
-          ),
-        );
-      }
-    });
+    try {
+
+      final response = await repository.labBookingRepository(
+        labTestId: event.labTestId,
+        testId: event.testId,
+        fee: event.fee,
+        viewType: "slots",
+        date: event.date,
+        familyMemberId: 0,
+        count: 1,
+      );
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          slots: response.response.slots,
+          familyMembers: response.response.familyMembers ?? [],
+          prices: response.response.prices ?? [],
+        ),
+      );
+
+    } catch (e) {
+
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      ));
+    }
   }
 }

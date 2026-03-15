@@ -1,11 +1,12 @@
 import '../../models/lab_test_models/lab_booking_model.dart';
 
 class LabBookingState {
+
   final bool isLoading;
   final List<LabDate> dates;
   final Slots? slots;
-  final List<FamilyMember> familyMembers;
-  final List<Price> prices;
+  final List<FamilyMembers> familyMembers;
+  final List<Prices> prices;
   final String? error;
 
   const LabBookingState({
@@ -21,8 +22,8 @@ class LabBookingState {
     bool? isLoading,
     List<LabDate>? dates,
     Slots? slots,
-    List<FamilyMember>? familyMembers,
-    List<Price>? prices,
+    List<FamilyMembers>? familyMembers,
+    List<Prices>? prices,
     String? error,
   }) {
     return LabBookingState(

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../bloc/lab_booking_bloc/lab_booking_bloc.dart';
-import '../../bloc/lab_booking_bloc/lab_booking_event.dart';
+import '../../config/colors/app_colors.dart';
 import '../../models/lab_test_models/lab_booking_model.dart';
 
-class FamilySelectionScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
 
+import 'lab_summary_screen.dart';
+
+class FamilySelectionScreen extends StatefulWidget {
   final int labTestId;
   final int testId;
   final int slotId;
   final int fee;
-//  final int count;
   final String date;
+  final String image;
 
-  final List<FamilyMember> familyMembers;
-  final List<Price> prices;
+  final List<FamilyMembers> familyMembers;
+  final List<Prices> prices;
 
   const FamilySelectionScreen({
     super.key,
@@ -23,33 +23,37 @@ class FamilySelectionScreen extends StatefulWidget {
     required this.testId,
     required this.slotId,
     required this.fee,
- //   required this.count,
     required this.date,
     required this.familyMembers,
     required this.prices,
+    required this.image
   });
 
   @override
-  State<FamilySelectionScreen> createState() =>
-      _FamilySelectionScreenState();
+  State<FamilySelectionScreen> createState() => _FamilySelectionScreenState();
 }
-class _FamilySelectionScreenState extends State<FamilySelectionScreen> {
 
+class _FamilySelectionScreenState extends State<FamilySelectionScreen> {
   List<int> selectedMembers = [];
-  Price? selectedPrice;
+  Prices? selectedPrice;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
-        title: const Text("Select Family Members"),
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          "Family Members",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: AppColors.whiteColor,
+            fontSize: 20,
+          ),
+        ),
       ),
-
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,176 +61,198 @@ class _FamilySelectionScreenState extends State<FamilySelectionScreen> {
             /// FAMILY MEMBERS
             const Text(
               "Family Members",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
-            Expanded(
-              child: ListView.builder(
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: widget.familyMembers.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 2.5,
+              ),
+              itemBuilder: (context, index) {
+                final member = widget.familyMembers[index];
+                final isSelected = selectedMembers.contains(member.id);
 
-                itemCount: widget.familyMembers.length,
-
-                itemBuilder: (context, index) {
-
-                  final member = widget.familyMembers[index];
-                  final isSelected =
-                  selectedMembers.contains(member.id);
-
-                  return Card(
-
-                    child: CheckboxListTile(
-
-                      title: Text(member.name),
-                      subtitle: Text(member.type),
-
-                      value: isSelected,
-
-                      onChanged: (value) {
-
-                        setState(() {
-
-                          if (value == true) {
-                            selectedMembers.add(member.id);
-                          } else {
-                            selectedMembers.remove(member.id);
-                          }
-
-                        });
-
-                      },
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        selectedMembers.remove(member.id);
+                      } else {
+                        selectedMembers.add(member.id);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                      isSelected ? Colors.blue.shade50 : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.blue : Colors.grey.shade300,
+                        width: 1.2,
+                      ),
                     ),
-                  );
-                },
-              ),
+                    child: Text(
+                      member.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: isSelected ? Colors.blue : Colors.black,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            /// PATIENT PRICE
+            /// PATIENT COUNT
             const Text(
               "Select Patient Count",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             Column(
               children: widget.prices.map((price) {
-
                 final isSelected =
-                    selectedPrice?.patientCount ==
-                        price.patientCount;
+                    selectedPrice?.patientCount == price.patientCount;
 
                 return GestureDetector(
-
                   onTap: () {
                     setState(() {
                       selectedPrice = price;
+                      selectedMembers.clear();
                     });
                   },
-
                   child: Container(
-
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(14),
-
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-
                       borderRadius: BorderRadius.circular(10),
-
                       border: Border.all(
                         color: isSelected
                             ? Colors.blue
                             : Colors.grey.shade300,
                       ),
                     ),
-
                     child: Row(
                       children: [
 
-                        Radio<Price>(
+                        Radio<Prices>(
                           value: price,
                           groupValue: selectedPrice,
                           onChanged: (value) {
-
                             setState(() {
                               selectedPrice = value;
+                              selectedMembers.clear();
                             });
-
                           },
                         ),
 
                         Expanded(
                           child: Text(
                             "${price.patientCount} Patient",
+                            style: const TextStyle(fontSize: 15),
                           ),
                         ),
 
-                        Text(
-                          "₹${price.discountPrice}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+
+                            /// Original price
+                            Text(
+                              "₹${price.price}",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.grey,
+                              ),
+                            ),
+
+                            /// Discount price
+                            Text(
+                              "₹${price.discountPrice}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),
                 );
-
               }).toList(),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
             /// CONTINUE BUTTON
             SizedBox(
               width: double.infinity,
-
               child: ElevatedButton(
+                  onPressed: () {
 
-                onPressed: () {
+                    if (selectedPrice == null) {
+                      _showMsg("Select patient count");
+                      return;
+                    }
 
-                  if (selectedMembers.isEmpty) {
+                    if (selectedMembers.isEmpty) {
+                      _showMsg("Select family member");
+                      return;
+                    }
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Select at least one member"),
+                    if (selectedMembers.length != selectedPrice!.patientCount) {
+                      _showMsg("Please select ${selectedPrice!.patientCount} members");
+                      return;
+                    }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LabSummaryScreen(
+                          labTestId: widget.labTestId,
+                          testId: widget.testId,
+                          slotId: widget.slotId,
+                          date: widget.date,
+                          fee: widget.fee,
+                          selectedMembers: selectedMembers,
+                          patientCount: selectedPrice!.patientCount,
+                          price: selectedPrice!.discountPrice,
+                          image: widget.image,
+                        ),
                       ),
                     );
-
-                    return;
-                  }
-
-                  if (selectedPrice == null) {
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Select patient count"),
-                      ),
-                    );
-
-                    return;
-                  }
-
-                  print("Selected Members: $selectedMembers");
-                  print("Selected Price: ${selectedPrice!.discountPrice}");
-                },
-
+                  },
                 child: const Text("Continue"),
               ),
             ),
-
           ],
         ),
       ),
     );
+  }
+
+  void _showMsg(String msg) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 }

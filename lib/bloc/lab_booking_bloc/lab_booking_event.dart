@@ -1,23 +1,27 @@
 abstract class LabBookingEvent {}
 
-class LoadDatesEvent extends LabBookingEvent {
+class FetchDatesEvent extends LabBookingEvent {
   final int labTestId;
   final int testId;
   final int fee;
 
-  LoadDatesEvent(this.labTestId, this.testId, this.fee);
+  FetchDatesEvent({
+    required this.labTestId,
+    required this.testId,
+    required this.fee,
+  });
 }
 
-class LoadSlotsEvent extends LabBookingEvent {
+class FetchSlotsEvent extends LabBookingEvent {
   final int labTestId;
   final int testId;
   final int fee;
   final String date;
 
-  LoadSlotsEvent(
-      this.labTestId,
-      this.testId,
-      this.fee,
-      this.date,
-      );
+  FetchSlotsEvent({
+    required this.labTestId,
+    required this.testId,
+    required this.fee,
+    required this.date,
+  });
 }

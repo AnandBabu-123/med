@@ -1,4 +1,5 @@
 class LabBookingModel {
+
   final bool status;
   final String message;
   final LabBookingResponse response;
@@ -10,46 +11,58 @@ class LabBookingModel {
   });
 
   factory LabBookingModel.fromJson(Map<String, dynamic> json) {
+
     return LabBookingModel(
-      status: json["status"],
-      message: json["message"],
-      response: LabBookingResponse.fromJson(json["response"]),
+      status: json["status"] ?? false,
+      message: json["message"] ?? "",
+      response: LabBookingResponse.fromJson(json["response"] ?? {}),
     );
   }
 }
+
 class LabBookingResponse {
 
-  final List<LabDate>? dates;
+  final List<LabDate> dates;
   final Slots? slots;
-  final List<FamilyMember>? familyMembers;
-  final List<Price>? prices;
+  final List<FamilyMembers> familyMembers;
+  final List<Prices> prices;
 
   LabBookingResponse({
-    this.dates,
+    required this.dates,
     this.slots,
-    this.familyMembers,
-    this.prices,
+    required this.familyMembers,
+    required this.prices,
   });
 
   factory LabBookingResponse.fromJson(Map<String, dynamic> json) {
+
     return LabBookingResponse(
+
       dates: json["dates"] == null
+          ? []
+          : (json["dates"] as List)
+          .map((e) => LabDate.fromJson(e))
+          .toList(),
+
+      slots: json["slots"] == null
           ? null
-          : List<LabDate>.from(
-          json["dates"].map((x) => LabDate.fromJson(x))),
-      slots:
-      json["slots"] == null ? null : Slots.fromJson(json["slots"]),
+          : Slots.fromJson(json["slots"]),
+
       familyMembers: json["family_members"] == null
-          ? null
-          : List<FamilyMember>.from(
-          json["family_members"].map((x) => FamilyMember.fromJson(x))),
+          ? []
+          : (json["family_members"] as List)
+          .map((e) => FamilyMembers.fromJson(e))
+          .toList(),
+
       prices: json["prices"] == null
-          ? null
-          : List<Price>.from(
-          json["prices"].map((x) => Price.fromJson(x))),
+          ? []
+          : (json["prices"] as List)
+          .map((e) => Prices.fromJson(e))
+          .toList(),
     );
   }
 }
+
 class LabDate {
 
   final String date;
@@ -63,13 +76,15 @@ class LabDate {
   });
 
   factory LabDate.fromJson(Map<String, dynamic> json) {
+
     return LabDate(
-      date: json["date"],
-      formatDate: json["format_date"],
-      convertDate: json["convert_date"],
+      date: json["date"] ?? "",
+      formatDate: json["format_date"] ?? "",
+      convertDate: json["convert_date"] ?? "",
     );
   }
 }
+
 class Slots {
 
   final List<Slot> morning;
@@ -83,79 +98,92 @@ class Slots {
   });
 
   factory Slots.fromJson(Map<String, dynamic> json) {
+
     return Slots(
-      morning: List<Slot>.from(
-          json["morning"].map((x) => Slot.fromJson(x))),
-      afternoon: List<Slot>.from(
-          json["afternoon"].map((x) => Slot.fromJson(x))),
-      evening: List<Slot>.from(
-          json["evening"].map((x) => Slot.fromJson(x))),
+
+      morning: json["morning"] == null
+          ? []
+          : (json["morning"] as List)
+          .map((e) => Slot.fromJson(e))
+          .toList(),
+
+      afternoon: json["afternoon"] == null
+          ? []
+          : (json["afternoon"] as List)
+          .map((e) => Slot.fromJson(e))
+          .toList(),
+
+      evening: json["evening"] == null
+          ? []
+          : (json["evening"] as List)
+          .map((e) => Slot.fromJson(e))
+          .toList(),
     );
   }
 }
+
 class Slot {
 
   final int id;
   final String time;
-  final String session;
   final String bookingStatus;
-  final String date;
 
   Slot({
     required this.id,
     required this.time,
-    required this.session,
     required this.bookingStatus,
-    required this.date,
   });
 
   factory Slot.fromJson(Map<String, dynamic> json) {
+
     return Slot(
-      id: json["id"],
-      time: json["time"],
-      session: json["session"],
-      bookingStatus: json["booking_status"],
-      date: json["date"],
+      id: json["id"] ?? 0,
+      time: json["time"] ?? "",
+      bookingStatus: json["booking_status"] ?? "",
     );
   }
 }
-class FamilyMember {
+
+class FamilyMembers {
 
   final int id;
   final String name;
   final String type;
 
-  FamilyMember({
+  FamilyMembers({
     required this.id,
     required this.name,
     required this.type,
   });
 
-  factory FamilyMember.fromJson(Map<String, dynamic> json) {
-    return FamilyMember(
-      id: json["id"],
-      name: json["name"],
-      type: json["type"],
+  factory FamilyMembers.fromJson(Map<String, dynamic> json) {
+
+    return FamilyMembers(
+      id: json["id"] ?? 0,
+      name: json["name"] ?? "",
+      type: json["type"] ?? "",
     );
   }
 }
-class Price {
+
+class Prices {
 
   final int patientCount;
   final int price;
   final int discountPrice;
 
-  Price({
+  Prices({
     required this.patientCount,
     required this.price,
     required this.discountPrice,
   });
 
-  factory Price.fromJson(Map<String, dynamic> json) {
-    return Price(
-      patientCount: json["patient_count"],
-      price: json["price"],
-      discountPrice: json["discont_price"],
+  factory Prices.fromJson(Map<String, dynamic> json) {
+
+    return Prices(
+      patientCount: json["patient_count"] ?? 0,
+      price: json["price"] ?? 0,
+      discountPrice: json["discont_price"] ?? 0,
     );
   }
 }

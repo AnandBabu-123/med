@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medryder/views/lab_tests/lab_family_screen.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_bloc.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_event.dart';
 import '../../bloc/lab_booking_bloc/lab_booking_state.dart';
+import '../../config/colors/app_colors.dart';
 import '../../models/lab_test_models/lab_booking_model.dart';
 import '../../utils/session_manager.dart';
 
@@ -33,18 +36,21 @@ class _LabTestPrescriptionBookingScreenState
 
   String? selectedDate;
   Slot? selectedSlot;
-  FamilyMember? selectedFamilyMember;
-  Price? selectedPrice;
+  FamilyMembers? selectedFamilyMember;
+  Prices? selectedPrice;
+  File? prescriptionImage;
+  final ImagePicker _picker = ImagePicker();
 
+  @override
   @override
   void initState() {
     super.initState();
 
     context.read<LabBookingBloc>().add(
-      LoadDatesEvent(
-        widget.labTestId,
-        widget.testId,
-        widget.price,
+      FetchDatesEvent(
+        labTestId: widget.labTestId,
+        testId: widget.testId,
+        fee: widget.price,
       ),
     );
   }
@@ -55,7 +61,16 @@ class _LabTestPrescriptionBookingScreenState
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Lab Test Booking"),
+        backgroundColor: AppColors.lightblue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          "Lab Test Booking",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: AppColors.whiteColor,
+            fontSize: 20,
+          ),
+        ),
       ),
 
       bottomNavigationBar: BlocBuilder<LabBookingBloc, LabBookingState>(
@@ -92,7 +107,8 @@ class _LabTestPrescriptionBookingScreenState
                 }
 
 
-
+                print("FAMILY MEMBERS COUNT: ${state.familyMembers.length}");
+                print(state.familyMembers);
                 /// NAVIGATION
                 Navigator.push(
                   context,
@@ -102,10 +118,10 @@ class _LabTestPrescriptionBookingScreenState
                       testId: widget.testId,
                       slotId: selectedSlot!.id,
                       fee: widget.price,
-                   //   count: selectedPrice!.patientCount,
                       date: selectedDate!,
                       familyMembers: state.familyMembers,
                       prices: state.prices,
+                      image: widget.image,
                     ),
                   ),
                 );
@@ -122,7 +138,7 @@ class _LabTestPrescriptionBookingScreenState
 
       body: BlocBuilder<LabBookingBloc, LabBookingState>(
         builder: (context, state) {
-
+          print("UI DATES: ${state.dates.length}");
           if (state.isLoading && state.dates.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -137,6 +153,9 @@ class _LabTestPrescriptionBookingScreenState
 
                 /// ADDRESS
                 _addressCard(),
+                const SizedBox(height: 10),
+
+                _prescriptionField(),
 
                 const SizedBox(height: 20),
 
@@ -152,23 +171,121 @@ class _LabTestPrescriptionBookingScreenState
                   _buildSession("Evening", state.slots!.evening),
                 ],
 
-                const SizedBox(height: 25),
 
-                /// FAMILY MEMBERS (ALWAYS SHOW)
-                if (state.familyMembers.isNotEmpty)
-                  _familyDropdown(state),
-
-                const SizedBox(height: 20),
-
-                /// PATIENT SELECTION (ALWAYS SHOW)
-                if (state.prices.isNotEmpty)
-                  _patientSelection(state),
               ],
             ),
           );
         },
       ),
     );
+  }
+
+  Widget _prescriptionField() {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        const Text(
+          "Upload Prescription",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        GestureDetector(
+          onTap: _showImagePicker,
+          child: Container(
+            height: 120,
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+
+            child: prescriptionImage == null
+                ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+
+                Icon(Icons.camera_alt_outlined,
+                    color: Colors.grey),
+
+                SizedBox(width: 10),
+
+                Text(
+                  "Upload Prescription",
+                  style: TextStyle(color: Colors.grey),
+                ),
+
+              ],
+            )
+                : ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                prescriptionImage!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  void _showImagePicker() {
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+
+        return SafeArea(
+          child: Wrap(
+            children: [
+
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+
+            ],
+          ),
+        );
+
+      },
+    );
+  }
+  Future<void> _pickImage(ImageSource source) async {
+
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      imageQuality: 70,
+    );
+
+    if (image != null) {
+
+      setState(() {
+        prescriptionImage = File(image.path);
+      });
+
+    }
   }
 
   /// ADDRESS
@@ -210,6 +327,10 @@ class _LabTestPrescriptionBookingScreenState
   /// DATE SELECTOR
   Widget _dateSelector(LabBookingState state) {
 
+    if (state.dates.isEmpty) {
+      return const Text("No dates available");
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -223,7 +344,6 @@ class _LabTestPrescriptionBookingScreenState
 
         SizedBox(
           height: 50,
-
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: state.dates.length,
@@ -235,27 +355,27 @@ class _LabTestPrescriptionBookingScreenState
 
               return GestureDetector(
 
-                onTap: () {
+                  onTap: () {
 
-                  setState(() {
-                    selectedDate = date.date;
-                    selectedSlot = null;
-                  });
+                    setState(() {
+                      selectedDate = date.date;
+                      selectedSlot = null;
+                    });
 
-                  context.read<LabBookingBloc>().add(
-                    LoadSlotsEvent(
-                      widget.labTestId,
-                      widget.testId,
-                      widget.price,
-                      date.date,
-                    ),
-                  );
-                },
-
+                    context.read<LabBookingBloc>().add(
+                      FetchSlotsEvent(
+                        labTestId: widget.labTestId,
+                        testId: widget.testId,
+                        fee: widget.price,
+                        date: date.date,
+                      ),
+                    );
+                  },
                 child: Container(
                   margin: const EdgeInsets.only(right: 10),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 10),
+                      horizontal: 16,
+                      vertical: 10),
 
                   decoration: BoxDecoration(
                     color: isSelected ? Colors.blue : Colors.white,
@@ -275,110 +395,6 @@ class _LabTestPrescriptionBookingScreenState
               );
             },
           ),
-        ),
-      ],
-    );
-  }
-
-  /// FAMILY DROPDOWN
-  Widget _familyDropdown(LabBookingState state) {
-
-    return DropdownButtonFormField<FamilyMember>(
-      value: selectedFamilyMember,
-
-      decoration: const InputDecoration(
-        labelText: "Select Family Member",
-        border: OutlineInputBorder(),
-      ),
-
-      items: state.familyMembers.map((member) {
-
-        return DropdownMenuItem(
-          value: member,
-          child: Text(member.name),
-        );
-
-      }).toList(),
-
-      onChanged: (value) {
-
-        setState(() {
-          selectedFamilyMember = value;
-        });
-
-      },
-    );
-  }
-
-  /// PATIENT SELECTION
-  Widget _patientSelection(LabBookingState state) {
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        const Text(
-          "Select Patients",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-
-        const SizedBox(height: 10),
-
-        Column(
-          children: state.prices.map((price) {
-
-            final isSelected =
-                selectedPrice?.patientCount == price.patientCount;
-
-            return GestureDetector(
-
-              onTap: () {
-                setState(() {
-                  selectedPrice = price;
-                });
-              },
-
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(14),
-
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: isSelected ? Colors.blue : Colors.grey,
-                  ),
-                ),
-
-                child: Row(
-                  children: [
-
-                    Radio<Price>(
-                      value: price,
-                      groupValue: selectedPrice,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedPrice = value;
-                        });
-                      },
-                    ),
-
-                    Expanded(
-                      child: Text("${price.patientCount} Patient"),
-                    ),
-
-                    Text(
-                      "₹${price.discountPrice}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-
-          }).toList(),
         ),
       ],
     );
@@ -460,8 +476,5 @@ class _LabTestPrescriptionBookingScreenState
     );
   }
 
-  void _showMsg(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
-  }
+
 }
