@@ -31,4 +31,5 @@ class RoutesName {
   static const String hospitalApplyFilterScreen ="hospital_apply_filter_screen";
   static const String hospitalSubCatFilterScreen ="hospital_subCat_filter_screen";
   static const String onLineDoctorsScreen ="onLine_doctors_screen";
+  static const String labPrescriptionScreen ="lab_prescription_screen";
 }

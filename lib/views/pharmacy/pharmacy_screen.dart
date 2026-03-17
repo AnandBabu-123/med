@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medryder/config/colors/app_colors.dart';
 import 'package:medryder/views/pharmacy/pharmacy_details_screen.dart';
-
 import '../../bloc/pharmacy_bloc/pharmacy_bloc.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_event.dart';
 import '../../bloc/pharmacy_bloc/pharmacy_state.dart';
 import '../../bloc/pharmacy_details_bloc/pharmacy_details_bloc.dart';
 import '../../config/routes/app_url.dart';
-import '../../config/routes/routes_name.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
 import '../../repository/pharmacy_repository/pharmacy_details_repository.dart';
@@ -34,8 +32,7 @@ class PharmacyScreen extends StatefulWidget {
 class _PharmacyScreenState extends State<PharmacyScreen> {
   final ScrollController _scrollController = ScrollController();
   TextEditingController searchController = TextEditingController();
-  static const String imageBaseUrl =
-      "https://medrayder.in/bharosa/";
+  static const String imageBaseUrl = "https://medrayder.in/bharosa/";
 
   @override
   void initState() {

@@ -25,3 +25,4 @@ export '../../views/hospitals/hospital_filter_screen.dart';
 export '../../views/hospitals/hospital_apply_filter_screen.dart';
 export '../../views/hospitals/hospital_subcat_filter_screen.dart';
 export '../../views/online_doctors/online_doctors_screen.dart';
+export '../../views/lab_tests/lab_prescription_family_screen.dart';

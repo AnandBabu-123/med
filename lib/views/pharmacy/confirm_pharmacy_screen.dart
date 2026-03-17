@@ -52,7 +52,7 @@ class _ConfirmPharmacyOrderScreenState
     address = await SessionManager.getAddress() ?? "";
     mobile = prefs.getInt(SessionManager.mobileKey)?.toString() ?? "";
     addressId = prefs.getInt("id") ?? 0;
-    name = await SessionManager.getLanguage() ?? "";
+    name = await SessionManager.getLanguage();
 
     setState(() {
       loading = false;
